@@ -2091,13 +2091,12 @@ showTopTable <- function(...,export=FALSE)
     }
     Try(if (!is.na(matchIndex) || (cdfName %in% .packages(all.available=TRUE)))
     {
-    
       Require(cdfName)
-      Try(code2eval <- paste("Try(geneNames <- as.character(unlist(mget(ls(envir=",cdfName,"GENENAME),env=",cdfName,"GENENAME))))",sep=""))
+      Try(code2eval <- paste("Try(geneNames <- as.character(unlist(lapply(mget(ls(cdfenv),env=",cdfName,"GENENAME),function(nm) return(paste(nm,collapse=\"; \"))))))",sep=""))
       Try(eval(parse(text=code2eval)))
       Try(assign("geneNames",geneNames,affylmGUIenvironment))
-      Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(mget(ls(envir=",cdfName,"SYMBOL),env=",cdfName,"SYMBOL))))",sep=""))
-      Try(eval(parse(text=code2eval)))
+      Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(lapply(mget(ls(cdfenv),env=",cdfName,"SYMBOL),function(sym) return(paste(sym,collapse=\"; \"))))))",sep=""))
+      Try(eval(parse(text=code2eval)))      
       Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))      
       Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
       Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols),as.matrix(geneNames)))
@@ -2198,40 +2197,44 @@ showTopTable <- function(...,export=FALSE)
       if (tolower(colnames(table1)[i]) %in% c("block","row","column","gridrow","gridcolumn","gridcol","grid.row","grid.col","grid.column"))
       {
         Try(if (.affylmGUIglobals$affylmGUIpresentation==FALSE)
-          Try(tkcmd(.Tk.ID(toptableTable),"width",paste(i-1),paste(max(4,nchar(colnames(table1)[i])+2))))
+          Try(tkcmd(toptableTable,"width",paste(i-1),paste(max(4,nchar(colnames(table1)[i])+2))))
         else
-          Try(tkcmd(.Tk.ID(toptableTable),"width",paste(i-1),paste(max(4,nchar(colnames(table1)[i]))))))        
+          Try(tkcmd(toptableTable,"width",paste(i-1),paste(max(4,nchar(colnames(table1)[i]))))))        
         next()
       }
       if (colnames(table1)[i] %in% c("M","A","t","B"))
       {
-        Try(tkcmd(.Tk.ID(toptableTable),"width",paste(i-1),"6"))
+        Try(tkcmd(toptableTable,"width",paste(i-1),"6"))
         next()
       }
       if (colnames(table1)[i] == "P.Value")
       {
-        Try(tkcmd(.Tk.ID(toptableTable),"width",paste(i-1),"8"))
+        Try(tkcmd(toptableTable,"width",paste(i-1),"8"))
         next()
       }     
       if(tolower(colnames(table1)[i]) == "name")
       {
-        Try(tkcmd(.Tk.ID(toptableTable),"width",paste(i-1),paste(30)))
+        Try(tkcmd(toptableTable,"width",paste(i-1),paste(30)))
+        Try(tkcmd(toptableTable,"tag","col","namecol",paste(i-1)))
+        Try(tkcmd(toptableTable,"tag","cell","namecolheading",paste("0",i-1,sep=",")))
+        Try(tkcmd(toptableTable,"tag","configure","namecol",anchor="w"))
+        Try(tkcmd(toptableTable,"tag","configure","namecolheading",anchor="center"))
         next()
       }
 
       if(tolower(colnames(table1)[i]) == "id")
       {
-        Try(tkcmd(.Tk.ID(toptableTable),"width",paste(i-1),paste(min(max(4,max(nchar(as.character(table1[,i])))+2),40))))
+        Try(tkcmd(toptableTable,"width",paste(i-1),paste(min(max(4,max(nchar(as.character(table1[,i])))+2),40))))
         next()
       }
 
       if(tolower(colnames(table1)[i]) == "symbol")
       {
-        Try(tkcmd(.Tk.ID(toptableTable),"width",paste(i-1),paste(min(max(4,max(nchar(as.character(table1[,i])))+2),30))))
+        Try(tkcmd(toptableTable,"width",paste(i-1),paste(min(max(4,max(nchar(as.character(table1[,i])))+2),30))))
         next()
       }
 
-      Try(tkcmd(.Tk.ID(toptableTable),"width",paste(i-1),paste(min(max(4,max(nchar(as.character(table1[,i])))+2),40))))
+      Try(tkcmd(toptableTable,"width",paste(i-1),paste(min(max(4,max(nchar(as.character(table1[,i])))+2),40))))
     })
     Try(tkfocus(toptableTable))
   }
