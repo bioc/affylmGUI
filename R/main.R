@@ -313,10 +313,6 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE)
   })
   # Try(assign("affylmGUIfontMenu",tkfont.create(family="arial",size=10),.GlobalEnv))
 
-  # Just make sure it has been called at least once before we start setting title etc.
-  # in HTMLplot.
-  try(plot.new(),silent=TRUE)        
-
   Try(affylmGUIglobals$ttMain <- tktoplevel())  
   Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
   Try(tkbind(.affylmGUIglobals$ttMain, "<Destroy>", onDestroy))
@@ -1982,17 +1978,8 @@ showTopTable <- function()
   })
 
   Try(options(digits=3))
-
+    
   Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-  if (!(RawAffyData@cdfName %in% .packages(all.available=TRUE)))
-  {
-    cdf <- RawAffyData@cdfName
-    Require("reposTools")
-    Try(cdfRepos <- getReposEntry("http://www.bioconductor.org/data/cdfenvs/repos"))
-    Try(install.packages2(cdf,cdfRepos))
-    Try(assign("cdf",cdf,affylmGUIenvironment)) # Can then use ls(env=cdf)
-  }
-
   Try(cdfenv<-getCdfInfo(RawAffyData))
 
   Try(genelist <- data.frame(ID=I(ls(cdfenv))))
