@@ -1,6 +1,6 @@
 Package: affylmGUI
-Version: 1.1.0
-Date: 11 June 2004
+Version: 1.1.8
+Date: 29 June 2004
 Title: GUI for affy analysis using limma package
 Author:	James Wettenhall and Ken Simpson
 	Division of Genetics and Bioinformatics, WEHI.

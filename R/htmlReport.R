@@ -416,13 +416,13 @@ ExportHTMLreport <- function()
   if (ExportTop50Toptables || ExportCompleteToptables)
   {
     Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-    if (!(RawAffyData@cdfName %in% .packages(all.available=TRUE)))
+    Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])
+    if (!(cdfName %in% .packages(all.available=TRUE)))
     {
-      cdf <- RawAffyData@cdfName
       Require("reposTools")
       Try(cdfRepos <- getReposEntry("http://www.bioconductor.org/data/cdfenvs/repos"))
-      Try(install.packages2(cdf,cdfRepos))
-      Try(assign("cdf",cdf,affylmGUIenvironment)) # Can then use ls(env=cdf)
+      Try(install.packages2(cdfName,cdfRepos))
+      Try(assign("cdfName",cdfName,affylmGUIenvironment))
     }
 
     Try(cdfenv<-getCdfInfo(RawAffyData))      
@@ -434,18 +434,18 @@ ExportHTMLreport <- function()
 		{
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))  
 			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-			Try(dataName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
+			Try(cdfName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
 			Require("reposTools")
 			Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))    
-			Try(matchIndex <- match(dataName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
+			Try(matchIndex <- match(cdfName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
 			Try(if (!is.na(matchIndex))
 			{
-				Try(install.packages2(dataName,annoPackages))
-				Require(dataName)
-				Try(code2eval <- paste("Try(geneNames <- as.character(unlist(multiget(ls(envir=",dataName,"GENENAME),env=",dataName,"GENENAME))))",sep=""))
+				Try(install.packages2(cdfName,annoPackages))
+				Require(cdfName)
+				Try(code2eval <- paste("Try(geneNames <- as.character(unlist(mget(ls(envir=",cdfName,"GENENAME),env=",cdfName,"GENENAME))))",sep=""))
 				Try(eval(parse(text=code2eval)))
 				Try(assign("geneNames",geneNames,affylmGUIenvironment))
-				Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(multiget(ls(envir=",dataName,"SYMBOL),env=",dataName,"SYMBOL))))",sep=""))
+				Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(mget(ls(envir=",cdfName,"SYMBOL),env=",cdfName,"SYMBOL))))",sep=""))
 				Try(eval(parse(text=code2eval)))
 				Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
 				Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
@@ -509,11 +509,11 @@ ExportHTMLreport <- function()
     {
       Try(options(digits=3))
       Try(table1 <- topTable2(coef=coef,number=nrow(genelist),genelist=genelist,fit=fit))
-      Try(ToptableAbsoluteFilename <- paste(HTMLfilePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".txt",sep=""))
-      Try(ToptableRelativeFilename <- paste(HTMLfileRelativePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".txt",sep=""))
+      Try(ToptableAbsoluteFilename <- paste(HTMLfilePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".xls",sep=""))
+      Try(ToptableRelativeFilename <- paste(HTMLfileRelativePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".xls",sep=""))
       Try(write.table(table1,file=ToptableAbsoluteFilename,quote=FALSE,col.names=NA,sep="\t"))      
       Try(HTML.title(paste("Complete Table of Genes Ranked in order of Evidence for Differential Expression for ",ContrastNamesVec[coef]),HR=3))
-      Try(HTMLli(txt=paste("<a href=\"",ToptableRelativeFilename,"\"><b>",paste("CompleteToptable_Contrast",coef,".txt",sep=""),"</b></a>",sep=""))) 
+      Try(HTMLli(txt=paste("<a href=\"",ToptableRelativeFilename,"\"><b>",paste("CompleteToptable_Contrast",coef,".xls",sep=""),"</b></a>",sep=""))) 
     }  
   }
   

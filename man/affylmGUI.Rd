@@ -20,6 +20,7 @@
 \alias{deleteItemFromList}
 \alias{DensityPlot}
 \alias{evalRcode}
+\alias{ExportTopTable}
 \alias{ExportHTMLreport}
 \alias{ExportNormalizedExpressionValues}
 \alias{generalPlotFunction}
@@ -124,6 +125,7 @@ DeleteCustomMenuItem()
 deleteItemFromList()
 DensityPlot()
 evalRcode()
+ExportTopTable()
 ExportHTMLreport()
 ExportNormalizedExpressionValues()
 generalPlotFunction()

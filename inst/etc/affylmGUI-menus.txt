@@ -12,6 +12,8 @@
     item    fileMenu        command         "Save    Ctrl+S"                                SaveLimmaFile
     item    fileMenu        command         "Save As"                                    		SaveAsLimmaFile
     item    fileMenu        separator       ""                                              ""
+    item    fileMenu        command         "Export Normalized Expression Values"           ExportNormalizedExpressionValues
+    item    fileMenu        command         "Export TopTable (differentially expressed genes)" ExportTopTable
     item    fileMenu        command         "Export HTML Report"                            ExportHTMLreport
     item    fileMenu        separator       ""                                              ""
     item    fileMenu        command         "Working Directory"                             SetWD

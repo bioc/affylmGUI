@@ -122,13 +122,13 @@ ExportNormalizedExpressionValues <- function()
   
   })
   Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
-	Try(FileName <- tclvalue(tkgetSaveFile(initialfile=paste(limmaDataSetNameText,"_exprs.txt",sep=""),filetypes="{{Tab-Delimited Text Files} {.txt}} {{All files} *}")))
+	Try(FileName <- tclvalue(tkgetSaveFile(initialfile=paste(limmaDataSetNameText,"_exprs.xls",sep=""),filetypes="{{Tab-Delimited Text Files} {.txt .xls}} {{All files} *}")))
 	Try(if (!nchar(FileName)) return())
 	Try(len <- nchar(FileName))
 	if (len<=4)
-		Try(FileName <- paste(FileName,".txt",sep=""))
-	else if (substring(FileName,len-3,len)!=".txt")
-				Try(FileName <- paste(FileName,".txt",sep=""))
+		Try(FileName <- paste(FileName,".xls",sep=""))
+  else if ((substring(FileName,len-3,len)!=".txt") &&(substring(FileName,len-3,len)!=".xls"))
+				Try(FileName <- paste(FileName,".xls",sep=""))
   Try(write.table(NormalizedAffyData@exprs,file=FileName,sep="\t",quote=FALSE,col.names=NA))
 
 }

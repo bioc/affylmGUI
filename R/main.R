@@ -319,10 +319,6 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE)
   })
   # Try(assign("affylmGUIfontMenu",tkfont.create(family="arial",size=10),.GlobalEnv))
 
-  # Just make sure it has been called at least once before we start setting title etc.
-  # in HTMLplot.
-  try(plot.new(),silent=TRUE)        
-
   Try(affylmGUIglobals$ttMain <- tktoplevel())  
   Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
   Try(tkbind(.affylmGUIglobals$ttMain, "<Destroy>", onDestroy))
@@ -486,13 +482,13 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE)
                   fileNameOnly <- fileNameOnly[length(fileNameOnly)]
                   if (nchar(recentFiles[i])>60)                  
                       label <- paste(".../",fileNameOnly)
-                  eval(parse(text=paste("assign(\".OpenALimmaFile_",fileNameOnly,"\",function() OpenALimmaFile(\"",recentFiles[i],"\"),.GlobalEnv)",sep="")))
+                  eval(parse(text=paste("assign(\".OpenALimmaFile_",i,"\",function() OpenALimmaFile(\"",recentFiles[i],"\"),.GlobalEnv)",sep="")))
                   Try(if (.Platform$OS.type=="windows")
                     tkadd(eval(parse(text=Menus[m,2])),"command",label=paste(i,". ",gsub("/","\\\\",label),sep=""),
-                      command=eval(parse(text=paste(".OpenALimmaFile_",fileNameOnly,sep=""))))
+                      command=eval(parse(text=paste(".OpenALimmaFile_",i,sep=""))))
                   else
                     tkadd(eval(parse(text=Menus[m,2])),"command",label=paste(i,". ",label,sep=""),
-                      command=eval(parse(text=paste(".OpenALimmaFile_",fileNameOnly,sep="")))))
+                      command=eval(parse(text=paste(".OpenALimmaFile_",i,sep="")))))
                 }
               }
           }
@@ -555,6 +551,7 @@ initGlobals <- function()
   assign("CDFFile" , "",affylmGUIenvironment)
   assign("ContrastParameterizationList" , list(),affylmGUIenvironment)
   assign("cdf" , data.frame(),affylmGUIenvironment)
+  assign("cdfName" , "",affylmGUIenvironment)
   assign("NumSlides" , 0,affylmGUIenvironment)
   assign("NumContrastParameterizations", 0, affylmGUIenvironment)
   assign("ContrastParameterizationNamesVec", c(), affylmGUIenvironment)
@@ -614,8 +611,8 @@ deleteItemFromList <- function(list1,itemName=NULL,index=NULL)
 
 OpenCDFFile <- function()
 {
-  Try(cdf <- ChooseCDF())
-  Try(if (cdf=="") return())
+  Try(cdfName <- ChooseCDF())
+  Try(if (cdfName=="") return())
   Try(assign("CDFFile",cdf,affylmGUIenvironment))
   Try(CDFFile <- get("CDFFile",envir=affylmGUIenvironment))
   Try(tclvalue(.affylmGUIglobals$CDFfileBoxTitle) <- "Chip Definition (CDF) File")
@@ -623,8 +620,8 @@ OpenCDFFile <- function()
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
   Require("reposTools")
   Try(cdfRepos <- getReposEntry("http://www.bioconductor.org/data/cdfenvs/repos"))
-  Try(install.packages2(cdf,cdfRepos))
-  Try(assign("cdf",cdf,affylmGUIenvironment)) # Can then use ls(env=cdf)
+  Try(install.packages2(cdfName,cdfRepos))
+  Try(assign("cdfName",cdfName,affylmGUIenvironment)) 
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))  
   Try(ArraysLoaded <- FALSE)
   Try(assign("ArraysLoaded",ArraysLoaded,affylmGUIenvironment))
@@ -1761,6 +1758,10 @@ ComputeContrasts <- function()
     Try(tkinsert(.affylmGUIglobals$mainTree,"end","ContrastParameterizations","ContrastParameterizations.Status.1" ,text="None",font=.affylmGUIglobals$affylmGUIfontTree)))  
   
   tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")       
+
+  Try(tkmessageBox(title="Contrasts Fit Complete",
+      message=paste("Calculation of the contrasts fit is complete. ",
+      "You can now view list(s) of differentially expressed genes, using the TopTable menu.")))
 }
 
 ComputeLinearModelFit <- function()
@@ -1772,7 +1773,6 @@ ComputeLinearModelFit <- function()
         icon="error",default="ok"))
     return()
   })
-  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
   Try(NormalizedAffyData.Available <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))
   Try(if (NormalizedAffyData.Available==FALSE)
     NormalizeNow())
@@ -1781,8 +1781,8 @@ ComputeLinearModelFit <- function()
   {
     tkmessageBox(title="Linear Model",message="An error occured while trying to normalize the data.")
     return()
-  
   })
+  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
   Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
   Try(Targets <- get("Targets",envir=affylmGUIenvironment))
   Try(design <- as.matrix(as.data.frame(model.matrix(~ -1 + factor(Targets$Target)))))
@@ -1806,6 +1806,10 @@ ComputeLinearModelFit <- function()
     Try(tkinsert(.affylmGUIglobals$mainTree,"end","Parameters",paste("Parameters.Status.",i,sep="") ,
       text=colnames(design)[i],font=.affylmGUIglobals$affylmGUIfontTree)))
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))      
+
+  Try(tkmessageBox(title="Linear Model Fit Complete",
+            message=paste("Calculation of the linear model fit is complete. ",
+              "Contrasts can now be computed (from the Linear Model menu).")))
 }
 
 GetContrast <- function(contrastParameterizationIndex)
@@ -1868,7 +1872,9 @@ GetContrast <- function(contrastParameterizationIndex)
   return (ReturnVal)
 }
 
-showTopTable <- function()
+ExportTopTable <- function() showTopTable(export=TRUE)
+
+showTopTable <- function(...,export=FALSE)
 {
   Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
   Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
@@ -1928,8 +1934,11 @@ showTopTable <- function()
     "Number of genes in table:",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(HowManyQuestion1))
   Try(tkgrid.configure(HowManyQuestion1,columnspan=2,sticky="w"))
-  
-  Try(numberOfGenesTcl <- tclVar("3"))
+
+  Try(if (export)  
+    Try(numberOfGenesTcl <- tclVar("5"))
+  else
+    Try(numberOfGenesTcl <- tclVar("3")))
   Try(Ten.but      <- tkradiobutton(frame1,text="10",variable=numberOfGenesTcl,value="1",font=.affylmGUIglobals$affylmGUIfont2))
   Try(Thirty.but   <- tkradiobutton(frame1,text="30",variable=numberOfGenesTcl,value="2",font=.affylmGUIglobals$affylmGUIfont2))
   Try(Fifty.but    <- tkradiobutton(frame1,text="50",variable=numberOfGenesTcl,value="3",font=.affylmGUIglobals$affylmGUIfont2))  
@@ -2051,13 +2060,13 @@ showTopTable <- function()
   Try(options(digits=3))
 
   Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-  if (!(RawAffyData@cdfName %in% .packages(all.available=TRUE)))
+  Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])
+  if (!(cdfName %in% .packages(all.available=TRUE)))
   {
-    cdf <- RawAffyData@cdfName
     Require("reposTools")
     Try(cdfRepos <- getReposEntry("http://www.bioconductor.org/data/cdfenvs/repos"))
-    Try(install.packages2(cdf,cdfRepos))
-    Try(assign("cdf",cdf,affylmGUIenvironment)) # Can then use ls(env=cdf)
+    Try(install.packages2(cdfName,cdfRepos))
+    Try(assign("cdfName",cdfName,affylmGUIenvironment))
   }
 
   Try(cdfenv<-getCdfInfo(RawAffyData))
@@ -2070,18 +2079,24 @@ showTopTable <- function()
   {
     Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))  
     Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-    Try(dataName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
-    Require("reposTools")
-    Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))    
-    Try(matchIndex <- match(dataName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
-    Try(if (!is.na(matchIndex))
+    Try(cdfName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
+    matchIndex <- NA
+    if (!(cdfName %in% .packages(all.available=TRUE)))
     {
-      Try(install.packages2(dataName,annoPackages))
-      Require(dataName)
-      Try(code2eval <- paste("Try(geneNames <- as.character(unlist(multiget(ls(envir=",dataName,"GENENAME),env=",dataName,"GENENAME))))",sep=""))
+      Require("reposTools")
+      Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))    
+      Try(matchIndex <- match(cdfName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
+      Try(if (!is.na(matchIndex))
+          Try(install.packages2(cdfName,annoPackages)))
+    }
+    Try(if (!is.na(matchIndex) || (cdfName %in% .packages(all.available=TRUE)))
+    {
+    
+      Require(cdfName)
+      Try(code2eval <- paste("Try(geneNames <- as.character(unlist(mget(ls(envir=",cdfName,"GENENAME),env=",cdfName,"GENENAME))))",sep=""))
       Try(eval(parse(text=code2eval)))
       Try(assign("geneNames",geneNames,affylmGUIenvironment))
-      Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(multiget(ls(envir=",dataName,"SYMBOL),env=",dataName,"SYMBOL))))",sep=""))
+      Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(mget(ls(envir=",cdfName,"SYMBOL),env=",cdfName,"SYMBOL))))",sep=""))
       Try(eval(parse(text=code2eval)))
       Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))      
       Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
@@ -2128,6 +2143,23 @@ showTopTable <- function()
 
   Try(nrows <- nrow(table1))
   Try(ncols <- ncol(table1))  
+
+
+  SaveTopTable <- function()
+  {
+    Try(FileName <- tclvalue(tkgetSaveFile(initialfile=paste("toptable", contrast,".xls",sep=""),filetypes="{{Tab-Delimited Text Files} {.txt .xls}} {{All files} *}")))
+    Try(if (!nchar(FileName))
+        return())
+    Try(write.table(table1,file=FileName,quote=FALSE,col.names=NA,sep="\t"))
+  } 
+  
+  Try(if (export)
+  {
+    Try(SaveTopTable())  
+    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+    return()
+  })
+  
   
   Try(if (nrows <=100)
   {
@@ -2205,9 +2237,9 @@ showTopTable <- function()
   }
   else
   {
-    Try(tkmessageBox(title="Large Toptable",message="Toptable is too big to display in a table widget, so it will be displayed in a text window instead.  You can save it as a tab-delimited text file and then import it into a spreadsheet program.",icon="info",type="ok"))
-
-    write.table(table1,file="temp5317",quote=FALSE,col.names=NA,sep="\t")
+    Try(tkmessageBox(title="Large Toptable",message="Toptable is too large to display in a table widget, so it will be displayed in a text window instead.  You can save it as a tab-delimited text file and then import it into a spreadsheet program.",icon="info",type="ok"))
+    Try(tempfile1 <- tempfile())
+    write.table(table1,file=tempfile1,quote=FALSE,col.names=NA,sep="\t")
     ttToptableTable <- tktoplevel(.affylmGUIglobals$ttMain)
     tkwm.title(ttToptableTable,paste("Top",numberOfGenes,"Candidate Genes for Differential Expression for",ContrastNamesVec[contrast],".",sep=" "));
 
@@ -2239,7 +2271,7 @@ showTopTable <- function()
     tkpack(xscr, side="bottom", fill="x")
     tkpack(txt, side="left", fill="both", expand="yes")
 
-    chn <- tclvalue(tkcmd("open", file.path(".","temp5317")))
+    chn <- tclvalue(tkcmd("open", tempfile1))
     tkinsert(txt, "end", tclvalue(tkcmd("read", chn)))
     tkcmd("close", chn)
     tkconfigure(txt, state="disabled")
@@ -2249,17 +2281,7 @@ showTopTable <- function()
     tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")
         
   })
-  
-  
-  SaveTopTable <- function()
-  {
-    Try(tmpTopTableFile <- tclvalue(tkgetSaveFile(initialfile=paste("toptable", contrast,".txt",sep=""))))
-    Try(if (!nchar(tmpTopTableFile))
-        return())
-    Try(TopTableFile <- tmpTopTableFile)
-    Try(write.table(table1,file=TopTableFile,quote=FALSE,col.names=NA,sep="\t"))
-  } 
-  
+    
   Try(copyFcn <-      function() .Tcl(paste("event","generate",.Tcl.args(.Tk.ID(toptableTable),"<<Copy>>"))))
   
   topMenu2 <- tkmenu(ttToptableTable)
@@ -2629,7 +2651,8 @@ evalRcode <- function()
 
   if (runType!="runGraphicsOnly")
   {
-    Try(RoutFileObject <- file("tmpEvalRcodeResults", open="wt"))
+    Try(tmpEvalRcodeResults <- tempfile())  
+    Try(RoutFileObject <- file(tmpEvalRcodeResults, open="wt"))
     Try(sink(RoutFileObject))
     Try(sink(RoutFileObject,type="message"))
     Try(e <- try(parse(text=code)))
@@ -2659,7 +2682,8 @@ evalRcode <- function()
 
   if (runType!="runTextOnly")
   {
-    Try(RoutFileObjectGraph <- file("tmpEvalRcodeResultsGraph",open="wt"))
+    Try(tmpEvalRcodeResults <- tempfile())  
+    Try(RoutFileObjectGraph <- file(tmpEvalRcodeResultsGraph,open="wt"))
     Try(sink(RoutFileObjectGraph))
     Try(sink(RoutFileObjectGraph,type="message"))
     Try(e3 <- try(parse(text=codeGraph)))
@@ -2740,7 +2764,7 @@ evalRcode <- function()
     Try(tkpack(xscr, side="bottom", fill="x"))
     Try(tkpack(txt2, side="left", fill="both", expand="yes"))
 
-    Try(chn <- tkopen("tmpEvalRcodeResults", "r"))
+    Try(chn <- tkopen(tmpEvalRcodeResults, "r"))
     Try(tkinsert(txt2, "0.0", tclvalue(tkread(chn))))
     Try(tkclose(chn))
     Try(tkfocus(tt2))
@@ -3451,13 +3475,13 @@ OpenALimmaFile <- function(FileName)
       Try(fileNameOnly <- fileNameOnly[length(fileNameOnly)])
       Try(if (nchar(recentFiles[i])>60)
           label <- paste(".../",fileNameOnly))
-      Try(eval(parse(text=paste("assign(\".OpenALimmaFile_",fileNameOnly,"\",function() OpenALimmaFile(\"",recentFiles[i],"\"),.GlobalEnv)",sep=""))))
+      Try(eval(parse(text=paste("assign(\".OpenALimmaFile_",i,"\",function() OpenALimmaFile(\"",recentFiles[i],"\"),.GlobalEnv)",sep=""))))
       Try(if (.Platform$OS.type=="windows")
         Try(tkinsert(fileMenu,workingDirIndex+2,"command",label=paste(i,". ",gsub("/","\\\\",label),sep=""),
-          command=eval(parse(text=paste(".OpenALimmaFile_",fileNameOnly,sep="")))))
+          command=eval(parse(text=paste(".OpenALimmaFile_",i,sep="")))))
       else
         Try(tkinsert(fileMenu,workingDirIndex+2,"command",label=paste(i,". ",label,sep=""),
-          command=eval(parse(text=paste(".OpenALimmaFile_",fileNameOnly,sep=""))))))
+          command=eval(parse(text=paste(".OpenALimmaFile_",i,sep=""))))))
     })
   })
   
@@ -3683,13 +3707,13 @@ SaveAsLimmaFile <- function()
       Try(fileNameOnly <- fileNameOnly[length(fileNameOnly)])
       Try(if (nchar(recentFiles[i])>60)
           label <- paste(".../",fileNameOnly))
-      Try(eval(parse(text=paste("assign(\".OpenALimmaFile_",fileNameOnly,"\",function() OpenALimmaFile(\"",recentFiles[i],"\"),.GlobalEnv)",sep=""))))
+      Try(eval(parse(text=paste("assign(\".OpenALimmaFile_",i,"\",function() OpenALimmaFile(\"",recentFiles[i],"\"),.GlobalEnv)",sep=""))))
       Try(if (.Platform$OS.type=="windows")      
         Try(tkinsert(fileMenu,workingDirIndex+2,"command",label=paste(i,". ",gsub("/","\\\\",label),sep=""),
-          command=eval(parse(text=paste(".OpenALimmaFile_",fileNameOnly,sep="")))))
+          command=eval(parse(text=paste(".OpenALimmaFile_",i,sep="")))))
       else
         Try(tkinsert(fileMenu,workingDirIndex+2,"command",label=paste(i,". ",label,sep=""),
-          command=eval(parse(text=paste(".OpenALimmaFile_",fileNameOnly,sep=""))))))
+          command=eval(parse(text=paste(".OpenALimmaFile_",i,sep=""))))))
 
     })
   })
