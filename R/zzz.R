@@ -1,6 +1,9 @@
 
 .First.lib <- function(libname, pkgname, where) 
 {
+     if (length(grep("^limmaGUI$", .packages()))>0)
+       stop("Please run limmaGUI and affylmGUI in separate R sessions.")
+       
      capable <- capabilities()
      if(!capable["tcltk"]){
          stop(paste("The tcl/tk library is not available in your system.",

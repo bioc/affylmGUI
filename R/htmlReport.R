@@ -335,7 +335,6 @@ ExportHTMLreport <- function()
     Try(HTML.title("<a name=\"RawIntensityBoxPlot\">Raw (Unnormalized) Intensity Box Plot</a>",HR=2))
     Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
     Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment))    
-    Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
      Try(plotFunction <- function() 
     {
       Try(opar<-par(bg="white",cex=0.7))
@@ -355,7 +354,6 @@ ExportHTMLreport <- function()
     Try(HTML.title("<a name=\"NormalizedIntensityBoxPlot\">Normalized Intensity Box Plot</a>",HR=2))
     Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
     Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment))    
-    Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
 		Try(plotFunction <- function() 
 		{
 			Try(opar<-par(bg="white",cex=0.7))
@@ -418,6 +416,15 @@ ExportHTMLreport <- function()
   if (ExportTop50Toptables || ExportCompleteToptables)
   {
     Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+    if (!(RawAffyData@cdfName %in% .packages(all.available=TRUE)))
+    {
+      cdf <- RawAffyData@cdfName
+      Require("reposTools")
+      Try(cdfRepos <- getReposEntry("http://www.bioconductor.org/data/cdfenvs/repos"))
+      Try(install.packages2(cdf,cdfRepos))
+      Try(assign("cdf",cdf,affylmGUIenvironment)) # Can then use ls(env=cdf)
+    }
+
     Try(cdfenv<-getCdfInfo(RawAffyData))      
 		Try(genelist <- data.frame(ID=I(ls(cdfenv))))
 

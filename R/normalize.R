@@ -24,6 +24,12 @@ NormalizeNow <- function()
     Try(NormalizedAffyData <- rma(RawAffyData))
     Try(assign("NormMethod","RMA",affylmGUIenvironment))
   }
+  else if (NormalizationMethod=="GCRMA")
+  {
+    Require("gcrma")
+    Try(NormalizedAffyData <- gcrma(RawAffyData))
+    Try(assign("NormMethod","GCRMA",affylmGUIenvironment))
+  }
   else
   {
     Require("affyPLM")
@@ -44,6 +50,8 @@ NormalizeNow <- function()
   Try(tkdelete(.affylmGUIglobals$mainTree,"NormalizedAffyData.Status"))
   Try(if (NormalizationMethod=="RMA")
     Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (RMA)",font=.affylmGUIglobals$affylmGUIfontTree))    
+  else if(NormalizationMethod=="GCRMA")
+    Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (GCRMA)",font=.affylmGUIglobals$affylmGUIfontTree))      
   else
     Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (PLM)",font=.affylmGUIglobals$affylmGUIfontTree)))  
 }
@@ -63,11 +71,13 @@ GetNormalizationMethod <- function()
 	
 	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    ")))
 	Try(NormalizationMethodTcl <- tclVar("RMA"))
-  Try(rb1 <- tkradiobutton(ttGetNormalizationMethod,text="RMA (Robust Multiarray Averaging)",variable=NormalizationMethodTcl,value="RMA",font=.affylmGUIglobals$affylmGUIfont2))
-	Try(rb2 <- tkradiobutton(ttGetNormalizationMethod,text="Robust Probe-level Linear Model",variable=NormalizationMethodTcl,value="RPLM",font=.affylmGUIglobals$affylmGUIfont2))
-	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    "),rb1))
-	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    "),rb2))
-	Try(tkgrid.configure(rb1,rb2,columnspan=2,sticky="w"))
+  Try(rbRMA <- tkradiobutton(ttGetNormalizationMethod,text="RMA (Robust Multiarray Averaging)",variable=NormalizationMethodTcl,value="RMA",font=.affylmGUIglobals$affylmGUIfont2))
+  Try(rbGCRMA<-tkradiobutton(ttGetNormalizationMethod,text="GCRMA (Background Adjustment Using Sequence Information)",variable=NormalizationMethodTcl,value="GCRMA",font=.affylmGUIglobals$affylmGUIfont2))
+	Try(rbPLM <- tkradiobutton(ttGetNormalizationMethod,text="Robust Probe-level Linear Model",variable=NormalizationMethodTcl,value="RPLM",font=.affylmGUIglobals$affylmGUIfont2))
+	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    "),rbRMA))
+  Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    "),rbGCRMA))
+	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    "),rbPLM))
+	Try(tkgrid.configure(rbRMA,rbGCRMA,rbPLM,columnspan=2,sticky="w"))
 	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    "),tklabel(ttGetNormalizationMethod,text="    ")))
 
 	Try(ReturnVal <- "")

@@ -99,7 +99,7 @@
 \alias{affylmGUIhelp}
 \alias{limmaHelp}
 \alias{onDestroy}
-
+\alias{GetPValueCutoff}
 \description{Graphical User Interface for Affy analysis using the limma microarray package}}
 
 \usage{
@@ -202,6 +202,7 @@ affyHelp()
 affylmGUIhelp()
 limmaHelp()
 onDestroy()
+GetPValueCutoff(p.value=0.01)
 }
 
 
@@ -209,6 +210,7 @@ onDestroy()
 	\item{BigfontsForaffylmGUIpresentation}{If set to TRUE, larger fonts are used.  However, some font 
 	sizes are not controlled by affylmGUI and so must be adjusted in the operating system, e.g.
 	in the Control Panel in Windows under Display, Appearance.}
+	\item{p.value}{A p-value cutoff.}	
 }
 
 \details{
