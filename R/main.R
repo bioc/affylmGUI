@@ -1,17 +1,14 @@
-if (data.class(try(require(limma),TRUE))=="try-error")
-{
-    tkmessageBox(title="An error has occured!",message=paste("Cannot find package limma"),icon="error",type="ok")
-    stop("Cannot find package limma")
-} 
 if (require(limma)==FALSE)
 {
-    tkmessageBox(title="An error has occured!",message=paste("Cannot find package limma"),icon="error",type="ok")
+    if (interactive())
+      tkmessageBox(title="An error has occured!",message=paste("Cannot find package limma"),icon="error",type="ok")
     stop("Cannot find package limma")
 }
 
 if (require(affy)==FALSE)
 {
-    tkmessageBox(title="An error has occured!",message=paste("Cannot find package affy"),icon="error",type="ok")
+    if (interactive())
+      tkmessageBox(title="An error has occured!",message=paste("Cannot find package affy"),icon="error",type="ok")
     stop("Cannot find package affy")
 }
 

@@ -20,15 +20,10 @@
          }
      }
 
-
-	if (data.class(try(require(limma),TRUE))=="try-error")
-	{
-			tkmessageBox(title="An error has occured!",message=paste("Cannot find package limma"),icon="error",type="ok")
-			stop("Cannot find package limma")
-	} 
 	if (require(limma)==FALSE)
 	{
-			tkmessageBox(title="An error has occured!",message=paste("Cannot find package limma"),icon="error",type="ok")
+		  if (interactive())
+			  tkmessageBox(title="An error has occured!",message=paste("Cannot find package limma"),icon="error",type="ok")
 			stop("Cannot find package limma")
 	}
 
@@ -83,7 +78,7 @@
     # for the case where the Tcl/Tk extensions can't be found (so affylmGUI tries
     # to exit), and speculated that there could be problems arising from running
     # the whole affylmGUI() program before finishing .First.lib.
-    if (.Platform$OS.type=="windows")
+    if (interactive() && .Platform$OS.type=="windows")
     {
       BeginAffyLimmaGUI <- tclvalue(tkmessageBox(title="affylmGUI",message="Begin affylmGUI?",type="yesno",icon="question"))
       if (BeginAffyLimmaGUI=="yes") 

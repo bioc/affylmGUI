@@ -831,6 +831,7 @@ GetJpegOrPngX11Params <- function(graphFileType)
 
 VennDiagramPlot <- function()
 {
+  Try(limmaDataSetNameText <-  get("limmaDataSetNameText",envir=affylmGUIenvironment))
   Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
   Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
   Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment))  
@@ -1180,16 +1181,22 @@ HeatDiagramPlot <- function()
     Require("reposTools")
     Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))    
     Try(matchIndex <- match(dataName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
-    Try(if (is.na(matchIndex)) break())
-    Try(install.packages2(dataName,annoPackages))
-    Require(dataName)
-    Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(multiget(ls(envir=",dataName,"SYMBOL),env=",dataName,"SYMBOL))))",sep=""))
-    Try(eval(parse(text=code2eval)))
-    Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
-    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+    Try(if (!is.na(matchIndex)) 
+    {
+      Try(install.packages2(dataName,annoPackages))
+      Require(dataName)
+      Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(multiget(ls(envir=",dataName,"SYMBOL),env=",dataName,"SYMBOL))))",sep=""))
+      Try(eval(parse(text=code2eval)))
+      Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
+      Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+    })
   })
 
-  Try(genelist <- cbind(as.matrix(ls(cdfenv)),as.matrix(geneSymbols)))
+	Try(if (length(geneSymbols)>0)
+		geneLabels <- geneSymbols
+	else
+		geneLabels <- ls(cdfenv))
+
   Try(contrastNames <- colnames(eb$t))
   Try(contrastNamesVec <- GetContrastNamesForHeatDiagram(numContrasts=length(contrastNames),ContrastNames=contrastNames))
   Try(if (length(contrastNamesVec)==0)
@@ -1202,7 +1209,7 @@ HeatDiagramPlot <- function()
     Try(opar<-par(bg="white"))
     Try(heatdiagram(abs(eb$t),fit$coefficients,primary=1,
       critical.primary=primaryCutoff,critical.other=otherCutoff,
-      names=substr(geneSymbols,1,20),main=plotTitle))
+      names=substr(geneLabels,1,20),main=plotTitle))
     Try(TempGraphPar<-par(opar))    
   }
   Try(LocalHScale <- .affylmGUIglobals$Myhscale*1.5)
