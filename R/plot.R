@@ -941,7 +941,7 @@ VennDiagramPlot <- function()
     Try(pvalueText <- GetPValueCutoff())
     Try(if (pvalueText=="ID_CancelFromGetPValueCutoff") return())
   })  
-  Try(clas <- classifyTestsF(tstats,design=design,contrasts=contrastsMatrix,p.value=p.value))
+  Try(clas <- classifyTestsF(tstats,p.value=p.value))
   Try(vc   <- vennCounts(clas,include=include))
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")) 
 
