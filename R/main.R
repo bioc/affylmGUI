@@ -2031,12 +2031,15 @@ showTopTable <- function(...,export=FALSE)
       Abort <<- 0
   })
 
+  Try(onHelp <- function() Try(help("topTable",htmlhelp=TRUE)))
+
   Try(frame4 <- tkframe(ttToptableDialog,borderwidth=2))
   Try(onCancel <- function() {Try(tkgrab.release(ttToptableDialog));Try(tkdestroy(ttToptableDialog));Try(tkfocus(.affylmGUIglobals$ttMain));Abort <<- 1})
   Try(OK.but <-tkbutton(frame4,text="   OK   ",command=onOK,font=.affylmGUIglobals$affylmGUIfont2))
   Try(Cancel.but <-tkbutton(frame4,text=" Cancel ",command=onCancel,font=.affylmGUIglobals$affylmGUIfont2))
-  
-  Try(tkgrid(tklabel(frame4,text="    "),OK.but,Cancel.but,tklabel(frame4,text="    ")))
+  Try(Help.but <-tkbutton(frame4,text=" Help ",command=onHelp,font=.affylmGUIglobals$affylmGUIfont2))
+
+  Try(tkgrid(tklabel(frame4,text="    "),OK.but,Cancel.but,Help.but,tklabel(frame4,text="    ")))
 
   Try(tkgrid(tklabel(ttToptableDialog,text="    "),frame1,frame2,tklabel(ttToptableDialog,text="  ")))
   Try(tkgrid(tklabel(ttToptableDialog,text="    ")))
