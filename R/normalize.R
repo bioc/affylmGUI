@@ -8,7 +8,7 @@ NormalizeNow <- function()
   Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
   Try(if (ArraysLoaded==FALSE)
   {
-    Try(tkmessageBox(title="Image Array Plot",message="Error: No arrays have been loaded.",
+    Try(tkmessageBox(title="Normalization",message="Error: No arrays have been loaded.",
         icon="error",default="ok"))
     return()
   })
@@ -17,8 +17,8 @@ NormalizeNow <- function()
   
   Try(NormalizationMethod <- GetNormalizationMethod())
   Try(if (NormalizationMethod=="") return())
-  Try(tkconfigure(ttMain,cursor="watch"))
-  Try(tkfocus(ttMain))
+  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+  Try(tkfocus(.affylmGUIglobals$ttMain))
   Try(if (NormalizationMethod=="RMA")
   {
     Try(NormalizedAffyData <- rma(RawAffyData))
@@ -38,14 +38,14 @@ NormalizeNow <- function()
     Try(assign("NormMethod","PLM",affylmGUIenvironment))    
     Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
   })
-  Try(tkconfigure(ttMain,cursor="arrow"))
+  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
   Try(assign("NormalizedAffyData.Available",TRUE,affylmGUIenvironment))
   Try(assign("NormalizedAffyData",NormalizedAffyData,affylmGUIenvironment))
-  Try(tkdelete(mainTree,"NormalizedAffyData.Status"))
+  Try(tkdelete(.affylmGUIglobals$mainTree,"NormalizedAffyData.Status"))
   Try(if (NormalizationMethod=="RMA")
-    Try(tkinsert(mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (RMA)",font=affylmGUIfontTree))    
+    Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (RMA)",font=.affylmGUIglobals$affylmGUIfontTree))    
   else
-    Try(tkinsert(mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (PLM)",font=affylmGUIfontTree)))  
+    Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (PLM)",font=.affylmGUIglobals$affylmGUIfontTree)))  
 }
 
 AboutNormalization <- function()
@@ -55,7 +55,7 @@ AboutNormalization <- function()
 
 GetNormalizationMethod <- function()
 {
-	Try(ttGetNormalizationMethod <- tktoplevel(ttMain))
+	Try(ttGetNormalizationMethod <- tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttGetNormalizationMethod))
   Try(tkgrab.set(ttGetNormalizationMethod))
   Try(tkfocus(ttGetNormalizationMethod))
@@ -63,26 +63,26 @@ GetNormalizationMethod <- function()
 	
 	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    ")))
 	Try(NormalizationMethodTcl <- tclVar("RMA"))
-  Try(rb1 <- tkradiobutton(ttGetNormalizationMethod,text="RMA (Robust Multiarray Averaging)",variable=NormalizationMethodTcl,value="RMA",font=affylmGUIfont2))
-	Try(rb2 <- tkradiobutton(ttGetNormalizationMethod,text="Robust Probe-level Linear Model",variable=NormalizationMethodTcl,value="RPLM",font=affylmGUIfont2))
+  Try(rb1 <- tkradiobutton(ttGetNormalizationMethod,text="RMA (Robust Multiarray Averaging)",variable=NormalizationMethodTcl,value="RMA",font=.affylmGUIglobals$affylmGUIfont2))
+	Try(rb2 <- tkradiobutton(ttGetNormalizationMethod,text="Robust Probe-level Linear Model",variable=NormalizationMethodTcl,value="RPLM",font=.affylmGUIglobals$affylmGUIfont2))
 	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    "),rb1))
 	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    "),rb2))
 	Try(tkgrid.configure(rb1,rb2,columnspan=2,sticky="w"))
 	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    "),tklabel(ttGetNormalizationMethod,text="    ")))
 
 	Try(ReturnVal <- "")
-	Try(onCancel <- function() {Try(ReturnVal <<- "");Try(tkgrab.release(ttGetNormalizationMethod));Try(tkdestroy(ttGetNormalizationMethod));Try(tkfocus(ttMain))})
-	Try(onOK <- function() {Try(ReturnVal <<- tclvalue(NormalizationMethodTcl));Try(tkgrab.release(ttGetNormalizationMethod));Try(tkdestroy(ttGetNormalizationMethod));Try(tkfocus(ttMain))})
+	Try(onCancel <- function() {Try(ReturnVal <<- "");Try(tkgrab.release(ttGetNormalizationMethod));Try(tkdestroy(ttGetNormalizationMethod));Try(tkfocus(.affylmGUIglobals$ttMain))})
+	Try(onOK <- function() {Try(ReturnVal <<- tclvalue(NormalizationMethodTcl));Try(tkgrab.release(ttGetNormalizationMethod));Try(tkdestroy(ttGetNormalizationMethod));Try(tkfocus(.affylmGUIglobals$ttMain))})
 
-	Try(OK.but     <- tkbutton(ttGetNormalizationMethod,text="OK",command=onOK,font=affylmGUIfont2))
-	Try(Cancel.but <- tkbutton(ttGetNormalizationMethod,text="Cancel",command=onCancel,font=affylmGUIfont2))
+	Try(OK.but     <- tkbutton(ttGetNormalizationMethod,text="OK",command=onOK,font=.affylmGUIglobals$affylmGUIfont2))
+	Try(Cancel.but <- tkbutton(ttGetNormalizationMethod,text="Cancel",command=onCancel,font=.affylmGUIglobals$affylmGUIfont2))
 
 	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    "),OK.but,Cancel.but,tklabel(ttGetNormalizationMethod,text="    ")))
 	Try(tkgrid.configure(OK.but,sticky="e"))
 	Try(tkgrid.configure(Cancel.but,sticky="w"))
 	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    ")))
 
-	Try(tkbind(ttGetNormalizationMethod,"<Destroy>",function() {ReturnVal <- "";Try(tkgrab.release(ttGetNormalizationMethod));Try(tkfocus(ttMain));}))
+	Try(tkbind(ttGetNormalizationMethod,"<Destroy>",function() {ReturnVal <- "";Try(tkgrab.release(ttGetNormalizationMethod));Try(tkfocus(.affylmGUIglobals$ttMain));}))
   Try(tkbind(OK.but, "<Return>",onOK))
   Try(tkbind(Cancel.but, "<Return>",onCancel))      
 
@@ -107,7 +107,7 @@ ExportNormalizedExpressionValues <- function()
   Try(NormalizedAffyData.Available <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))    
   Try(if (NormalizedAffyData.Available==FALSE)
   {
-    tkmessageBox(title="Export Normalized Expression Values",message="An error occured while trying to normalize the data.")
+    tkmessageBox(title="Export Normalized Expression Values",message="An error or cancellation occured while trying to normalize the data.")
     return()
   
   })

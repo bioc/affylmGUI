@@ -1,7 +1,26 @@
 
 .First.lib <- function(libname, pkgname, where) 
 {
-	require(tcltk) || stop ("Cannot find package tcltk")
+     capable <- capabilities()
+     if(!capable["tcltk"]){
+         stop(paste("The tcl/tk library is not available in your system.",
+                    "Download/install the tcltk library from",
+                    "www.tcl.tk/software/tcltk/"))
+     }else{
+         if(interactive()){
+             out <- paste("Package tcltk not able to be loaded!")
+             if (.Platform$OS.type == "windows")
+                 out <- paste(out,"\nThe most likely cause of this",
+                              "is that your Tcl/Tk installation is",
+                              "misconfigured\nPlease see the R",
+                              "Windows FAQ, question 3.6:\n",
+                              "http://cran.r-project.org/bin/windows/contrib/rw-FAQ.html#Package%20TclTk%20does%20not%20work.")
+
+             require("tcltk", character.only = TRUE) || stop(out)
+         }
+     }
+
+
 	if (data.class(try(require(limma),TRUE))=="try-error")
 	{
 			tkmessageBox(title="An error has occured!",message=paste("Cannot find package limma"),icon="error",type="ok")
@@ -51,7 +70,7 @@
 		}
 
 
-		if (.Platform$OS.type=="windows")
+		if ((.Platform$OS.type=="windows")&&(.Platform$GUI == "Rgui"))
 		{
 			winMenuAdd("affylmGUI");winMenuAddItem("affylmGUI","affylmGUI","affylmGUI()")
 			cat(paste("\nTo begin, type affylmGUI() or use the pull-down menu.\n"))

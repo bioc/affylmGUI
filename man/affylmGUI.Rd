@@ -13,7 +13,7 @@
 \alias{chooseDir}
 \alias{ChooseEbayesStatistic}
 \alias{ComputeContrasts}
-\alias{ComputeLinearModel}
+\alias{ComputeLinearModelFit}
 \alias{CopyGraph}
 \alias{DeleteContrastParameterization}
 \alias{DeleteCustomMenuItem}
@@ -95,6 +95,9 @@
 \alias{ViewContrastsMatrixInTable}
 \alias{ViewExistingContrastParameterization}
 \alias{ViewRNATargets}
+\alias{affyHelp}
+\alias{affylmGUIhelp}
+\alias{limmaHelp}
 
 \description{Graphical User Interface for Affy analysis using the limma microarray package by Gordon Smyth}}
 
@@ -111,7 +114,7 @@ ChooseContrastParameterization()
 chooseDir()
 ChooseEbayesStatistic()
 ComputeContrasts()
-ComputeLinearModel()
+ComputeLinearModelFit()
 CopyGraph()
 DeleteContrastParameterization()
 DeleteCustomMenuItem()
@@ -194,6 +197,10 @@ ViewContrastsMatrixInTable()
 ViewExistingContrastParameterization()
 ViewRNATargets()
 affylmGUI(BigfontsForaffylmGUIpresentation=FALSE)
+affyHelp()
+affylmGUIhelp()
+limmaHelp()
+
 }
 
 

@@ -66,7 +66,7 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 {
   Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))  
 
-  Try(ttHTMLreportDialog<-tktoplevel(ttMain))
+  Try(ttHTMLreportDialog<-tktoplevel(.affylmGUIglobals$ttMain))
   Try(tkwm.deiconify(ttHTMLreportDialog))
   Try(tkgrab.set(ttHTMLreportDialog))
   Try(tkfocus(ttHTMLreportDialog))
@@ -111,37 +111,37 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
   Try(Top50ToptablesCheckbox              <- tkcheckbutton(ttHTMLreportDialog,variable=Top50ToptablesTcl))              
   Try(CompleteToptablesCheckbox           <- tkcheckbutton(ttHTMLreportDialog,variable=CompleteToptablesTcl))                
 
-  Try(lbl2 <- tklabel(ttHTMLreportDialog,text="Components to be Included in the HTML Report",font=affylmGUIfont2))
+  Try(lbl2 <- tklabel(ttHTMLreportDialog,text="Components to be Included in the HTML Report",font=.affylmGUIglobals$affylmGUIfont2))
   tkgrid(tklabel(ttHTMLreportDialog,text="    "),lbl2)
   Try(tkgrid.configure(lbl2,columnspan=3,sticky="w"))
   tkgrid(tklabel(ttHTMLreportDialog,text="    "))
   
-  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="RNA Targets",font=affylmGUIfont2))
+  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="RNA Targets",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),TargetsCheckbox,currentLabel))
   Try(tkgrid.configure(TargetsCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
-  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Normalization Method",font=affylmGUIfont2))
+  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Normalization Method",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),NormalizationMethodCheckbox,currentLabel))
   Try(tkgrid.configure(NormalizationMethodCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))  
-  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Raw Intensity Box Plot",font=affylmGUIfont2))
+  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Raw Intensity Box Plot",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),RawIntensityBoxPlotCheckbox,currentLabel))
   Try(tkgrid.configure(RawIntensityBoxPlotCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
-  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Normalized Intensity Box Plot",font=affylmGUIfont2))
+  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Normalized Intensity Box Plot",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),NormalizedIntensityBoxPlotCheckbox,currentLabel))
   Try(tkgrid.configure(NormalizedIntensityBoxPlotCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
-  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Design Matrix (Parameterization)",font=affylmGUIfont2))
+  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Design Matrix (Parameterization)",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),DesignMatrixCheckbox,currentLabel))
   Try(tkgrid.configure(DesignMatrixCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
 
-  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Contrasts Matrix (Parameterization)",font=affylmGUIfont2))
+  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Contrasts Matrix (Parameterization)",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),ContrastMatrixCheckbox,currentLabel))
   Try(tkgrid.configure(ContrastMatrixCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
-  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="M A Plots for Contrasts",font=affylmGUIfont2))
+  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="M A Plots for Contrasts",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),MAPlotsContrastsCheckbox,currentLabel))
   Try(tkgrid.configure(MAPlotsContrastsCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
-  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Top 50 DE Genes",font=affylmGUIfont2))
+  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Top 50 DE Genes",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),Top50ToptablesCheckbox,currentLabel))
   Try(tkgrid.configure(Top50ToptablesCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
-  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Complete Lists of DE-Ranked Genes",font=affylmGUIfont2))
+  Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Complete Lists of DE-Ranked Genes",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),CompleteToptablesCheckbox,currentLabel))
   Try(tkgrid.configure(CompleteToptablesCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
 
@@ -169,19 +169,19 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
       if (tclvalue(Top50ToptablesTcl)=="1") ReturnVal[["Top50ToptablesTcl"]] <- TRUE else ReturnVal[["Top50Toptables"]] <- FALSE
       if (tclvalue(CompleteToptablesTcl)=="1") ReturnVal[["CompleteToptablesTcl"]] <- TRUE else ReturnVal[["CompleteToptablesTcl"]] <- FALSE
       
-      Try(tkgrab.release(ttHTMLreportDialog));Try(tkdestroy(ttHTMLreportDialog));Try(tkfocus(ttMain))
+      Try(tkgrab.release(ttHTMLreportDialog));Try(tkdestroy(ttHTMLreportDialog));Try(tkfocus(.affylmGUIglobals$ttMain))
       ReturnVal <<- ReturnVal
   }
-  onCancel <- function() {Try(tkgrab.release(ttHTMLreportDialog));Try(tkdestroy(ttHTMLreportDialog));Try(tkfocus(ttMain)); ReturnVal <<- list()}      
-  OK.but <-tkbutton(ttHTMLreportDialog,text="   OK   ",command=onOK,font=affylmGUIfont2)
-  Cancel.but <-tkbutton(ttHTMLreportDialog,text=" Cancel ",command=onCancel,font=affylmGUIfont2)
+  onCancel <- function() {Try(tkgrab.release(ttHTMLreportDialog));Try(tkdestroy(ttHTMLreportDialog));Try(tkfocus(.affylmGUIglobals$ttMain)); ReturnVal <<- list()}      
+  OK.but <-tkbutton(ttHTMLreportDialog,text="   OK   ",command=onOK,font=.affylmGUIglobals$affylmGUIfont2)
+  Cancel.but <-tkbutton(ttHTMLreportDialog,text=" Cancel ",command=onCancel,font=.affylmGUIglobals$affylmGUIfont2)
   tkgrid(tklabel(ttHTMLreportDialog,text="    "),tklabel(ttHTMLreportDialog,text="    "),OK.but,Cancel.but,tklabel(ttHTMLreportDialog,text="    "),tklabel(ttHTMLreportDialog,text="    "))
   tkgrid.configure(OK.but,    sticky="e")
   tkgrid.configure(Cancel.but,sticky="w")
   tkgrid(tklabel(ttHTMLreportDialog,text="    "),tklabel(ttHTMLreportDialog,text="    "),tklabel(ttHTMLreportDialog,text="    "),
        tklabel(ttHTMLreportDialog,text="    "),tklabel(ttHTMLreportDialog,text="    "))
   Try(tkfocus(ttHTMLreportDialog))
-  Try(tkbind(ttHTMLreportDialog, "<Destroy>", function() {Try(tkgrab.release(ttHTMLreportDialog));Try(tkfocus(ttMain));}))
+  Try(tkbind(ttHTMLreportDialog, "<Destroy>", function() {Try(tkgrab.release(ttHTMLreportDialog));Try(tkfocus(.affylmGUIglobals$ttMain));}))
   Try(tkwait.window(ttHTMLreportDialog))
 
   return (ReturnVal)
@@ -207,7 +207,7 @@ ExportHTMLreport <- function()
   if (ArraysLoaded==FALSE)
   {
       Try(tkmessageBox(title="Export HTML Report",message="No arrays have been loaded.  Please try New or Open from the File menu.",type="ok",icon="error"))
-      Try(tkfocus(ttMain))
+      Try(tkfocus(.affylmGUIglobals$ttMain))
       return()
   }
 
@@ -217,11 +217,11 @@ ExportHTMLreport <- function()
 		Try(if (contrastParameterizationIndex==0) return()) # Cancel
     
     Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment))
-		Try(ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
+		Try(.affylmGUIglobals$ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
 		Try(contrastsMatrix <- as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts))
 		Try(ContrastNamesVec  <- colnames(contrastsMatrix))
     Try(NumContrasts <- length(ContrastNamesVec))
-    Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",ContrastParameterizationTREEIndex,sep=""))
+    Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
   	Try(fit <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$fit)
   	Try(fit <- eBayes(fit))
     
@@ -306,8 +306,8 @@ ExportHTMLreport <- function()
   Try(if (ExportTop50Toptables) Try(HTMLli(txt="<a href=\"#Top50Toptables\"><b>Tables of Top 50 Differentially Expressed Genes</b></a>")))
   Try(if (ExportCompleteToptables) Try(HTMLli(txt="<a href=\"#CompleteToptables\"><b>Complete Tables of Genes Ranked in order of Evidence for Differential Expression</b></a>")))
 
-  Try(tkconfigure(ttMain,cursor="watch"))
-  Try(tkfocus(ttMain))    
+  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+  Try(tkfocus(.affylmGUIglobals$ttMain))    
 
   if (ExportTargets)
   {
@@ -425,7 +425,7 @@ ExportHTMLreport <- function()
 		Try(geneSymbols <- get("geneSymbols",envir=affylmGUIenvironment))		
 		Try(if (length(geneNames)==0||length(geneSymbols)==0)
 		{
-			Try(tkconfigure(ttMain,cursor="watch"))  
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))  
 			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
 			Try(dataName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
 			Require("reposTools")
@@ -441,14 +441,14 @@ ExportHTMLreport <- function()
 				Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(multiget(ls(envir=",dataName,"SYMBOL),env=",dataName,"SYMBOL))))",sep=""))
 				Try(eval(parse(text=code2eval)))
 				Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
-				Try(tkconfigure(ttMain,cursor="arrow"))
+				Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 				Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols),as.matrix(geneNames)))
 				Try(colnames(genelist) <- c("ID","Symbol","Name"))
 			}
 			else
 			{
 				Try(genelist <- data.frame(ID=I(ls(cdfenv))))
-				Try(tkconfigure(ttMain,cursor="arrow"))
+				Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 			})
 
 		}
@@ -511,8 +511,8 @@ ExportHTMLreport <- function()
   }
   
 
-  Try(tkconfigure(ttMain,cursor="arrow"))
-  Try(tkfocus(ttMain))    
+  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+  Try(tkfocus(.affylmGUIglobals$ttMain))    
   Try(HTMLhr())
   Try(HTMLli(txt="This report was generated by "))
   Try(HTMLli(txt=paste("affylmGUI Version",getPackageVersion("affylmGUI"),"(by James Wettenhall), using")))
