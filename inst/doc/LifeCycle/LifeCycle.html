@@ -1,0 +1,125 @@
+<html>
+<head>
+<title>Malaria Life-Cycle Worked Example for affylmGUI</title>
+</head>
+<body>
+<h1>Malaria Life-Cycle Worked Example for affylmGUI</h1>
+
+<h2>Introduction</h2>
+<p>
+The aim of this experiment is to study the evolution of gene expression
+throughout the life-cycle of the Malaria parasite, Plasmodium Falciparum.
+RNA is extracted at several key stages during the life-cycle:
+Early Ring, Late Ring, Early Trophozoite, Late Trophozoite, Early Schizogony,
+Late Schizogony and Merozoite.  The experiment was performed by Elizabeth
+Winzeler's lab at The Scripps Research Institute in California.
+</p>
+
+<p>The CEL files are available from
+<a href="http://carrier.gnf.org/publications/CellCycle">http://carrier.gnf.org/publications/CellCycle</a>
+and (thanks to Ken Simpson), the CDF package can be obtained from
+<a href="http://bioinf.wehi.edu.au/affylmGUI/malaria">http://bioinf.wehi.edu.au/affylmGUI/malaria</a>.
+</p>
+
+<h2>Analyzing the Malaria Life-Cycle Data in affylmGUI</h2>
+
+<p>To begin using affylmGUI, you will need to create an RNA Targets file, which is a tab-delimited
+text file with three columns: Name, FileName and Target:</p>
+<img src="malariaTargetsInExcel.png"><br><br>
+
+<p>The main window of affylmGUI is shown below.</p>
+<img src="mainWin.png"><br><br>
+
+<p>Click "New" from the File menu to start a new analysis.</p>
+<img src="NewSelected.png"><br><br>
+<p>Select the directory containing the CEL files and the Targets file.</p>
+<img src="chooseDir.png"><br><br>
+<p>Specify the Targets file, using the "Select Targets File" button.</p>
+<img src="TargetsFileSelected.png"><br><br>
+<p>Enter a name for the data set.</p>
+<img src="DataSetName.png"><br><br>
+
+<p>Select "Normalize" from the "Normalization" menu.</p>
+<img src="NormalizeSelected.png"><br><br>
+<p>Select "RMA" as the normalization method.  For this to work, you must have
+the CDF packge installed in R.</p>
+<img src="RMAselected.png"><br><br>
+
+<p>Now compute a linear model fit, by selecting "Compute Linear Model Fit"
+from the "Linear Model" menu.  The design matrix is determined automatically
+for Affymetrix (single-channel) chips, so you will not be asked any
+questions about the linear model.</p>
+<img src="ComputeLinearModelFitSelected.png"><br><br>
+
+<p>Select "Compute Contrasts" from the "Linear Model" menu.</p>
+<img src="ComputeContrastsSelected.png"><br><br>
+<p>Define contrasts, either using the drop-down combo-boxes, or
+by clicking "Advanced" and either manually entering a contrasts
+matrix or loading one from a tab-delimited text file.</p>
+<img src="ContrastsDefined.png"><br><br>
+<p>Give this set of contrasts a name.</p>
+<img src="ContrastsName.png"><br><br>
+
+<p>Select "Table of Genes Ranked in order of Differential Expression" from the "TopTable" menu.</p>
+<img src="ToptableSelected.png"><br><br>
+<p>Select the "Chronological" contrasts parameterization.</p>
+<img src="ChooseContrastsParameterization.png"><br><br>
+<p>Choose the Merozoite vs Late Schizogony contrast.</p>
+<img src="ChooseContrast.png"><br><br>
+<p>Leave the gene-ranking options at their default settings.</p>
+<img src="ToptableOptions.png"><br><br>
+<p>The differentially expressed genes for this contrast are shown
+in the table below.  They can be saved to tab-delimited text using
+the "File" menu, and then opened in Excel.</p>
+<img src="ToptableMzvsLS.png"><br><br>
+
+<p>From the "Plot" menu, select "MA Plot" (for one contrast).</p>
+<img src="MAplotContrast.png"><br><br>
+<p>Select the "Chronological" contrasts parameterization again.</p>
+<img src="ChooseContrastsParameterization.png"><br><br>
+<p>Choose the Merozoite vs Late Schizogony contrast again.</p>
+<img src="ChooseContrast.png"><br><br>
+<p>Use the probe-set IDs to label the top-ten most
+differentially-expressed genes, as we don't have an annotation
+package for this chip, so we can't use Gene Symbols.</p>
+<img src="DEgeneLabelOptions.png"><br><br>
+<p>You can customize the title and axis labels of the plot.</p>
+<img src="MAcontrastPlotLabels.png"><br><br>
+<p>The resulting plot is shown below.  The genes selected as being
+differentially-expressed may not have the most extreme fold-changes,
+because the linear-modelling technique takes variability between
+replicate chips into account as well as average fold-change.
+<img src="MAcontrastPlot.png"><br><br>
+
+<h2>Automatically Generated HTML Report</h2>
+<p>We now demonstrate how to create an HTML report.  Here's
+one we prepared earlier:</p>
+<ul>
+<li><a href="MalariaLifeCycle.html">MalariaLifeCycle.html</a></li>
+</ul>
+<br><br>
+<p>From the "File menu", select "Export HTML Report".</p>
+<img src="ExportHTMLselected.png"><br><br>
+<p>Choose what you would like to include in the HTML report.</p>
+<img src="HTMLcomponents.png"><br><br>
+<p>Select the size, font size, and background color of images to
+be included in the HTML report.</p>
+<img src="PNGparams.png"><br><br>
+<p>Specify a name for the HTML report.</p>
+<img src="HTMLfilename.png"><br><br>
+<p>Et voila!</p>
+<ul>
+<li><a href="MalariaLifeCycle.html">MalariaLifeCycle.html</a></li>
+</ul>
+
+
+<h2>References</h2>
+<ol>
+<li>
+Discovery of Gene Function by Expression Profiling of the Malaria Parasite Life Cycle<br>
+Karine G. Le Roch, Yingyao Zhou, Peter L. Blair, Muni Grainger, J. Kathleen Moch, J. David Haynes, Patricia De la Vega, Anthony A. Holder, Serge Batalov, Daniel J. Carucci, and Elizabeth A. Winzeler<br>
+<b>Science</b> 2003 301: 1503-1508. (in Research Articles)</li>
+</ol>
+
+</body>
+</html>

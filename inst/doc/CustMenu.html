@@ -1,0 +1,27 @@
+<html>
+<head>
+<title>Customizing the menus in affylmGUI (for Advanced users)</title>
+</head>
+<body>
+<h1>Customizing the menus in affylmGUI (for Advanced users)</h1>
+
+<p>The pull-down menus in affylmGUI are defined in <code>affylmGUI-menus.txt</code> in the <code>etc</code>
+subdirectory of the <code>affylmGUI</code> package installation.  To find out exactly where this directory
+is on your computer, you can paste the following into R:</p>
+<pre>
+system.file(&quot;etc&quot;,package=&quot;affylmGUI&quot;)
+</pre>
+<p>R source files can be added to this <code>etc</code> directory (and must have extension <code>.R</code>).</p>
+
+<p>Try uncommenting (i.e. removing the # from) the histogram menu item in <code>affylmGUI-menus.txt</code>
+to enable the histogram command in the plot menu.</p>
+
+<p>You can add as many menu items as you wish.</p>
+
+<p>The reason that the histogram example plots the graph in the standard R graphics device rather than in a Tk
+window is simply to keep this example brief and avoid calling <code>tkrplot</code>.  Generally graphs are plotted
+in Tk windows and users of the Windows operating system can keep their main RGui window minimized while they
+run <code>affylmGUI</code>.</p>
+
+</body>
+</html>
