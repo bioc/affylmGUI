@@ -1,0 +1,2096 @@
+
+ImageArrayPlot <- function()
+{
+# Late Nov, 2003.  There's still the problem that tkrplot uses too much memory on my Windows machine for this
+#                  type of image plot, but the Tk Img extension does not seem to be a good platform-independent
+#                  solution as it is hard to install a working version in Linux, so the current solution is to
+#                  ask the user whether to plot the image in a Tk window or within R.
+# Nov, 2003.  The Tcl/Tk Img extension is not easy to install in Linux (doesn't seem to be compatible with the
+#             latest Tcl/Tk source (8.4.x) ) so I'm going to try tkrplot again.
+# Oct, 2003. Unfortunately this doesn't work using the standard tkrplot method because the images are too large.
+# So it requires the Img Tcl/Tk extension.
+  Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment)) 
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv))   
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment)) 
+  Try(if (ArraysLoaded==FALSE)
+  {
+    Try(tkmessageBox(title="Image Array Plot",message="Error: No arrays have been loaded.",
+        icon="error",default="ok"))
+    return()
+  })
+  Try(slide <- GetSlideNum())
+  Try(if (slide==0) return())
+  Try(tkconfigure(ttMain,cursor="watch"))
+
+#  Try(jpeg(filename="temp.jpg"))
+  Try(plotFunction <- function() 
+  {
+    Try(opar<-par(bg="white"))
+    Try(tkconfigure(ttMain,cursor="watch"))
+    Try(image(1:ncol(RawAffyData),1:nrow(RawAffyData),log2(matrix(intensity(RawAffyData)[,slide],nrow=nrow(RawAffyData))),col=gray(c(0:64)/64),    
+      main=plotTitle,xlab=xLabel,ylab=yLabel))
+    Try(tkconfigure(ttMain,cursor="arrow"))
+    Try(tmp<-par(opar))
+  })
+#  Try(dev.off())
+#  Try(tt <- tktoplevel(ttMain))
+#  Try(tkwm.title(tt,paste("Image Plot for",colnames(RawAffyData@exprs)[slide])))
+#  TclRequire("Img")
+#  Try(image1 <- tclVar())
+#  Try(tkcmd("image","create","photo",image1,file="temp.jpg"))
+#  Try(img <- tklabel(tt,image=image1))
+#  Try(tkpack(img))
+  Try(plotTitle<-SlideNamesVec[slide])
+  Try(plotLabels <- GetPlotLabels(plotTitle,"",""))
+  Try(if (length(plotLabels)==0) return())
+  Try(plotTitle <- plotLabels$plotTitle)
+  Try(xLabel    <- plotLabels$xLabel)
+  Try(yLabel    <- plotLabels$yLabel)
+  
+  Try(WhetherToUseTkrplot <- tclvalue(tkmessageBox(title="Where To Plot Array Image",type="yesnocancel",
+    message="Plot this image in R rather than a new (Tk) window? (Requires less memory.)",icon="question")))
+  Try(if (WhetherToUseTkrplot=="cancel") return())
+  Try(if (WhetherToUseTkrplot=="yes")
+    plotFunction()
+  else
+  {
+    Require("tkrplot")  
+    Try(ttGraph<-tktoplevel(ttMain))
+    Try(tkwm.withdraw(ttGraph))
+    Try(tkwm.title(ttGraph,plotTitle))
+    Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+    Try(tkwm.title(ttGraph,paste("Image Plot for",SlideNamesVec[slide])))
+    SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
+    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
+    Try(tkgrid(imgLimmaGUI))
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+      Try(tkdestroy(ttGraph))
+    else
+    {
+      Try(tkwm.deiconify(ttGraph))
+      Try(tkfocus(imgLimmaGUI))   
+    })
+
+    CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+  })
+  Try(tkconfigure(ttMain,cursor="arrow"))
+}
+
+GetWhichProbes <- function(includeBoth=FALSE)
+{
+	Try(ttGetWhichProbes <- tktoplevel(ttMain))
+	Try(tkwm.deiconify(ttGetWhichProbes))
+  Try(tkgrab.set(ttGetWhichProbes))
+  Try(tkfocus(ttGetWhichProbes))
+  Try(tkwm.title(ttGetWhichProbes,"Probe Set"))
+	
+	Try(tkgrid(tklabel(ttGetWhichProbes,text="    ")))
+	Try(whichProbesTcl <- tclVar("pm"))
+  Try(rb1 <- tkradiobutton(ttGetWhichProbes,text="PM probes",variable=whichProbesTcl,value="pm",font=affylmGUIfont2))
+	Try(rb2 <- tkradiobutton(ttGetWhichProbes,text="MM probes",variable=whichProbesTcl,value="mm",font=affylmGUIfont2))
+	Try(if (includeBoth==TRUE)
+	  Try(rb3 <- tkradiobutton(ttGetWhichProbes,text="Both",variable=whichProbesTcl,value="both",font=affylmGUIfont2)))
+	Try(tkgrid(tklabel(ttGetWhichProbes,text="    "),rb1))
+	Try(tkgrid(tklabel(ttGetWhichProbes,text="    "),rb2))
+	Try(if (includeBoth==TRUE)	
+  	Try(tkgrid(tklabel(ttGetWhichProbes,text="    "),rb3)))
+  Try(if (includeBoth==TRUE)
+  	Try(tkgrid.configure(rb1,rb2,rb3,columnspan=2,sticky="w"))
+  else
+  	Try(tkgrid.configure(rb1,rb2,columnspan=2,sticky="w")))
+	Try(tkgrid(tklabel(ttGetWhichProbes,text="    "),tklabel(ttGetWhichProbes,text="    ")))
+
+	Try(ReturnVal <- "")
+	Try(onCancel <- function() {Try(ReturnVal <<- "");Try(tkgrab.release(ttGetWhichProbes));Try(tkdestroy(ttGetWhichProbes));Try(tkfocus(ttMain))})
+	Try(onOK <- function() {Try(ReturnVal <<- tclvalue(whichProbesTcl));Try(tkgrab.release(ttGetWhichProbes));Try(tkdestroy(ttGetWhichProbes));Try(tkfocus(ttMain))})
+
+	Try(OK.but     <- tkbutton(ttGetWhichProbes,text="OK",command=onOK,font=affylmGUIfont2))
+	Try(Cancel.but <- tkbutton(ttGetWhichProbes,text="Cancel",command=onCancel,font=affylmGUIfont2))
+
+	Try(tkgrid(tklabel(ttGetWhichProbes,text="    "),OK.but,Cancel.but,tklabel(ttGetWhichProbes,text="    ")))
+	Try(tkgrid.configure(OK.but,sticky="e"))
+	Try(tkgrid.configure(Cancel.but,sticky="w"))
+	Try(tkgrid(tklabel(ttGetWhichProbes,text="    ")))
+
+	Try(tkbind(ttGetWhichProbes,"<Destroy>",function() {ReturnVal <- "";Try(tkgrab.release(ttGetWhichProbes));Try(tkfocus(ttMain));}))
+  Try(tkbind(OK.but, "<Return>",onOK))
+  Try(tkbind(Cancel.but, "<Return>",onCancel))      
+
+	Try(tkwait.window(ttGetWhichProbes))
+
+	return (ReturnVal)
+}
+
+
+IntensityHistogram <- function()
+{
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment)) 
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv))   
+  Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment)) 
+  Try(if (ArraysLoaded==FALSE)
+  {
+    Try(tkmessageBox(title="Intensity Histogram",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+    return()
+  })  
+  Try(slide <- GetSlideNum())
+  Try(if (slide==0) return())
+  
+  Try(whichProbes <- GetWhichProbes())
+  Try(if (whichProbes=="") return())
+  
+  Try(plotFunction <- function() 
+  {
+    Try(opar<-par(bg="white"))
+    Try(tkconfigure(ttMain,cursor="watch"))
+    Try(if (whichProbes=="pm")
+      Try(hist(log2(pm(RawAffyData[slide])),breaks=100,col="blue",main=plotTitle,xlab=xLabel,ylab=yLabel)))
+    Try(if (whichProbes=="mm")
+      Try(hist(log2(mm(RawAffyData[slide])),breaks=100,col="blue",main=plotTitle,xlab=xLabel,ylab=yLabel)))
+    Try(tkconfigure(ttMain,cursor="arrow"))
+    Try(tmp<-par(opar))
+  })
+  Try(if (whichProbes=="pm")
+  {
+    Try(plotTitle<-paste("PM Intensity distribution for",SlideNamesVec[slide]))
+    Try(xLabel <- "log2(PM Intensity)")
+  })    
+  Try(if (whichProbes=="mm")
+  {
+    Try(plotTitle<-paste("MM Intensity distribution for",SlideNamesVec[slide]))
+    Try(xLabel <- "log2(MM Intensity)")  
+  })        
+  Try(plotLabels <- GetPlotLabels(plotTitle,xLabel,"Frequency"))
+  Try(if (length(plotLabels)==0) return())
+  Try(plotTitle <- plotLabels$plotTitle)
+  Try(xLabel    <- plotLabels$xLabel)
+  Try(yLabel    <- plotLabels$yLabel)
+  Require("tkrplot")  
+  Try(ttGraph<-tktoplevel(ttMain))
+  Try(tkwm.withdraw(ttGraph))
+  Try(tkwm.title(ttGraph,plotTitle))
+  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+  Try(tkwm.title(ttGraph,plotTitle))
+  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
+  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
+  Try(tkgrid(imgLimmaGUI))
+  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+    Try(tkdestroy(ttGraph))
+  else
+  {
+    Try(tkwm.deiconify(ttGraph))
+    Try(tkfocus(imgLimmaGUI))   
+  })
+
+  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+}
+
+
+DensityPlot <- function()
+{
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment)) 
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv))   
+  Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment)) 
+  Try(if (ArraysLoaded==FALSE)
+  {
+    Try(tkmessageBox(title="Intensity Histogram",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+    return()
+  })  
+  Try(slide <- GetSlideNum())
+  Try(if (slide==0) return())
+  
+  Try(whichProbes <- GetWhichProbes(includeBoth=TRUE))
+  Try(if (whichProbes=="") return())
+  
+  Try(plotFunction <- function() 
+  {
+    Try(opar<-par(bg="white"))
+    Try(tkconfigure(ttMain,cursor="watch"))  
+    Try(plotDensity.AffyBatch(RawAffyData[slide],which=whichProbes,main=plotTitle,xlab=xLabel,ylab=yLabel))
+    Try(tkconfigure(ttMain,cursor="arrow"))
+    Try(tmp<-par(opar))
+  })
+  Try(yLabel <- "Density")
+  Try(if (whichProbes=="both")
+  {
+    Try(plotTitle<-paste("Intensity distribution for",SlideNamesVec[slide]))    
+    Try(xLabel <- "log2(Intensity)")
+  })
+  Try(if (whichProbes=="pm")
+  {
+    Try(plotTitle<-paste("PM Intensity distribution for",SlideNamesVec[slide]))
+    Try(xLabel <- "log2(PM Intensity)")
+  })    
+  Try(if (whichProbes=="mm")
+  {
+    Try(plotTitle<-paste("MM Intensity distribution for",SlideNamesVec[slide]))
+    Try(xLabel <- "log2(MM Intensity)")  
+  })        
+  Try(plotLabels <- GetPlotLabels(plotTitle,xLabel,"Density"))
+  Try(if (length(plotLabels)==0) return())
+  Try(plotTitle <- plotLabels$plotTitle)
+  Try(xLabel    <- plotLabels$xLabel)
+  Try(yLabel    <- plotLabels$yLabel)
+  Require("tkrplot")  
+  Try(ttGraph<-tktoplevel(ttMain))
+  Try(tkwm.withdraw(ttGraph))
+  Try(tkwm.title(ttGraph,plotTitle))
+  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+  Try(tkwm.title(ttGraph,plotTitle))
+  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
+  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
+  Try(tkgrid(imgLimmaGUI))
+  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+    Try(tkdestroy(ttGraph))
+  else
+  {
+    Try(tkwm.deiconify(ttGraph))
+    Try(tkfocus(imgLimmaGUI))   
+  })
+
+  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+}
+
+
+RawIntensityBoxPlot <- function()
+{
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment)) 
+  Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment)) 
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv))   
+  Try(if (ArraysLoaded==FALSE)
+  {
+    Try(tkmessageBox(title="Density Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+    return()
+  })  
+  Try(plotFunction <- function() 
+  {
+    Try(opar<-par(bg="white",cex=0.7))
+    Try(tkconfigure(ttMain,cursor="watch"))
+    Try(boxplot(RawAffyData,col="red",las=2,names=SlideNamesVec))
+    Try(title(plotTitle))
+    Try(tkconfigure(ttMain,cursor="arrow"))
+    Try(tmp<-par(opar))
+  }) 
+  Try(plotTitle <- "Raw intensity distribution for each array")
+  Try(plotTitleList <- GetPlotTitle(plotTitle)) 
+  Try(if (length(plotTitleList)==0) return())
+  Try(plotTitle <- plotTitleList$plotTitle)    
+  Require("tkrplot")  
+  Try(ttGraph<-tktoplevel(ttMain))
+  Try(tkwm.withdraw(ttGraph))
+  Try(tkwm.title(ttGraph,plotTitle))
+  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+  Try(tkwm.title(ttGraph,plotTitle))
+  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
+  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
+  Try(tkgrid(imgLimmaGUI))
+  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+    Try(tkdestroy(ttGraph))
+  else
+  {
+    Try(tkwm.deiconify(ttGraph))
+    Try(tkfocus(imgLimmaGUI))   
+  })
+
+  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+}
+
+
+NormalizedIntensityBoxPlot <- function()
+{
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment)) 
+  Try(if (ArraysLoaded==FALSE)
+  {
+    Try(tkmessageBox(title="Normalized Intensity Box Plot",message="Error: No arrays have been loaded.",
+        icon="error",default="ok"))
+    return()
+  })
+  Try(NormalizedAffyData.Available <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))
+  Try(if (NormalizedAffyData.Available==FALSE)
+    NormalizeNow())
+  Try(NormalizedAffyData.Available <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))    
+  Try(if (NormalizedAffyData.Available==FALSE)
+  {
+    tkmessageBox(title="Normalized Intensity Box Plot",message="An error occured while trying to normalize the data.")
+    return()
+  
+  })
+  Try(NormalizedAffyData <- get("NormalizedAffyData", envir=affylmGUIenvironment)) 
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv))   
+  Try(if (ArraysLoaded==FALSE)
+  {
+    Try(tkmessageBox(title="Normalized Intensity Box Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+    return()
+  })  
+  Try(plotFunction <- function() 
+  {
+    Try(opar<-par(bg="white",cex=0.7))
+    Try(tkconfigure(ttMain,cursor="watch"))
+    Try(boxplot(data.frame(exprs(NormalizedAffyData)),col="blue",las=2,names=SlideNamesVec))
+    Try(title(plotTitle))
+    Try(tkconfigure(ttMain,cursor="arrow"))
+    Try(tmp<-par(opar))
+  }) 
+  Try(plotTitle<-"Normalized intensity distribution for each array")
+  Try(plotTitleList <- GetPlotTitle(plotTitle)) 
+  Try(if (length(plotTitleList)==0) return())
+  Try(plotTitle <- plotTitleList$plotTitle)    
+  Require("tkrplot")  
+  Try(ttGraph<-tktoplevel(ttMain))
+  Try(tkwm.withdraw(ttGraph))
+  Try(tkwm.title(ttGraph,plotTitle))
+  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+  Try(tkwm.title(ttGraph,plotTitle))
+  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
+  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
+  Try(tkgrid(imgLimmaGUI))
+  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+    Try(tkdestroy(ttGraph))
+  else
+  {
+    Try(tkwm.deiconify(ttGraph))
+    Try(tkfocus(imgLimmaGUI))   
+  })
+
+  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+}
+
+#HeatMap <- function()
+#{
+#  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+#  Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment)) 
+#  Try(NormalizedAffyData <- get("NormalizedAffyData", envir=affylmGUIenvironment)) 
+#  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
+#  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv))   
+#  Try(if (ArraysLoaded==FALSE)
+#  {
+#    Try(tkmessageBox(title="Heat Map",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+#    return()
+#  })  
+#  Try(plotFunction <- function() 
+#  {
+#    Try(opar<-par(bg="white"))
+#    Try(tkconfigure(ttMain,cursor="watch"))
+#    Try(low  <- col2rgb("green")/256)
+#    Try(high <- col2rgb("red")/256)
+#    Try(ncolors<-256)
+#    Try(col <- rgb(seq(low[1], high[1], len = ncolors), seq(low[2], 
+#            high[2], len = ncolors), seq(low[3], high[3], len = ncolors)))
+#    Try(require(mva))
+#    Try(rsd <- apply(exprs(NormalizedAffyData),1,sd))
+#    Try(sel <- order(rsd, decreasing = TRUE)[1:50])
+#    Try(tmp <- exprs(NormalizedAffyData)[sel,])
+#    Try(colnames(tmp) <- SlideNamesVec)
+#    Try(heatmap(tmp,col=col))
+#    Try(tkconfigure(ttMain,cursor="arrow"))
+#    Try(tmp<-par(opar))
+#  })
+#  Try(plotTitle<-"Heat Map")
+#  Require("tkrplot")  
+#  Try(ttGraph<-tktoplevel(ttMain))
+#  Try(tkwm.withdraw(ttGraph))
+#  Try(tkwm.title(ttGraph,plotTitle))
+#  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+#  Try(tkwm.title(ttGraph,plotTitle))
+#  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
+#  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
+#  Try(tkgrid(imgLimmaGUI))
+#  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+#    Try(tkdestroy(ttGraph))
+#  else
+#  {
+#    Try(tkwm.deiconify(ttGraph))
+#    Try(tkfocus(imgLimmaGUI))   
+#  })
+#
+#  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+#}
+
+
+# The idea of having this function below came about from allowing customized menu items.
+# Perhaps one reason it is not widely used is that the code specific to one particular 
+# plotting function may include asking the user a question via dialog box, but we may
+# not want this question to be asked again if they select "Copy" to clipboard or "Save"
+# i.e. replot
+generalPlotFunction <- function(code="",WindowTitle="")
+{
+
+  Try(plotTitle <- WindowTitle)
+  Try(ttGraph<-tktoplevel(ttMain))
+  Try(tkwm.withdraw(ttGraph))
+  Try(tkwm.title(ttGraph,plotTitle))
+
+  Try(e1 <- try(parse(text=code)))
+  if (inherits(e1, "try-error")) 
+  {
+    Try(tkmessageBox(message="Syntax error",icon="error"))
+    Try(tkconfigure(ttMain,cursor="arrow"))
+    return()
+  }
+  e2 <- try(print(eval(e1,envir=affylmGUIenvironment)))
+  if (inherits(e2, "try-error"))
+  {
+    Try(tkmessageBox(message="An error occured while trying to plot the graph(s) for your R code",icon="error"))
+    Try(tkconfigure(ttMain,cursor="arrow"))
+    return()            
+  }
+  Require("tkrplot")
+
+  Try(plotFunction <- get("plotFunction",envir=affylmGUIenvironment))
+  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=1,vscale=1))
+  Try(tkwm.title(ttGraph,plotTitle))
+  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
+  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
+
+  Try(tkgrid(imgLimmaGUI))
+  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+    Try(tkdestroy(ttGraph))
+  else
+  {
+    Try(tkwm.deiconify(ttGraph))
+    Try(tkfocus(imgLimmaGUI))   
+  })
+
+  CopyToClip <- function()
+  {
+    Try(tkrreplot(imgLimmaGUI))
+  }
+}
+
+
+GetPlotLabels <- function(plottitle="",xlabel="",ylabel="")
+{
+  Try(ttGetPlotLabels<-tktoplevel(ttMain))
+  Try(tkwm.deiconify(ttGetPlotLabels))
+  Try(tkgrab.set(ttGetPlotLabels))
+  Try(tkfocus(ttGetPlotLabels)  )
+  Try(tkwm.title(ttGetPlotLabels,"Plot title and axis labels"))
+  Try(tkgrid(tklabel(ttGetPlotLabels,text="    ")))
+  Try(TitleTcl <- tclVar(init=plottitle))
+  Try(entry.Title<-tkentry(ttGetPlotLabels,width="40",font=affylmGUIfont2,textvariable=TitleTcl,bg="white"))
+  Try(tkgrid(tklabel(ttGetPlotLabels,text="Plot Title : ",font=affylmGUIfont2),entry.Title))
+  Try(tkgrid(tklabel(ttGetPlotLabels,text="    ")))
+  Try(xLabelTcl <- tclVar(init=xlabel))
+  Try(entry.xLabel<-tkentry(ttGetPlotLabels,width="40",font=affylmGUIfont2,textvariable=xLabelTcl,bg="white"))
+  Try(tkgrid(tklabel(ttGetPlotLabels,text="X Axis Label : ",font=affylmGUIfont2),entry.xLabel))
+  Try(tkgrid(tklabel(ttGetPlotLabels,text="    ")))
+  Try(yLabelTcl <- tclVar(init=ylabel))
+  Try(entry.yLabel<-tkentry(ttGetPlotLabels,width="40",font=affylmGUIfont2,textvariable=yLabelTcl,bg="white"))
+  Try(tkgrid(tklabel(ttGetPlotLabels,text="Y Axis Label :   ",font=affylmGUIfont2),entry.yLabel))
+  Try(tkgrid(tklabel(ttGetPlotLabels,text="    ")))
+
+  Try(tkgrid.configure(entry.Title,entry.xLabel,entry.yLabel,columnspan=2))
+  Try(ReturnVal <- list())
+  Try(onOK <- function()
+  {
+      Try(plotTitle <- tclvalue(TitleTcl))
+      Try(xLabel <- tclvalue(xLabelTcl))
+      Try(yLabel <- tclvalue(yLabelTcl))
+      Try(Try(tkgrab.release(ttGetPlotLabels)))
+      Try(tkdestroy(ttGetPlotLabels))
+      Try(tkfocus(ttMain))
+      Try(ReturnVal <<- list(plotTitle=plotTitle,xLabel=xLabel,yLabel=yLabel))
+  })
+  onCancel <- function() {Try(tkgrab.release(ttGetPlotLabels));Try(tkdestroy(ttGetPlotLabels));Try(tkfocus(ttMain));ReturnVal <<- list()}
+  OK.but <-tkbutton(ttGetPlotLabels,text="   OK   ",command=onOK,font=affylmGUIfont2)
+  Cancel.but <-tkbutton(ttGetPlotLabels,text=" Cancel ",command=onCancel,font=affylmGUIfont2)
+  Try(tkgrid(tklabel(ttGetPlotLabels,text="    "),OK.but,Cancel.but))
+  Try(tkgrid(tklabel(ttGetPlotLabels,text="    ")))
+  Try(tkbind(ttGetPlotLabels, "<Destroy>", function() {Try(tkgrab.release(ttGetPlotLabels));Try(tkfocus(ttMain));}))
+  Try(tkfocus(ttGetPlotLabels))
+  Try(tkwait.window(ttGetPlotLabels))
+
+  return (ReturnVal)
+}
+
+GetPlotTitle <- function(plottitle="")
+{
+  ttGetPlotTitle<-tktoplevel(ttMain)
+  tkwm.deiconify(ttGetPlotTitle)
+  tkgrab.set(ttGetPlotTitle)
+  tkfocus(ttGetPlotTitle)  
+  tkwm.title(ttGetPlotTitle,"Plot title")
+  tkgrid(tklabel(ttGetPlotTitle,text="    "))
+  TitleTcl <- tclVar(init=plottitle)
+  entry.Title<-tkentry(ttGetPlotTitle,width="40",font=affylmGUIfont2,textvariable=TitleTcl,bg="white")
+  tkgrid(tklabel(ttGetPlotTitle,text="Plot Title : ",font=affylmGUIfont2),entry.Title)
+  tkgrid(tklabel(ttGetPlotTitle,text="    "))
+
+  tkgrid.configure(entry.Title,columnspan=2)
+  ReturnVal <- list()
+  onOK <- function()
+  {
+      plotTitle <- tclvalue(TitleTcl)
+      Try(tkgrab.release(ttGetPlotTitle))
+      Try(tkdestroy(ttGetPlotTitle))
+      Try(tkfocus(ttMain))
+      ReturnVal <<- list(plotTitle=plotTitle)
+  }
+  onCancel <- function() {Try(tkgrab.release(ttGetPlotTitle));Try(tkdestroy(ttGetPlotTitle));Try(tkfocus(ttMain));ReturnVal <<- list()}
+  OK.but <-tkbutton(ttGetPlotTitle,text="   OK   ",command=onOK,font=affylmGUIfont2)
+  Cancel.but <-tkbutton(ttGetPlotTitle,text=" Cancel ",command=onCancel,font=affylmGUIfont2)
+  tkgrid(tklabel(ttGetPlotTitle,text="    "),OK.but,Cancel.but)
+  tkgrid(tklabel(ttGetPlotTitle,text="    "))
+  Try(tkbind(entry.Title, "<Return>",onOK))  
+  Try(tkbind(ttGetPlotTitle, "<Destroy>", function() {Try(tkgrab.release(ttGetPlotTitle));Try(tkfocus(ttMain));}))
+  Try(tkfocus(ttGetPlotTitle))  
+  Try(tkwait.window(ttGetPlotTitle))
+
+  return (ReturnVal)
+}
+
+
+GetPlotSize <- function()
+{
+  Try(Myhscale <- get("Myhscale",envir=.GlobalEnv))
+  Try(Myvscale <- get("Myvscale",envir=.GlobalEnv))
+  ttGetPlotSize<-tktoplevel(ttMain)
+  tkwm.deiconify(ttGetPlotSize)
+  tkgrab.set(ttGetPlotSize)
+  tkfocus(ttGetPlotSize)  
+  tkwm.title(ttGetPlotSize,"Plot size")
+  tkgrid(tklabel(ttGetPlotSize,text="    "))
+  tkgrid(tklabel(ttGetPlotSize,text="If desired, you may adjust the horizontal and vertical size of the plot.",font=affylmGUIfont2),columnspan=2)
+  tkgrid(tklabel(ttGetPlotSize,text="    "))
+  HScaleTcl <- tclVar(paste(Myhscale))
+  entry.HScale<-tkentry(ttGetPlotSize,width="20",font=affylmGUIfont2,textvariable=HScaleTcl,bg="white")
+  tkgrid(tklabel(ttGetPlotSize,text="Horizontal Scaling Factor : ",font=affylmGUIfont2),entry.HScale,sticky="w")
+  tkgrid(tklabel(ttGetPlotSize,text="    "))
+  VScaleTcl <- tclVar(paste(Myvscale))
+  entry.VScale<-tkentry(ttGetPlotSize,width="20",font=affylmGUIfont2,textvariable=VScaleTcl,bg="white")
+  tkgrid(tklabel(ttGetPlotSize,text="Vertical Scaling Factor :   ",font=affylmGUIfont2),entry.VScale,sticky="w")
+  tkgrid(tklabel(ttGetPlotSize,text="    "))
+  ReturnVal <- 0
+  HScale <- 0
+  VScale <- 0
+  onOK <- function()
+  {
+      HScale <<- as.numeric(tclvalue(HScaleTcl))
+      VScale <<- as.numeric(tclvalue(VScaleTcl))
+      Try(tkgrab.release(ttGetPlotSize))
+      Try(tkdestroy(ttGetPlotSize))
+      Try(tkfocus(ttMain))
+      ReturnVal <<- list(HScale=HScale,VScale=VScale)
+  }
+  onCancel <- function() {Try(tkgrab.release(ttGetPlotSize));Try(tkdestroy(ttGetPlotSize));Try(tkfocus(ttMain));ReturnVal <<- list()}
+  OK.but <-tkbutton(ttGetPlotSize,text="   OK   ",command=onOK,font=affylmGUIfont2)
+  Cancel.but <-tkbutton(ttGetPlotSize,text=" Cancel ",command=onCancel,font=affylmGUIfont2)
+  tkgrid(OK.but,Cancel.but)
+  tkgrid(tklabel(ttGetPlotSize,text="    "))
+  Try(tkfocus(ttGetPlotSize))
+  Try(tkbind(ttGetPlotSize, "<Destroy>", function() {Try(tkgrab.release(ttGetPlotSize));Try(tkfocus(ttMain));}))
+  Try(tkbind(entry.HScale, "<Return>",function() tkfocus(entry.VScale))) 
+  Try(tkbind(entry.VScale, "<Return>", onOK))
+  Try(tkwait.window(ttGetPlotSize))
+
+  return (ReturnVal)
+}
+
+SaveGraphAsJpeg <- function(initialfile,plotFunction)
+{
+  Try(jpegFileName <- tclvalue(tkgetSaveFile(initialfile=initialfile,filetypes="{{JPEG Files} {.jpg .jpeg}} {{All files} *}"))  )
+  if (!nchar(jpegFileName)) 
+    return()
+  Try(len <- nchar(jpegFileName))
+  if (len<4)
+      Try(jpegFileName <- paste(jpegFileName,".jpg",sep=""))
+  else if   ((tolower(substring(jpegFileName,len-3,len))!=".jpg") &&
+  (len<5 || (tolower(substring(jpegFileName,len-4,len))!=".jpeg")))
+        Try(jpegFileName <- paste(jpegFileName,".jpg",sep=""))
+
+  Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")  
+  {
+    Try(jpegParams <- GetJpegOrPngX11Params(graphFileType="JPEG"))  
+    Try(bitmap(file=jpegFileName,bg=jpegParams$bg,res=jpegParams$res,type="jpeg"))
+  }
+  else
+  {
+    Try(jpegParams <- GetJpegOrPngParams(graphFileType="JPEG"))
+    if (length(jpegParams)==0) return()
+    Try(jpeg(file=jpegFileName,width=jpegParams$width,height=jpegParams$height,pointsize=jpegParams$pointsize,bg=jpegParams$bg))
+  })
+  Try(plotFunction())
+  Try(dev.off())
+}
+
+SaveGraphAsPNG <- function(initialfile,plotFunction)
+{
+  Try(pngFileName <- tclvalue(tkgetSaveFile(initialfile=initialfile,filetypes="{{PNG Files} {.png}} {{All files} *}"))  )
+  if (!nchar(pngFileName)) 
+    return()
+  Try(len <- nchar(pngFileName))
+  if (len<4)
+      Try(pngFileName <- paste(pngFileName,".png",sep=""))
+  else if   ((tolower(substring(pngFileName,len-3,len))!=".png"))
+        Try(pngFileName <- paste(pngFileName,".png",sep=""))
+
+  Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")  
+  {
+    Try(pngParams <- GetJpegOrPngX11Params(graphFileType="PNG"))  
+    Try(bitmap(file=pngFileName,bg=pngParams$bg,res=pngParams$res))
+  }
+  else
+  {
+    Try(pngParams <- GetJpegOrPngParams(graphFileType="PNG"))
+    if (length(pngParams)==0) return()
+    Try(png(file=pngFileName,width=pngParams$width,height=pngParams$height,pointsize=pngParams$pointsize,bg=pngParams$bg))
+  })
+  Try(plotFunction())
+  Try(dev.off())
+}
+
+SaveGraphAsPostscript <- function(initialfile,plotFunction)
+{
+  Try(psFileName <- tclvalue(tkgetSaveFile(initialfile=initialfile,filetypes="{{Postscript Files} {.ps .eps}} {{All files} *}"))  )
+  if (!nchar(psFileName)) 
+    return()
+  Try(len <- nchar(psFileName))
+  if (len<2)
+      Try(psFileName <- paste(psFileName,".ps",sep=""))
+  else if   ((tolower(substring(psFileName,len-2,len))!=".ps"))
+        Try(psFileName <- paste(psFileName,".ps",sep=""))
+
+  Try(postscript(file=psFileName,title=substring(psFileName,1,nchar(psFileName)-3)))
+  Try(plotFunction())
+  Try(dev.off())
+}
+
+SaveGraphAsPDF <- function(initialfile,plotFunction)
+{
+  Try(pdfFileName <- tclvalue(tkgetSaveFile(initialfile=initialfile,filetypes="{{PDF Files} {.pdf}} {{All files} *}"))  )
+  if (!nchar(pdfFileName)) 
+    return()
+  Try(len <- nchar(pdfFileName))
+  if (len<2)
+      Try(pdfFileName <- paste(pdfFileName,".pdf",sep=""))
+  else if   ((tolower(substring(pdfFileName,len-3,len))!=".pdf"))
+        Try(pdfFileName <- paste(pdfFileName,".pdf",sep=""))
+
+  Try(pdf(file=pdfFileName,title=substring(pdfFileName,1,nchar(pdfFileName)-4)))
+  Try(plotFunction())
+  Try(dev.off())
+}
+
+
+Resize <- function(img,plotFunction)
+{
+  Try(PlotSize <- GetPlotSize())
+  Try(if (length(PlotSize)==0)      return())
+  Try(LocalHScale <<- PlotSize$HScale)
+  Try(LocalVScale <<- PlotSize$VScale)
+  Try(tkconfigure(img,cursor="watch"))    
+  Try(tkfocus(img))  
+  Try(tkrreplot(img,fun=plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+  Try(tkconfigure(img,cursor="arrow"))        
+}
+
+CopyGraph <- function(img) Try(tkrreplot(img))  
+
+SetupPlotKeyBindings <- function(tt,img)
+{
+  Try(tkbind(tt, "<Control-C>", function() CopyGraph(img)))  
+  Try(tkbind(tt, "<Control-c>", function() CopyGraph(img)))  
+}  
+
+SetupPlotMenus <- function(tt,initialfile,plotFunction,img)
+{
+  Try(topMenu <- tkmenu(tt))
+  Try(tkconfigure(tt, menu=topMenu))
+  Try(fileMenu <- tkmenu(topMenu, tearoff=FALSE))
+  Try(editMenu <- tkmenu(topMenu, tearoff=FALSE))
+  Try(resizeMenu <- tkmenu(topMenu, tearoff=FALSE))  
+
+  Try(tkadd(fileMenu, "command", label="Save As PNG",command=function() SaveGraphAsPNG(initialfile=initialfile,plotFunction=plotFunction))) # ) # ,font=limmaGUIfontMenu))
+  Try(tkadd(fileMenu, "command", label="Save As JPEG",command=function() SaveGraphAsJpeg(initialfile=initialfile,plotFunction=plotFunction))) # ) # ,font=limmaGUIfontMenu))  
+  Try(tkadd(fileMenu, "command", label="Save As Postscript",command=function() SaveGraphAsPostscript(initialfile=initialfile,plotFunction=plotFunction))) # ) # ,font=limmaGUIfontMenu))
+  Try(tkadd(fileMenu, "command", label="Save As PDF",command=function() SaveGraphAsPDF(initialfile=initialfile,plotFunction=plotFunction))) # ) # ,font=limmaGUIfontMenu))    
+  Try(tkadd(fileMenu, "separator"))
+  Try(tkadd(fileMenu, "command", label="Close",command=function() tkdestroy(tt))) # ) # ,font=limmaGUIfontMenu))
+  Try(tkadd(topMenu, "cascade", label="File",menu=fileMenu)) # ) # ,font=limmaGUIfontMenu))
+
+  Try(tkadd(editMenu, "command", label="Copy <Ctrl-C>",command=function() CopyGraph(img=img))) # ) # ,font=limmaGUIfontMenu))
+  Try(tkadd(topMenu, "cascade", label="Edit", menu=editMenu)) # ) # ,font=limmaGUIfontMenu))
+
+  Try(tkadd(resizeMenu, "command", label="Resize Window",command=function() Resize(img=img,plotFunction=plotFunction))) # ) # ,font=limmaGUIfontMenu))
+  Try(tkadd(topMenu, "cascade", label="Resize", menu=resizeMenu)) # ) # ,font=limmaGUIfontMenu))
+  return (list(topMenu=topMenu,fileMenu=fileMenu,editMenu=editMenu,resizeMenu=resizeMenu))
+}
+
+GetJpegOrPngParams <- function(graphFileType)
+{
+  ttGetJpegOrPngParams<-tktoplevel(ttMain)
+  tkwm.deiconify(ttGetJpegOrPngParams)
+  tkgrab.set(ttGetJpegOrPngParams)
+  tkfocus(ttGetJpegOrPngParams)  
+  tkwm.title(ttGetJpegOrPngParams,paste(graphFileType,"Image Parameters"))
+  tkgrid(tklabel(ttGetJpegOrPngParams,text="    "))
+  tkgrid(tklabel(ttGetJpegOrPngParams,text=paste(graphFileType,"Image Parameters"),font=affylmGUIfont2),columnspan=2)
+  tkgrid(tklabel(ttGetJpegOrPngParams,text="    "))
+  WidthTcl <- tclVar(paste(600))
+  entry.Width<-tkentry(ttGetJpegOrPngParams,width="10",font=affylmGUIfont2,textvariable=WidthTcl,bg="white")
+  tkgrid(tklabel(ttGetJpegOrPngParams,text="Width   ",font=affylmGUIfont2),entry.Width,tklabel(ttGetJpegOrPngParams,text="    "),sticky="w")
+  tkgrid(tklabel(ttGetJpegOrPngParams,text="    "))
+  HeightTcl <- tclVar(paste(600))
+  entry.Height<-tkentry(ttGetJpegOrPngParams,width="10",font=affylmGUIfont2,textvariable=HeightTcl,bg="white")
+  tkgrid(tklabel(ttGetJpegOrPngParams,text="Height    ",font=affylmGUIfont2),entry.Height,tklabel(ttGetJpegOrPngParams,text="    "),sticky="w")
+  tkgrid(tklabel(ttGetJpegOrPngParams,text="    "))
+  BackgroundTcl <- tclVar("white")
+  entry.Background<-tkentry(ttGetJpegOrPngParams,width="10",font=affylmGUIfont2,textvariable=BackgroundTcl,bg="white")
+  tkgrid(tklabel(ttGetJpegOrPngParams,text="Background    ",font=affylmGUIfont2),entry.Background,tklabel(ttGetJpegOrPngParams,text="    "),sticky="w")
+  tkgrid(tklabel(ttGetJpegOrPngParams,text="    "))
+  PointSizeTcl <- tclVar(paste(12))
+  entry.PointSize<-tkentry(ttGetJpegOrPngParams,width="10",font=affylmGUIfont2,textvariable=PointSizeTcl,bg="white")
+  tkgrid(tklabel(ttGetJpegOrPngParams,text="Font Size    ",font=affylmGUIfont2),entry.PointSize,tklabel(ttGetJpegOrPngParams,text="    "),sticky="w")
+  tkgrid(tklabel(ttGetJpegOrPngParams,text="    "))
+    
+  ReturnVal <- list()
+  Width <- 600
+  Height <- 600
+  Background <- "white"
+  PointSize <- 12
+  
+  onOK <- function()
+  {
+      Try(Width  <<- as.numeric(tclvalue(WidthTcl)))
+      Try(Height <<- as.numeric(tclvalue(HeightTcl)))
+      Try(Background <<- tclvalue(BackgroundTcl))
+      Try(PointSize <<- as.numeric(tclvalue(PointSizeTcl)))      
+      Try(tkgrab.release(ttGetJpegOrPngParams))
+      Try(tkdestroy(ttGetJpegOrPngParams))
+      Try(tkfocus(ttMain))
+      Try(ReturnVal <<- list(width=Width,height=Height,pointsize=PointSize,bg=Background))
+  }
+  onCancel <- function() {Try(tkgrab.release(ttGetJpegOrPngParams));Try(tkdestroy(ttGetJpegOrPngParams));Try(tkfocus(ttMain));Try(ReturnVal <<- list())}
+  OK.but <-tkbutton(ttGetJpegOrPngParams,text="   OK   ",command=onOK,font=affylmGUIfont2)
+  Cancel.but <-tkbutton(ttGetJpegOrPngParams,text=" Cancel ",command=onCancel,font=affylmGUIfont2)
+  tkgrid(OK.but,Cancel.but)
+  tkgrid(tklabel(ttGetJpegOrPngParams,text="    "))
+  Try(tkfocus(ttGetJpegOrPngParams))
+  Try(tkbind(ttGetJpegOrPngParams, "<Destroy>", function() {Try(tkgrab.release(ttGetJpegOrPngParams));Try(tkfocus(ttMain));}))
+  Try(tkwait.window(ttGetJpegOrPngParams))
+
+  return (ReturnVal)
+}
+
+GetJpegOrPngX11Params <- function(graphFileType)
+{
+  ttGetJpegOrPngX11Params<-tktoplevel(ttMain)
+  tkwm.deiconify(ttGetJpegOrPngX11Params)
+  tkgrab.set(ttGetJpegOrPngX11Params)
+  tkfocus(ttGetJpegOrPngX11Params)  
+  tkwm.title(ttGetJpegOrPngX11Params,paste(graphFileType,"Image Parameters"))
+  tkgrid(tklabel(ttGetJpegOrPngX11Params,text="    "))
+  tkgrid(tklabel(ttGetJpegOrPngX11Params,text=paste(graphFileType,"Image Parameters"),font=affylmGUIfont2),columnspan=2)
+  tkgrid(tklabel(ttGetJpegOrPngX11Params,text="    "))
+  BackgroundTcl <- tclVar("white")
+  entry.Background<-tkentry(ttGetJpegOrPngX11Params,width="20",font=affylmGUIfont2,textvariable=BackgroundTcl,bg="white")
+  tkgrid(tklabel(ttGetJpegOrPngX11Params,text="Background    ",font=affylmGUIfont2),entry.Background,sticky="w")
+  tkgrid(tklabel(ttGetJpegOrPngX11Params,text="    "))
+  ResolutionTcl <- tclVar("72")
+  entry.Resolution<-tkentry(ttGetJpegOrPngX11Params,width="20",font=affylmGUIfont2,textvariable=ResolutionTcl,bg="white")
+  tkgrid(tklabel(ttGetJpegOrPngX11Params,text="Resolution    ",font=affylmGUIfont2),entry.Resolution,sticky="w")
+  tkgrid(tklabel(ttGetJpegOrPngX11Params,text="    "))
+    
+  ReturnVal <- list()
+  Background <- "white"
+  Resolution <- 72
+  
+  onOK <- function()
+  {
+      Try(Background <<- tclvalue(BackgroundTcl))
+      Try(Resolution <<- as.numeric(tclvalue(ResolutionTcl)))
+      Try(tkgrab.release(ttGetJpegOrPngX11Params))
+      Try(tkdestroy(ttGetJpegOrPngX11Params))
+      Try(tkfocus(ttMain))
+      Try(ReturnVal <<- list(bg=Background,res=Resolution))
+  }
+  onCancel <- function() {Try(tkgrab.release(ttGetJpegOrPngX11Params));Try(tkdestroy(ttGetJpegOrPngX11Params));Try(tkfocus(ttMain));Try(ReturnVal <<- list())}
+  OK.but <-tkbutton(ttGetJpegOrPngX11Params,text="   OK   ",command=onOK,font=affylmGUIfont2)
+  Cancel.but <-tkbutton(ttGetJpegOrPngX11Params,text=" Cancel ",command=onCancel,font=affylmGUIfont2)
+  tkgrid(OK.but,Cancel.but)
+  tkgrid(tklabel(ttGetJpegOrPngX11Params,text="    "))
+  Try(tkfocus(ttGetJpegOrPngX11Params))
+  Try(tkbind(ttGetJpegOrPngX11Params, "<Destroy>", function() {Try(tkgrab.release(ttGetJpegOrPngX11Params));Try(tkfocus(ttMain));}))
+  Try(tkwait.window(ttGetJpegOrPngX11Params))
+
+  return (ReturnVal)
+}
+
+VennDiagramPlot <- function()
+{
+  Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
+  Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
+  Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment))  
+  Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))    
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(LinearModelComputed <- get("LinearModelComputed", envir=affylmGUIenvironment))   
+  Try(design <- get("design", envir=affylmGUIenvironment))
+  
+  Try(if (ArraysLoaded==FALSE)
+  {
+      tkmessageBox(title="Venn Diagram",message="No arrays have been loaded.  Please try New or Open from the File menu.",type="ok",icon="error")
+      Try(tkfocus(ttMain))
+      return()
+  })
+
+  Try(if (NumContrastParameterizations==0)
+  {
+    Try(tkmessageBox(title="Venn Diagram",message="There are no contrast parameterizations available.  Select \"Compute Contrasts\" from the \"Linear Model\" menu.",type="ok",icon="error"))
+    Try(tkfocus(ttMain))
+    return()  
+  })  
+
+  Try(contrastParameterizationIndex <- ChooseContrastParameterization())
+  Try(if (contrastParameterizationIndex==0)    return())
+  Try(ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
+  Try(ContrastNamesVec  <- colnames(as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts)))
+  Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",ContrastParameterizationTREEIndex,sep=""))
+    
+  Try(fit <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$fit)
+
+	Try(if (("eb" %in% names(ContrastParameterizationList[[contrastParameterizationIndex]]))&&
+										length(ContrastParameterizationList[[contrastParameterizationIndex]]$eb)>0)
+		Try(ebayesAvailable <- TRUE)
+	else
+		Try(ebayesAvailable <- FALSE))
+
+  Try(if (ebayesAvailable==FALSE)
+  {
+    Try(tkmessageBox(title="Venn diagram",message="For now, Venn diagrams are only available when empirical bayes statistics are available (requires replicate arrays).",icon="error"))
+    return()
+  })
+
+#  Try(eb  <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$eb)
+  Try(fit <- eBayes(fit))
+ 
+  Try(Contrasts <- GetMultipleContrasts(contrastParameterizationIndex))
+  Try(NumContrastsSelected <- length(Contrasts$contrastIndices))
+  Try(if (NumContrastsSelected==0)
+    return())
+
+  Try(include <- UpDownOrBoth())
+  Try(if (include=="")
+    return())
+
+  Try(contrastsMatrix <- c())
+  Try(tstats <- c())
+  
+  Try(NumParameters <- get("NumParameters" , envir=affylmGUIenvironment))      
+
+  Try(for (i in (1:NumContrastsSelected))
+  {
+    Try(currentIndex <- Contrasts$contrastIndices[[i]])
+    Try(tstat <- as.matrix((ContrastParameterizationList[[ContrastParameterizationNameNode]])$eb$t))
+    Try(if (ncol(tstat)>1)
+      tstat <- tstat[,currentIndex])
+
+    Try(contrastsMatrix <- cbind(contrastsMatrix,as.matrix(rep(0,NumParameters))))
+    Try(contrastsMatrix[currentIndex,ncol(contrastsMatrix)] <- 1)
+    Try(ContrastName <- ContrastNamesVec[currentIndex])
+    
+    Try(if (length(tstats)==0) 
+      Try(tstats <- as.matrix(tstat))
+    else
+    {
+      Try(tstats <- cbind(tstats,  as.matrix(tstat)))
+    })
+    Try(colnames(tstats)[ncol(tstats)] <- ContrastName)
+  })
+    
+  Try(clas <- classifyTests(tstats,design=design,contrasts=contrastsMatrix))
+  Try(vc   <- vennCounts(clas$classification,include=include))
+
+  plotVennDiagram <- function()
+  {
+    Try(opar<-par(bg="white"))
+    Try(vennDiagramlimmaGUI(vc,include=include,names=as.vector(setNames),cex=0.85))
+    Try(TempGraphPar<-par(opar))
+  }
+  
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv)*1.25)
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv)*1.25)
+
+  # FIXME: It'd be nice to list the one, two or three parameters.
+  Try(plotTitle <- paste("Venn diagram for contrast parameterization",ContrastParameterizationNamesVec[contrastParameterizationIndex]))
+
+  Try(if (NumContrastsSelected==1)
+    Try(setNames <- GetSetNames(numSets=1,set1=colnames(vc)[1])))
+  Try(if (NumContrastsSelected==2)
+    Try(setNames <- GetSetNames(numSets=2,set1=colnames(vc)[1],set2=colnames(vc)[2])))
+  Try(if (NumContrastsSelected==3)
+    Try(setNames <- GetSetNames(numSets=3,set1=colnames(vc)[1],set2=colnames(vc)[2],set3=colnames(vc)[3])))
+
+  Try(tkconfigure(ttMain,cursor="watch")) 
+  Try(tkfocus(ttMain))
+  Try(ttVennDiagramPlot <- tktoplevel(ttMain))  
+  Try(tkwm.title(ttVennDiagramPlot,plotTitle))
+  Try(Require("tkrplot"))
+  Try(img <- tkrplot(ttVennDiagramPlot,plotVennDiagram,hscale=LocalHScale,vscale=LocalVScale))
+  Try(SetupPlotKeyBindings(tt=ttVennDiagramPlot,img=img))
+  Try(SetupPlotMenus(tt=ttVennDiagramPlot,initialfile=paste(limmaDataSetNameText,"VennDiagram",sep=""),
+                 plotFunction=plotVennDiagram,img=img))
+  
+  Try(tkgrid(img))
+  Try(tkconfigure(ttMain,cursor="arrow")) 
+
+  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",img)))<10)  # Nothing plotted.
+    Try(tkdestroy(ttVennDiagramPlot))
+  else  
+    Try(tkfocus(ttVennDiagramPlot)))  
+}
+
+
+UpDownOrBoth <- function()
+{
+  Try(ttUpDownOrBoth <- tktoplevel(ttMain))
+  Try(tkwm.title(ttUpDownOrBoth,"D.E. Genes to Include in Venn Diagram"))
+  Try(tkwm.deiconify(ttUpDownOrBoth))
+  Try(tkgrab.set(ttUpDownOrBoth))
+  Try(tkfocus(ttUpDownOrBoth))
+  Try(tkgrid(tklabel(ttUpDownOrBoth,text="    ")))
+  Try(tkgrid(tklabel(ttUpDownOrBoth,text="    "),tklabel(ttUpDownOrBoth,text="Which differentially expressed genes should be",font=affylmGUIfont2),tklabel(ttUpDownOrBoth,text="    ")))
+  Try(tkgrid(tklabel(ttUpDownOrBoth,text="    "),tklabel(ttUpDownOrBoth,text="included in the Venn diagram?",font=affylmGUIfont2),tklabel(ttUpDownOrBoth,text="    ")))
+  Try(tkgrid(tklabel(ttUpDownOrBoth,text="    ")))
+  Try(UpDownOrBothTcl <- tclVar("both"))
+  Try(frame1 <- tkframe(ttUpDownOrBoth,relief="groove",borderwidth="2"))
+  Try(tkgrid(tkradiobutton(frame1,text="Up-regulated genes",variable=UpDownOrBothTcl,value="up",font=affylmGUIfont2),sticky="w"))
+  Try(tkgrid(tkradiobutton(frame1,text="Down-regulated genes",variable=UpDownOrBothTcl,value="down",font=affylmGUIfont2),sticky="w"))
+  Try(tkgrid(tkradiobutton(frame1,text="Both",variable=UpDownOrBothTcl,value="both",font=affylmGUIfont2),sticky="w"))
+  Try(tkgrid(tklabel(ttUpDownOrBoth,text="    "),frame1))
+  Try(tkgrid(tklabel(ttUpDownOrBoth,text="    ")))
+  Try(tkframeOKCancel <- tkframe(ttUpDownOrBoth))
+  Try(ReturnVal <- "")
+  Try(onOK <- function() { Try(ReturnVal <<- tclvalue(UpDownOrBothTcl)); Try(tkdestroy(ttUpDownOrBoth));Try(tkfocus(ttMain))})
+  Try(onCancel <- function() { Try(tkdestroy(ttUpDownOrBoth));Try(ReturnVal <- "")})
+  Try(OK.but     <- tkbutton(tkframeOKCancel,text="   OK   ",command=onOK,    font=affylmGUIfont2))
+  Try(Cancel.but <- tkbutton(tkframeOKCancel,text=" Cancel ",command=onCancel,font=affylmGUIfont2))
+  Try(tkgrid(tklabel(tkframeOKCancel,text="    "),columnspan=2))
+  Try(tkgrid(OK.but,Cancel.but))
+  Try(tkgrid.configure(OK.but,sticky="e"))
+  Try(tkgrid.configure(Cancel.but,sticky="w"))  
+  Try(tkgrid(tklabel(tkframeOKCancel,text="    "),columnspan=2))
+  Try(tkgrid(tklabel(ttUpDownOrBoth,text="    "),tkframeOKCancel))
+  
+  Try(tkbind(ttUpDownOrBoth, "<Destroy>", function() {Try(tkgrab.release(ttUpDownOrBoth));Try(tkfocus(ttMain))}))
+  Try(tkwait.window(ttUpDownOrBoth))  
+  
+  return (ReturnVal)
+}
+
+
+vennDiagramlimmaGUI <- function(object,include="both",names,cex=1.5,...) {
+# Plot Venn diagram
+# Gordon Smyth and James Wettenhall
+# 4 July 2003.  Last modified 23 September 2003.
+
+  if(class(object) != "VennCounts") object <- vennCounts(object,include=include)
+  nsets <- ncol(object)-1
+  if(nsets > 3) stop("Can't plot Venn diagram for more than 3 sets")
+  if(missing(names)) names <- colnames(object)[1:nsets]
+  counts <- object[,"Counts"]
+  theta <- 2*pi*(1:360)/360
+  xcentres <- list(0,c(-1,1),c(-1,1,0))[[nsets]]
+  ycentres <- list(0,c(0,0),c(1/sqrt(3),1/sqrt(3),-2/sqrt(3)))[[nsets]]
+  r <- c(1.5,1.5,1.5)[nsets]
+  xtext <- list(-1.2,c(-1.2,1.2),c(-1.2,1.2,0))[[nsets]]
+  ytext <- list(1.8,c(1.8,1.8),c(2.4,2.4,-3))[[nsets]]
+  plot(x=0,y=0,type="n",xlim=c(-4,4),ylim=c(-4,4),xlab="",ylab="",axes=FALSE,...)
+  for(circle in 1:nsets) {
+    lines(xcentres[circle]+r*cos(theta),ycentres[circle]+r*sin(theta))
+    text(xtext[circle],ytext[circle],names[circle],cex=cex)
+  }
+  switch(nsets,
+    {
+      rect(-3,-2.5,3,2.5)
+      text(2.3,-2.1,counts[1],cex=cex)
+      text(0,0,counts[2],cex=cex)
+    }, {
+      rect(-3,-2.5,3,2.5)
+        text(2.3,-2.1,counts[1],cex=cex)
+      text(1.5,0.1,counts[2],cex=cex)
+      text(-1.5,0.1,counts[3],cex=cex)
+      text(0,0.1,counts[4],cex=cex)
+    }, {
+      rect(-3,-3.5,3,3.3)
+      text(2.5,-3,counts[1],cex=cex)
+      text(0,-1.7,counts[2],cex=cex)
+      text(1.5,1,counts[3],cex=cex)
+      text(.75,-.35,counts[4],cex=cex)
+      text(-1.5,1,counts[5],cex=cex)
+      text(-.75,-.35,counts[6],cex=cex)
+      text(0,.9,counts[7],cex=cex)
+      text(0,0,counts[8],cex=cex)
+    }
+  )
+  invisible()
+}
+
+
+HeatDiagramDialog <- function(parameterName)
+{
+  Try(ttHeatDiagramDialog <- tktoplevel(ttMain))
+  Try(tkwm.title(ttHeatDiagramDialog,"Heat Diagram Options"))
+  Try(tkwm.deiconify(ttHeatDiagramDialog))
+  Try(tkgrab.set(ttHeatDiagramDialog))
+  Try(tkfocus(ttHeatDiagramDialog))  
+  Try(tkframe1 <- tkframe(ttHeatDiagramDialog))
+  Try(tkgrid(tklabel(tkframe1,text="    ")))
+  Try(tkgrid(tklabel(tkframe1,text="    "),
+             tklabel(tkframe1,text="The absolute value of the (moderated) t statistic will be used to plot",
+               font=affylmGUIfont2)))
+  Try(tkgrid(tklabel(tkframe1,text="    "),
+             tklabel(tkframe1,text=paste("the heat diagram, relative to parameter ",parameterName,".",sep=""),font=affylmGUIfont2),
+             tklabel(tkframe1,text="    ")))
+  Try(tkgrid(tklabel(tkframe1,text="    ")))
+  Try(primaryCutoffTcl <- tclVar("4"))  
+  Try(otherCutoffTcl   <- tclVar("3"))
+  Try(entry.primaryCutoff <- tkentry(tkframe1,textvariable=primaryCutoffTcl,bg="white",width=10,font=affylmGUIfont2))
+  Try(entry.otherCutoff   <- tkentry(tkframe1,textvariable=otherCutoffTcl,  bg="white",width=10,font=affylmGUIfont2))  
+  Try(tkgrid(tklabel(tkframe1,text="    "),tklabel(tkframe1,text=paste("D.E. cutoff for parameter ",
+    parameterName,":   ",sep=""),font=affylmGUIfont2),entry.primaryCutoff,tklabel(tkframe1,text="    ")))
+  Try(tkgrid(tklabel(tkframe1,text="    "),tklabel(tkframe1,text=
+    "D.E. cutoff for other parameters:   ",font=affylmGUIfont2),entry.otherCutoff,tklabel(tkframe1,text="    ")))
+  Try(tkgrid.configure(entry.primaryCutoff,sticky="w"))
+  Try(tkgrid.configure(entry.otherCutoff,sticky="w"))  
+  Try(tkgrid(tklabel(tkframe1,text="    ")))    
+  Try(tkgrid(tkframe1))
+  Try(tkframeOKCancel <- tkframe(ttHeatDiagramDialog))
+  ReturnVal <- list()
+  onOK <- function()
+  {
+    Try(primaryCutoffVal <- as.numeric(tclvalue(primaryCutoffTcl)))
+    Try(otherCutoffVal   <- as.numeric(tclvalue(otherCutoffTcl)))
+    Try(tkgrab.release(ttHeatDiagramDialog))
+    Try(tkdestroy(ttHeatDiagramDialog))
+    Try(tkfocus(ttMain))
+    Try(ReturnVal <<- list(primaryCutoff=primaryCutoffVal,otherCutoff=otherCutoffVal))
+  }
+  Try(onCancel <- function() {Try(tkgrab.release(ttHeatDiagramDialog));Try(tkdestroy(ttHeatDiagramDialog));Try(tkfocus(ttMain));Try(ReturnVal <<- list())})
+  Try(OK.but <-tkbutton(tkframeOKCancel,text="   OK   ",command=onOK,font=affylmGUIfont2))
+  Try(Cancel.but <-tkbutton(tkframeOKCancel,text=" Cancel ",command=onCancel,font=affylmGUIfont2))
+  Try(tkgrid(OK.but,Cancel.but))
+  Try(tkgrid(tklabel(tkframeOKCancel,text="    ")))
+  Try(tkgrid(tkframeOKCancel))
+  Try(tkfocus(entry.primaryCutoff))
+  Try(tkbind(ttHeatDiagramDialog, "<Destroy>", function() {Try(tkgrab.release(ttHeatDiagramDialog));Try(tkfocus(ttMain))}))
+  Try(tkwait.window(ttHeatDiagramDialog))
+  
+  return (ReturnVal)
+  
+}
+
+
+HeatDiagramPlot <- function()
+{
+  Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
+  Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
+  Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))  
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  
+  Try(if (ArraysLoaded==FALSE)
+  {
+      Try(tkmessageBox(title="Heat Diagram",message="No arrays have been loaded.  Please try New or Open from the File menu.",type="ok",icon="error"))
+      Try(tkfocus(ttMain))
+      return()
+  })
+  
+  Try(if (NumContrastParameterizations==0)
+  {
+    Try(tkmessageBox(title="Heat Diagram",message="There are no contrast parameterizations available.  Select \"Compute Contrasts\" from the \"Linear Model\" menu.",type="ok",icon="error"))
+    Try(tkfocus(ttMain))
+    return()  
+  })  
+  Try(contrastParameterizationIndex <- ChooseContrastParameterization())
+  Try(if (contrastParameterizationIndex==0) return()) # Cancel
+  
+  Try(ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
+  Try(ContrastNamesVec  <- colnames(as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts)))
+  Try(NumContrasts <- length(ContrastNamesVec))
+
+  Try(GetContrastReturnVal <- GetContrast(contrastParameterizationIndex))
+  Try(if (GetContrastReturnVal$contrastIndex==0) return()) # Cancel
+  Try(contrast <- GetContrastReturnVal$contrastIndex)
+  Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",ContrastParameterizationTREEIndex,sep=""))
+
+  Try(fit <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$fit)
+
+	Try(if (("eb" %in% names(ContrastParameterizationList[[contrastParameterizationIndex]]))&&
+										length(ContrastParameterizationList[[contrastParameterizationIndex]]$eb)>0)
+		Try(ebayesAvailable <- TRUE)
+	else
+		Try(ebayesAvailable <- FALSE))
+
+  Try(if (ebayesAvailable==FALSE)
+  {
+    Try(tkmessageBox(title="Heat diagram",message="For now, heat diagrams are only available when empirical bayes statistics are available (requires replicate arrays).",icon="error"))
+    return()
+  })
+
+
+  Try(eb  <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$eb)
+#  Try(fit <- eBayes(fit))
+
+
+  Try(if (NumContrasts<=1)
+  {
+    Try(tkmessageBox(title="Heat Diagram",message="To plot a heat diagram, you need to have more than one contrast, i.e. more than two RNA types.",type="ok",icon="error"))
+    Try(tkfocus(ttMain))
+    return()  
+  })  
+
+  Try(HeatDiagramOptions <- HeatDiagramDialog(colnames(fit$coefficients)[1]))
+  Try(if (length(HeatDiagramOptions)==0)
+    return())
+  Try(primaryCutoff <- HeatDiagramOptions$primaryCutoff)
+  Try(otherCutoff   <- HeatDiagramOptions$otherCutoff)  
+ 
+  Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+  Try(cdfenv<-getCdfInfo(RawAffyData))
+ 
+  Try(geneSymbols <- get("geneSymbols",envir=affylmGUIenvironment))
+  Try(if (length(geneSymbols)==0)
+  {
+    Try(tkconfigure(ttMain,cursor="watch"))  
+    Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+    Try(dataName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
+    Require("reposTools")
+    Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))    
+    Try(matchIndex <- match(dataName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
+    Try(if (is.na(matchIndex)) break())
+    Try(install.packages2(dataName,annoPackages))
+    Require(dataName)
+    Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(multiget(ls(envir=",dataName,"SYMBOL),env=",dataName,"SYMBOL))))",sep=""))
+    Try(eval(parse(text=code2eval)))
+    Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
+    Try(tkconfigure(ttMain,cursor="arrow"))
+  })
+
+  Try(genelist <- cbind(as.matrix(ls(cdfenv)),as.matrix(geneSymbols)))
+  Try(contrastNames <- colnames(eb$t))
+  Try(contrastNamesVec <- GetContrastNamesForHeatDiagram(numContrasts=length(contrastNames),ContrastNames=contrastNames))
+  Try(if (length(contrastNamesVec)==0)
+    return()
+  else
+    colnames(eb$t) <- contrastNamesVec) # Local assignment only.
+
+  plotHD <- function() 
+  {
+    Try(opar<-par(bg="white"))
+    Try(heatdiagram(abs(eb$t),fit$coefficients,primary=1,
+      critical.primary=primaryCutoff,critical.other=otherCutoff,
+      names=substr(geneSymbols,1,20),main=plotTitle))
+    Try(TempGraphPar<-par(opar))    
+  }
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv)*1.5)
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv)*0.5)   
+   
+  Try(plotTitle <- paste("Heat diagram relative to parameter",ContrastNamesVec[contrast]))
+
+  Try(tkconfigure(ttMain,cursor="arrow")) 
+  Try(tkfocus(ttMain))
+  Try(plotTitleList <- GetPlotTitle(plotTitle)) 
+  Try(if (length(plotTitleList)==0) return())
+  Try(plotTitle <- plotTitleList$plotTitle)  
+
+  Try(tkconfigure(ttMain,cursor="watch")) 
+  Try(tkfocus(ttMain))
+  Try(ttHeatDiagramPlot <- tktoplevel(ttMain))  
+  tkwm.title(ttHeatDiagramPlot,plotTitle)
+  Try(Require("tkrplot"))
+
+  img <-tkrplot(ttHeatDiagramPlot,plotHD,hscale=LocalHScale,vscale=LocalVScale) 
+  Try(SetupPlotKeyBindings(tt=ttHeatDiagramPlot,img=img))
+  Try(SetupPlotMenus(tt=ttHeatDiagramPlot,initialfile=paste(limmaDataSetNameText,"HeatDiagram",sep=""),
+                 plotFunction=plotHD,img=img))
+  
+  tkgrid(img)
+  Try(tkconfigure(ttMain,cursor="arrow")) 
+  tkfocus(ttHeatDiagramPlot)
+}
+
+affyPlotMA <- function()
+{
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment)) 
+  Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))  
+  Try(if (ArraysLoaded==FALSE)
+  {
+    Try(tkmessageBox(title="M A Plot",message="Error: No arrays have been loaded.", icon="error",default="ok"))
+    return()
+  })
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv))   
+  
+  Try(SlideNums <- GetSlideNums())
+  Try(if (length(SlideNums)==0) return())
+  Try(slide1 <- SlideNums$slide1)
+  Try(slide2 <- SlideNums$slide2)
+
+
+  Try(WhetherToNormalize <- tclvalue(tkmessageBox(title="M A Plot",message="Use normalized data?",type="yesnocancel",icon="question")))
+  Try(if (WhetherToNormalize=="cancel") return())
+   
+  Try(if (WhetherToNormalize=="yes")
+  {
+    Try(NormalizedAffyData.Available <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))
+    Try(if (NormalizedAffyData.Available==FALSE)
+      NormalizeNow())
+    Try(NormalizedAffyData.Available <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))    
+    Try(if (NormalizedAffyData.Available==FALSE)
+    {
+      tkmessageBox(title="M A Plot",message="An error occured while trying to normalize the data.")
+      return()
+  
+    })
+    Try(NormalizedAffyData <- get("NormalizedAffyData", envir=affylmGUIenvironment)) 
+    
+    Try(R <- exprs(NormalizedAffyData)[,slide1])  # Using cDNA notation (R for one channel/array, G for the other)
+    Try(G <- exprs(NormalizedAffyData)[,slide2])  # Using cDNA notation (R for one channel/array, G for the other)
+    pch <- 16
+    cex <- 0.2
+  }
+  else
+  {
+    Try(R <- log2(RawAffyData@exprs[,slide1]))  # Using cDNA notation (R for one channel/array, G for the other)
+    Try(G <- log2(RawAffyData@exprs[,slide2]))  # Using cDNA notation (R for one channel/array, G for the other)  
+    pch <- "."
+    cex <- 1
+  })
+
+  # R and G are already log2ed.
+  M <- R - G
+  A <- 0.5*(R+G)
+  
+  Try(plotFunction <- function() 
+  {
+    Try(opar<-par(bg="white"))
+    Try(tkconfigure(ttMain,cursor="watch"))
+    Try(plot(A,M,pch=pch,cex=cex,xlab=xLabel,ylab=yLabel,main=plotTitle))
+    Try(tkconfigure(ttMain,cursor="arrow"))
+    Try(tmp<-par(opar))
+  }) 
+  Try(if (WhetherToNormalize=="yes")  
+    Try(plotTitle<-paste("Normalized M A Plot (",SlideNamesVec[slide1]," vs ",SlideNamesVec[slide2],")",sep=""))
+  else
+    Try(plotTitle<-paste("Raw M A Plot (",SlideNamesVec[slide1]," vs ",SlideNamesVec[slide2],")",sep="")))
+  Try(plotLabels <- GetPlotLabels(plotTitle,"A","M"))
+  Try(if (length(plotLabels)==0) return())
+  Try(plotTitle <- plotLabels$plotTitle)
+  Try(xLabel    <- plotLabels$xLabel)
+  Try(yLabel    <- plotLabels$yLabel)
+    
+  Require("tkrplot")  
+  Try(ttGraph<-tktoplevel(ttMain))
+  Try(tkwm.withdraw(ttGraph))
+  Try(tkwm.title(ttGraph,plotTitle))
+  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+  Try(tkwm.title(ttGraph,plotTitle))
+  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
+  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
+  Try(tkgrid(imgLimmaGUI))
+  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+    Try(tkdestroy(ttGraph))
+  else
+  {
+    Try(tkwm.deiconify(ttGraph))
+    Try(tkfocus(imgLimmaGUI))   
+  })
+
+  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+}
+
+
+GetSlideNums <- function()
+{
+  Try(SlideNamesVec <- get("SlideNamesVec",envir=affylmGUIenvironment))  
+  Try(if (min(nchar(gsub("[^0-9]","",SlideNamesVec))==nchar(SlideNamesVec))==TRUE)
+    SlideNamesVec <- paste("Slide",SlideNamesVec))  
+  Try(NumSlides <- get("NumSlides",envir=affylmGUIenvironment))
+  ttGetSlideNum<-tktoplevel(ttMain)
+  tkwm.deiconify(ttGetSlideNum)
+  tkgrab.set(ttGetSlideNum)
+  tkfocus(ttGetSlideNum)
+  tkwm.title(ttGetSlideNum,"Please Specify Slides To Compare")
+  TclRequire("BWidget")  
+  combo1<-tkwidget(ttGetSlideNum,"ComboBox",background="white",editable=FALSE,font=affylmGUIfont2) 
+  combo2<-tkwidget(ttGetSlideNum,"ComboBox",background="white",editable=FALSE,font=affylmGUIfont2)   
+  tkgrid(tklabel(ttGetSlideNum,text="    "))
+  lbl2<-tklabel(ttGetSlideNum,text="Choose a pair of slides to compare",font=affylmGUIfont2)
+  tkgrid(tklabel(ttGetSlideNum,text="    "),lbl2,sticky="w")     
+  tkgrid(tklabel(ttGetSlideNum,text="    "))
+  tkgrid(tklabel(ttGetSlideNum,text="    "),combo1,tklabel(ttGetSlideNum,text="    "),combo2,tklabel(ttGetSlideNum,text="    "))
+
+  tkgrid(tklabel(ttGetSlideNum,text="    "))
+  tkconfigure(combo1,values=SlideNamesVec)
+  tkconfigure(combo2,values=SlideNamesVec)    
+
+  tkgrid(tklabel(ttGetSlideNum,text="    "))
+  ReturnVal <- list()
+  onOK <- function()
+  {
+      slidenum1 <- as.numeric(tclvalue(tkcmd(combo1,"getvalue")))+1
+      slidenum2 <- as.numeric(tclvalue(tkcmd(combo2,"getvalue")))+1
+      Try(tkgrab.release(ttGetSlideNum));Try(tkdestroy(ttGetSlideNum));Try(tkfocus(ttMain))
+      ReturnVal <<- list(slide1=slidenum1,slide2=slidenum2)
+  }
+  onCancel <- function() {Try(tkgrab.release(ttGetSlideNum));Try(tkdestroy(ttGetSlideNum));Try(tkfocus(ttMain)); ReturnVal <<- list()}
+  OK.but <-tkbutton(ttGetSlideNum,text="   OK   ",command=onOK,font=affylmGUIfont2)
+  Cancel.but <-tkbutton(ttGetSlideNum,text=" Cancel ",command=onCancel,font=affylmGUIfont2)
+  tkgrid(tklabel(ttGetSlideNum,text="    "),OK.but,Cancel.but,tklabel(ttGetSlideNum,text="    "),tklabel(ttGetSlideNum,text="    "))
+  tkgrid.configure(OK.but,sticky="e")
+  tkgrid(tklabel(ttGetSlideNum,text="    "),tklabel(ttGetSlideNum,text="    "),tklabel(ttGetSlideNum,text="    "),
+       tklabel(ttGetSlideNum,text="    "),tklabel(ttGetSlideNum,text="    "))
+  Try(tkbind(OK.but, "<Return>",onOK))
+  Try(tkbind(Cancel.but, "<Return>",onCancel))      
+  Try(tkfocus(ttGetSlideNum))
+  Try(tkbind(ttGetSlideNum, "<Destroy>", function() {Try(tkgrab.release(ttGetSlideNum));Try(tkfocus(ttMain));}))
+  Try(tkwait.window(ttGetSlideNum))
+
+  return (ReturnVal)
+}
+
+affyPlotMAcontrast <- function()
+{
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment)) 
+  Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))  
+  Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
+  Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
+  Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
+  
+  Try(if (ArraysLoaded==FALSE)
+  {
+    Try(tkmessageBox(title="M A Plot",message="Error: No arrays have been loaded.", icon="error",default="ok"))
+    return()
+  })
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv))   
+
+  Try(if (NumContrastParameterizations==0)
+  {
+    Try(tkmessageBox(title="M A Plot",message="There are no contrast parameterizations available.  Select \"Compute Contrasts\" from the \"Linear Model\" menu.",type="ok",icon="error"))
+    Try(tkfocus(ttMain))
+    return()  
+  })  
+
+  Try(contrastParameterizationIndex <- ChooseContrastParameterization())
+  Try(if (contrastParameterizationIndex==0) return()) # Cancel
+  
+  Try(ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
+  Try(ContrastNamesVec  <- colnames(as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts)))
+  Try(NumContrasts <- length(ContrastNamesVec))
+
+  Try(GetContrastReturnVal <- GetContrast(contrastParameterizationIndex))
+  Try(if (GetContrastReturnVal$contrastIndex==0) return()) # Cancel
+  Try(contrast <- GetContrastReturnVal$contrastIndex)
+  Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",ContrastParameterizationTREEIndex,sep=""))
+
+
+  Try(GeneLabelsOptions <- GetGeneLabelsOptions())
+  Try(if (length(GeneLabelsOptions)==0) return())
+  Try(numDEgenesLabeled   <- GeneLabelsOptions$HowManyDEGeneLabels)
+  Try(GeneLabelsMaxLength <- GeneLabelsOptions$GeneLabelsMaxLength)
+  Try(IDorSymbol <- GeneLabelsOptions$IDorSymbol)
+
+  Try(fit <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$fit)
+
+	Try(if (("eb" %in% names(ContrastParameterizationList[[contrastParameterizationIndex]]))&&
+										length(ContrastParameterizationList[[contrastParameterizationIndex]]$eb)>0)
+		Try(ebayesAvailable <- TRUE)
+	else
+		Try(ebayesAvailable <- FALSE))
+
+  Try(if (ebayesAvailable==TRUE)
+    Try(fit <- eBayes(fit)))
+
+  Try(M <- fit$coefficients[,contrast])
+  Try(A <- rowMeans(exprs(NormalizedAffyData)))
+  Try(pch <- 16)
+  Try(cex <- 0.2)
+
+  Try(if (numDEgenesLabeled>0)
+  {
+    Try(if (NumContrasts>1) 
+    {
+      Try(if (ebayesAvailable==TRUE)
+        Try(ord <- order(fit$lods[,contrast],decreasing=TRUE))
+      else
+        Try(ord <- order(abs(fit$coef[,contrast]),decreasing=TRUE)))
+    }
+    else 
+    {
+      Try(if (ebayesAvailable==TRUE)
+        Try(ord <- order(fit$lods,decreasing=TRUE))
+      else
+        Try(ord <- order(abs(fit$coef),decreasing=TRUE)))
+    })
+    Try(topGenes <- ord[1:numDEgenesLabeled])
+    
+    Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+    Try(cdfenv<-getCdfInfo(RawAffyData))
+    
+		Try(genelist <- data.frame(ID=I(ls(cdfenv))))
+
+		Try(geneSymbols <- get("geneSymbols",envir=affylmGUIenvironment))
+		Try(if (length(geneSymbols)==0)
+		{
+			Try(tkconfigure(ttMain,cursor="watch"))  
+			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+			Try(dataName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
+			Require("reposTools")
+			Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))    
+			Try(matchIndex <- match(dataName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
+			Try(if (!is.na(matchIndex))
+			{
+				Try(install.packages2(dataName,annoPackages))
+				Require(dataName)
+				Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(multiget(ls(envir=",dataName,"SYMBOL),env=",dataName,"SYMBOL))))",sep=""))
+				Try(eval(parse(text=code2eval)))
+				Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
+				Try(tkconfigure(ttMain,cursor="arrow"))
+				Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols)))
+				Try(colnames(genelist) <- c("ID","Symbol"))
+			}
+			else
+			{
+				Try(genelist <- data.frame(ID=I(ls(cdfenv))))
+				Try(tkconfigure(ttMain,cursor="arrow"))
+			})
+
+		}
+		else
+		{
+			Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols)))
+			Try(colnames(genelist) <- c("ID","Symbol"))  
+		})
+    
+  })
+  
+  Try(if (IDorSymbol=="Symbol" && !("Symbol" %in% colnames(genelist)))
+  {
+    Try(tkmessageBox(title="Symbols Not Available",message="Gene symbols are not available.  Probe set IDs will be used instead.",icon="warning"))
+    Try(IDorSymbol <- "ID")  
+  })
+  
+  Try(plotFunction <- function() 
+  {
+    Try(opar<-par(bg="white"))
+    Try(tkconfigure(ttMain,cursor="watch"))
+    Try(plot(A,M,pch=pch,cex=cex,xlab=xLabel,ylab=yLabel,main=plotTitle))
+    Try(if (numDEgenesLabeled>0)      
+      Try(text(A[topGenes],M[topGenes],labels=substr(genelist[topGenes,IDorSymbol],1,GeneLabelsMaxLength),cex=0.8,col="blue"))) 
+    Try(tkconfigure(ttMain,cursor="arrow"))
+    Try(tmp<-par(opar))
+  }) 
+  Try(plotTitle<-paste("M A Plot (",ContrastNamesVec[contrast],")",sep=""))
+  Try(plotLabels <- GetPlotLabels(plotTitle,"A","M"))
+  Try(if (length(plotLabels)==0) return())
+  Try(plotTitle <- plotLabels$plotTitle)
+  Try(xLabel    <- plotLabels$xLabel)
+  Try(yLabel    <- plotLabels$yLabel)
+      
+  Require("tkrplot")  
+  Try(ttGraph<-tktoplevel(ttMain))
+  Try(tkwm.withdraw(ttGraph))
+  Try(tkwm.title(ttGraph,plotTitle))
+  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+  Try(tkwm.title(ttGraph,plotTitle))
+  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
+  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
+  Try(tkgrid(imgLimmaGUI))
+  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+    Try(tkdestroy(ttGraph))
+  else
+  {
+    Try(tkwm.deiconify(ttGraph))
+    Try(tkfocus(imgLimmaGUI))   
+  })
+
+  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+}
+
+GetGeneLabelsOptions <- function()
+{
+  Try(ttGeneLabelsOptions <- tktoplevel(ttMain))
+  Try(tkwm.deiconify(ttGeneLabelsOptions))
+  Try(tkgrab.set(ttGeneLabelsOptions))
+  Try(tkfocus(ttGeneLabelsOptions))
+  Try(tkwm.title(ttGeneLabelsOptions,"D.E. Gene Labels"))
+  Try(tkgrid(tklabel(ttGeneLabelsOptions,text="       ")))
+  Try(HowManyDEGenesTcl <- tclVar(paste(10)))
+  Try(entry.HowManyDEGenes<-tkentry(ttGeneLabelsOptions,width="12",font=affylmGUIfont2,
+    textvariable=HowManyDEGenesTcl,bg="white"))
+  Try(GeneLabelsMaxLengthTcl <- tclVar(paste(10)))
+  Try(entry.GeneLabelsMaxLength<-tkentry(ttGeneLabelsOptions,width="12",font=affylmGUIfont2,
+    textvariable=GeneLabelsMaxLengthTcl,bg="white"))
+
+  Try(ReturnVal <- list())
+  onOK <- function()
+  {
+    Try(tkgrab.release(ttGeneLabelsOptions))
+    Try(tkdestroy(ttGeneLabelsOptions))
+    Try(tkfocus(ttMain))
+    Try(ReturnVal <<- list(HowManyDEGeneLabels=as.integer(tclvalue(HowManyDEGenesTcl)),
+                           GeneLabelsMaxLength=as.integer(tclvalue(GeneLabelsMaxLengthTcl)),
+                           IDorSymbol=tclvalue(IDorSymbolTcl)))
+  }
+  onCancel <- function() {Try(tkgrab.release(ttGeneLabelsOptions));Try(tkdestroy(ttGeneLabelsOptions));Try(tkfocus(ttMain)); ReturnVal <<- list()}        
+
+  Try(OK.but <-tkbutton(ttGeneLabelsOptions,text="   OK   ",command=onOK,font=affylmGUIfont2))
+  Try(Cancel.but <-tkbutton(ttGeneLabelsOptions,text=" Cancel ",command=onCancel,font=affylmGUIfont2))
+  Try(tkgrid(tklabel(ttGeneLabelsOptions,text="    "),tklabel(ttGeneLabelsOptions,text="Please select D.E. gene labeling options.",font=affylmGUIfont2),tklabel(ttGeneLabelsOptions,text="    "),sticky="w"))
+  Try(tkgrid(tklabel(ttGeneLabelsOptions,text="       ")))
+  Try(tkgrid(tklabel(ttGeneLabelsOptions,text="    "),tklabel(ttGeneLabelsOptions,text="Number of labeled differentially expressed genes",font=affylmGUIfont2),entry.HowManyDEGenes,tklabel(ttGeneLabelsOptions,text="    "),sticky="w"))
+  Try(tkgrid.configure(entry.HowManyDEGenes,sticky="w"))
+  Try(tkgrid(tklabel(ttGeneLabelsOptions,text="       ")))
+  Try(tkgrid(tklabel(ttGeneLabelsOptions,text="       "),tklabel(ttGeneLabelsOptions,text="Maximum length of gene labels",font=affylmGUIfont2),entry.GeneLabelsMaxLength,tklabel(ttGeneLabelsOptions,text="       "),sticky="w"))
+  Try(tkgrid.configure(entry.GeneLabelsMaxLength,sticky="w"))
+  Try(tkgrid(tklabel(ttGeneLabelsOptions,text="       ")))
+	Try(IDorSymbolTcl <- tclVar("ID"))
+  Try(rb1 <- tkradiobutton(ttGeneLabelsOptions,text="Use Probe Set ID",variable=IDorSymbolTcl,value="ID",font=affylmGUIfont2))
+	Try(rb2 <- tkradiobutton(ttGeneLabelsOptions,text="Use Gene Symbol",variable=IDorSymbolTcl,value="Symbol",font=affylmGUIfont2))
+	Try(tkgrid(tklabel(ttGeneLabelsOptions,text="       "),rb1))
+	Try(tkgrid(tklabel(ttGeneLabelsOptions,text="       "),rb2))	
+	Try(tkgrid.configure(rb1,sticky="w"))
+	Try(tkgrid.configure(rb2,sticky="w"))
+	
+  Try(tkgrid(tklabel(ttGeneLabelsOptions,text="       ")))
+  
+  Try(tkgrid(tklabel(ttGeneLabelsOptions,text="       "),OK.but,Cancel.but))
+  Try(tkgrid.configure(OK.but,sticky="e"))
+  Try(tkgrid.configure(Cancel.but,sticky="w"))  
+  Try(tkgrid(tklabel(ttGeneLabelsOptions,text="    ")))
+
+  Try(tkfocus(ttGeneLabelsOptions))
+  
+  Try(tkbind(ttGeneLabelsOptions, "<Destroy>", function() {Try(tkgrab.release(ttGeneLabelsOptions));Try(tkfocus(ttMain));}))
+  Try(tkwait.window(ttGeneLabelsOptions))
+
+  return(ReturnVal)
+
+}
+
+QQTplot <- function()
+{
+  Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
+  Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment))
+  Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
+  Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
+  
+  if (ArraysLoaded==FALSE)
+  {
+      Try(tkmessageBox(title="Quantile-Quantile t-Statistic Plot",message="No arrays have been loaded.  Please try New or Open from the File menu.",type="ok",icon="error"))
+      Try(tkfocus(ttMain))      
+      return()
+  }
+  if (NumContrastParameterizations==0)
+  {
+    Try(tkmessageBox(title="Quantile-Quantile t-Statistic Plot",message="There are no contrast parameterizations loaded.  Select \"Compute Contrasts\" from the \"Linear Model\" menu.",type="ok",icon="error"))
+    Try(tkfocus(ttMain))
+    return()  
+  }  
+
+  Try(contrastParameterizationIndex <- ChooseContrastParameterization())
+  Try(if (contrastParameterizationIndex==0) return()) # Cancel
+  
+  Try(ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
+  Try(ContrastNamesVec  <- colnames(as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts)))
+  Try(NumContrasts <- length(ContrastNamesVec))
+
+  Try(GetContrastReturnVal <- GetContrast(contrastParameterizationIndex))
+  Try(if (GetContrastReturnVal$contrastIndex==0) return()) # Cancel
+  Try(contrast <- GetContrastReturnVal$contrastIndex)
+  Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",ContrastParameterizationTREEIndex,sep=""))
+
+  Try(fit <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$fit)
+
+	Try(if (("eb" %in% names(ContrastParameterizationList[[contrastParameterizationIndex]]))&&
+										length(ContrastParameterizationList[[contrastParameterizationIndex]]$eb)>0)
+		Try(ebayesAvailable <- TRUE)
+	else
+		Try(ebayesAvailable <- FALSE))
+
+  Try(if (ebayesAvailable==FALSE)
+  {
+    Try(tkmessageBox(title="QQT plot",message="t statistics are not available because of a lack of replicate arrays.",icon="error"))
+    return()
+  })
+
+
+  Try(fit <- eBayes(fit))
+  
+  Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows") 
+    Try(cex <- 0.3)
+  else
+    Try(cex <- 0.2))    
+  plotQQT <- function() 
+  {
+    Try(opar<-par(bg="white"))
+    Try(if (NumContrasts>1) 
+    {
+      qqt(fit$t[,contrast],df=fit$df.residual+fit$df.prior,pch=16,cex=cex,main=plotTitle)
+    }
+    else 
+    {
+      qqt(fit$t,df=fit$df.residual+fit$df.prior,pch=16,cex=cex,main=plotTitle)
+    })
+    abline(0,1) 
+    Try(tempGraphPar <- par(opar))
+  }
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv))   
+   
+#  Try(plotTitle <- paste("Student's t Quantile-Quantile Plot for",ContrastNamesVec[contrast]))
+  Try(plotTitle <- ContrastNamesVec[contrast])
+  Try(tkconfigure(ttMain,cursor="arrow")) 
+  Try(plotTitleList <- GetPlotTitle(plotTitle)) 
+  Try(if (length(plotTitleList)==0) return())
+  Try(tkfocus(ttMain))
+  Try(plotTitle <- plotTitleList$plotTitle)
+
+  Try(tkconfigure(ttMain,cursor="watch"))
+  Try(tkfocus(ttMain))
+  Try(ttQQTplot <- tktoplevel(ttMain))
+  Try(tkwm.title(ttQQTplot,plotTitle))
+  Try(Require("tkrplot"))
+
+  Try(img <-tkrplot(ttQQTplot,plotQQT,hscale=LocalHScale,vscale=LocalVScale))
+  Try(SetupPlotKeyBindings(tt=ttQQTplot,img=img))
+  Try(SetupPlotMenus(tt=ttQQTplot,initialfile=paste(limmaDataSetNameText,"QQTPlot",ContrastNamesVec[contrast],sep=""),
+                 plotFunction=plotQQT,img=img))
+  Try(tkconfigure(ttMain,cursor="arrow")) 
+  Try(tkgrid(img))
+  Try(tkfocus(ttQQTplot))
+}
+
+LogOddsPlot <- function()
+{
+  Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
+  Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment))
+  Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))  
+  Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
+ 
+  if (ArraysLoaded==FALSE)
+  {
+      Try(tkmessageBox(title="Log Odds Plot",message="No arrays have been loaded.  Please try New or Open from the File menu.",type="ok",icon="error"))
+      Try(tkfocus(ttMain))
+      return()
+  }
+
+  if (NumContrastParameterizations==0)
+  {
+    Try(tkmessageBox(title="Log Odds Plot",message="There are no contrast parameterizations loaded.  Select \"Compute Contrasts\" from the \"Linear Model\" menu.",type="ok",icon="error"))
+    Try(tkfocus(ttMain))
+    return()  
+  }  
+
+  Try(contrastParameterizationIndex <- ChooseContrastParameterization())
+  Try(if (contrastParameterizationIndex==0) return()) # Cancel
+  
+  Try(ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
+  Try(ContrastNamesVec  <- colnames(as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts)))
+  Try(NumContrasts <- length(ContrastNamesVec))
+
+  Try(GetContrastReturnVal <- GetContrast(contrastParameterizationIndex))
+  Try(if (GetContrastReturnVal$contrastIndex==0) return()) # Cancel
+  Try(contrast <- GetContrastReturnVal$contrastIndex)
+  Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",ContrastParameterizationTREEIndex,sep=""))
+
+  Try(fit <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$fit)
+
+	Try(if (("eb" %in% names(ContrastParameterizationList[[contrastParameterizationIndex]]))&&
+										length(ContrastParameterizationList[[contrastParameterizationIndex]]$eb)>0)
+		Try(ebayesAvailable <- TRUE)
+	else
+		Try(ebayesAvailable <- FALSE))
+
+  Try(if (ebayesAvailable==FALSE)
+  {
+    Try(tkmessageBox(title="Log Odds Plot",message="Log Odds (B statistic) values are not available because of a lack of replicate arrays.",icon="error"))
+    return()
+  })
+
+  
+  
+  Try(fit <- eBayes(fit))
+
+  Try(GeneLabelsOptions <- GetGeneLabelsOptions())
+  Try(if (length(GeneLabelsOptions)==0) return())
+  Try(numDEgenesLabeled   <- GeneLabelsOptions$HowManyDEGeneLabels)
+  Try(GeneLabelsMaxLength <- GeneLabelsOptions$GeneLabelsMaxLength)
+  Try(IDorSymbol <- GeneLabelsOptions$IDorSymbol)
+
+  Try(tkconfigure(ttMain,cursor="watch"))
+  Try(tkfocus(ttMain))
+
+  Try(if (numDEgenesLabeled>0)
+  {
+    Try(if (NumContrasts>1)
+        Try(ord <- order(fit$lods[,contrast],decreasing=TRUE))
+    else
+        Try(ord <- order(fit$lods,decreasing=TRUE)))    
+    Try(topGenes <- ord[1:numDEgenesLabeled])
+  })
+  Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows") 
+    Try(cex <- 0.3)
+  else
+    Try(cex <- 0.2))  
+
+  Try(if (numDEgenesLabeled>0)
+  {
+    Try(if (NumContrasts>1) 
+      Try(ord <- order(fit$lods[,contrast],decreasing=TRUE))
+    else 
+      Try(ord <- order(fit$lods,decreasing=TRUE)))
+    Try(topGenes <- ord[1:numDEgenesLabeled])
+    
+    Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+    Try(cdfenv<-getCdfInfo(RawAffyData))
+    
+		Try(genelist <- data.frame(ID=I(ls(cdfenv))))
+
+		Try(geneSymbols <- get("geneSymbols",envir=affylmGUIenvironment))
+		Try(if (length(geneSymbols)==0)
+		{
+			Try(tkconfigure(ttMain,cursor="watch"))  
+			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+			Try(dataName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
+			Require("reposTools")
+			Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))    
+			Try(matchIndex <- match(dataName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
+			Try(if (!is.na(matchIndex))
+			{
+				Try(install.packages2(dataName,annoPackages))
+				Require(dataName)
+				Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(multiget(ls(envir=",dataName,"SYMBOL),env=",dataName,"SYMBOL))))",sep=""))
+				Try(eval(parse(text=code2eval)))
+				Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
+				Try(tkconfigure(ttMain,cursor="arrow"))
+				Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols)))
+				Try(colnames(genelist) <- c("ID","Symbol"))
+			}
+			else
+			{
+				Try(genelist <- data.frame(ID=I(ls(cdfenv))))
+				Try(tkconfigure(ttMain,cursor="arrow"))
+			})
+
+		}
+		else
+		{
+			Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols)))
+			Try(colnames(genelist) <- c("ID","Symbol"))  
+		})
+    
+  })
+
+  plotLogOdds <- function()
+  {
+    Try(opar<-par(bg="white"))
+    Try(if (NumContrasts>1)
+    {
+      Try(plot(fit$coef[,contrast],fit$lods[,contrast],pch=16,cex=cex,xlab="Log Fold Change",ylab="Log Odds",main=plotTitle))
+      Try(if (numDEgenesLabeled>0)
+        text(fit$coef[topGenes,contrast],fit$lods[topGenes,contrast],labels=substr(genelist[topGenes,IDorSymbol],1,GeneLabelsMaxLength),cex=0.8,col="blue"))
+    }
+    else
+    {
+      Try(plot(fit$coef,fit$lods,pch=16,cex=cex,xlab="Log Fold Change",ylab="Log Odds",main=plotTitle))
+      Try(if (numDEgenesLabeled>0)
+        text(fit$coef[topGenes],fit$lods[topGenes],labels=substring(genelist[topGenes,IDorSymbol],1,10),cex=0.8,col="blue"))
+    })
+    Try(tempGraphPar <- par(opar))
+  }
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv))   
+   
+  Try(plotTitle <- (ContrastNamesVec[contrast]))
+  Try(tkconfigure(ttMain,cursor="arrow")) 
+  Try(tkfocus(ttMain))
+  Try(plotTitleList <- GetPlotTitle(plotTitle)) 
+  Try(if (length(plotTitleList)==0) return())
+  Try(plotTitle <- plotTitleList$plotTitle)
+
+  Try(tkconfigure(ttMain,cursor="watch")) 
+  Try(tkfocus(ttMain))  
+  Try(ttLogOddsPlot <- tktoplevel(ttMain))  
+  Try(tkwm.title(ttLogOddsPlot,plotTitle))
+  Try(Require("tkrplot"))
+
+  Try(img <-tkrplot(ttLogOddsPlot,plotLogOdds,hscale=LocalHScale,vscale=LocalVScale))
+  Try(SetupPlotKeyBindings(tt=ttLogOddsPlot,img=img))
+  Try(SetupPlotMenus(tt=ttLogOddsPlot,initialfile=paste(limmaDataSetNameText,"LogOddsPlot",ContrastNamesVec[contrast],sep=""),
+                 plotFunction=plotLogOdds,img=img))
+  
+  Try(tkgrid(img))
+  Try(tkconfigure(ttMain,cursor="arrow"))
+  Try(tkfocus(ttLogOddsPlot))
+
+}
+
+
+
+ImageQualityPlot <- function()
+{
+  Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment)) 
+  Try(LocalHScale <- get("Myhscale",envir=.GlobalEnv))
+  Try(LocalVScale <- get("Myvscale",envir=.GlobalEnv))   
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment)) 
+  Try(if (ArraysLoaded==FALSE)
+  {
+    Try(tkmessageBox(title="Image Array Plot",message="Error: No arrays have been loaded.",
+        icon="error",default="ok"))
+    return()
+  })
+  
+  Try(NormMethod <- get("NormMethod", envir=affylmGUIenvironment))
+  Try(if (NormMethod!="PLM")
+  {
+    Try(tkmessageBox(title="Error! Plot requires PLM normalization",message=
+      "This plot requires PLM normalization.  Please choose \"Normalize\" from the \"Normalization Menu\" and select \"Robust Probe-level Linear Model\"",
+      icon="error"))
+    return()
+  })
+  
+  Try(weightsPLM <- get("weightsPLM", envir=affylmGUIenvironment))
+  
+  Try(slide <- GetSlideNum())
+  Try(if (slide==0) return())
+  Try(tkconfigure(ttMain,cursor="watch"))
+
+  Try(plotFunction <- function() 
+  {
+    Try(opar<-par(bg="white"))
+    Try(tkconfigure(ttMain,cursor="watch"))
+		pm.index <- unique(unlist(indexProbes(RawAffyData, "pm")))
+		rows <- nrow(RawAffyData)
+		cols <- ncol(RawAffyData)
+		pm.x.locs <- pm.index%%rows
+		pm.x.locs[pm.x.locs == 0] <- rows
+		pm.y.locs <- pm.index%/%rows + 1
+		xycoor <- matrix(cbind(pm.x.locs,pm.y.locs),ncol=2)
+		xycoor2 <- matrix(cbind(pm.x.locs,pm.y.locs+1),ncol=2)
+
+		weightmatrix <- matrix(nrow=rows,ncol=cols)
+		weightmatrix[xycoor] <- weightsPLM[,slide]
+		weightmatrix[xycoor2] <- weightsPLM[,slide]
+		# this line flips the matrix around so it is correct
+		weightmatrix <- as.matrix(rev(as.data.frame(weightmatrix)))
+		image(weightmatrix,col=terrain.colors(12),xaxt='n',yaxt='n',main=SlideNamesVec[slide])
+    Try(tkconfigure(ttMain,cursor="arrow"))
+    Try(tmp<-par(opar))
+  })
+  Try(plotTitle<-SlideNamesVec[slide])
+  Try(plotLabels <- GetPlotLabels(plotTitle,"",""))
+  Try(if (length(plotLabels)==0) return())
+  Try(plotTitle <- plotLabels$plotTitle)
+  Try(xLabel    <- plotLabels$xLabel)
+  Try(yLabel    <- plotLabels$yLabel)
+  
+  Try(WhetherToUseTkrplot <- tclvalue(tkmessageBox(title="Where To Plot Array Image",type="yesnocancel",
+    message="Plot this image in R rather than a new (Tk) window? (Requires less memory.)",icon="question")))
+  Try(if (WhetherToUseTkrplot=="cancel") return())
+  Try(if (WhetherToUseTkrplot=="yes")
+    plotFunction()
+  else
+  {
+    Require("tkrplot")  
+    Try(ttGraph<-tktoplevel(ttMain))
+    Try(tkwm.withdraw(ttGraph))
+    Try(tkwm.title(ttGraph,plotTitle))
+    Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+    Try(tkwm.title(ttGraph,paste("Image Plot for",SlideNamesVec[slide])))
+    SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
+    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
+    Try(tkgrid(imgLimmaGUI))
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+      Try(tkdestroy(ttGraph))
+    else
+    {
+      Try(tkwm.deiconify(ttGraph))
+      Try(tkfocus(imgLimmaGUI))   
+    })
+
+    CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+  })
+  Try(tkconfigure(ttMain,cursor="arrow"))
+}
+
+
+
+GetMultipleContrasts <- function(contrastParameterizationIndex)
+{
+  Try(ttGetMultipleContrasts<-tktoplevel(ttMain))
+  Try(tkwm.deiconify(ttGetMultipleContrasts))
+  Try(tkgrab.set(ttGetMultipleContrasts)  )
+  Try(tkfocus(ttGetMultipleContrasts))
+  Try(tkwm.title(ttGetMultipleContrasts,"Choose one or more contrast"))
+  Try(scr <- tkscrollbar(ttGetMultipleContrasts, repeatinterval=5,command=function(...)tkyview(tl,...)))
+  Try(xscr <- tkscrollbar(ttGetMultipleContrasts, repeatinterval=5,command=function(...)tkxview(tl,...) ,orient="horizontal"))                       
+  ## Safest to make sure scr exists before setting yscrollcommand
+  Try(tl<-tklistbox(ttGetMultipleContrasts,height=4,width=30,selectmode="multiple",xscrollcommand=function(...)tkset(xscr,...),yscrollcommand=function(...)tkset(scr,...),background="white",font=affylmGUIfont2)   )
+  Try(lbl2<-tklabel(ttGetMultipleContrasts,text="Which contrast(s) is this for?",font=affylmGUIfont2))
+  Try(tkgrid(tklabel(ttGetMultipleContrasts,text="       "),row=0,column=1,columnspan=1))
+  Try(tkgrid(tklabel(ttGetMultipleContrasts,text="       "),row=0,column=4,columnspan=1))
+  Try(tkgrid(lbl2,row=1,column=2,columnspan=2,rowspan=1))
+  Try(tkgrid.configure(lbl2,sticky="w"))
+  Try(tkgrid(tklabel(ttGetMultipleContrasts,text="         "),row=2,column=1))
+  Try(tkgrid(tl,row=2,column=2,columnspan=2,rowspan=4,sticky="ew"))
+  Try(tkgrid(scr,row=2,column=4,columnspan=1,rowspan=4,sticky="wns"))
+  Try(tkgrid(xscr,row=6,column=2,columnspan=2,sticky="wne"))
+  
+  Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
+
+  Try(ContrastNamesVec  <- colnames(as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts)))
+  
+  Try(NumContrasts <- length(ContrastNamesVec))
+  
+  coefIndexList <- list()
+
+  Try(if (NumContrasts>0)
+    Try(for (i in (1:NumContrasts))     
+      Try(tkinsert(tl,"end",ContrastNamesVec[i]))))
+
+  Try(tkselection.set(tl,0))
+
+  Try(ReturnVal <- list(coefIndices=list())) # Other attributes can be added later if necessary.
+  onOK <- function()
+  {
+			Try(ReturnVal <<- list(contrastIndices=as.list(as.numeric(strsplit(tclvalue(tkcurselection(tl))," ")[[1]])+1)))
+      Try(tkgrab.release(ttGetMultipleContrasts));Try(tkdestroy(ttGetMultipleContrasts));Try(tkfocus(ttMain))
+  }
+  onCancel <- function() {Try(tkgrab.release(ttGetMultipleContrasts));Try(tkdestroy(ttGetMultipleContrasts));Try(tkfocus(ttMain));Try(ReturnVal <<- list(contrastIndices=list()))}
+  Try(OK.but <-tkbutton(ttGetMultipleContrasts,text="   OK   ",command=onOK,font=affylmGUIfont2))
+  Try(Cancel.but <-tkbutton(ttGetMultipleContrasts,text=" Cancel ",command=onCancel,font=affylmGUIfont2))
+  Try(tkgrid(tklabel(ttGetMultipleContrasts,text="    ")))
+  Try(tkgrid(tklabel(ttGetMultipleContrasts,text="    "),tklabel(ttGetMultipleContrasts,text="    "),OK.but,Cancel.but))
+  Try(tkgrid.configure(OK.but,sticky="e"))
+  Try(tkgrid.configure(Cancel.but,sticky="w"))  
+  Try(tkbind(OK.but, "<Return>",onOK))
+  Try(tkbind(tl, "<Return>",onOK))    
+  Try(tkbind(Cancel.but, "<Return>",onCancel))      
+  Try(tkgrid(tklabel(ttGetMultipleContrasts,text="    ")))
+  Try(tkfocus(ttGetMultipleContrasts))
+  Try(tkbind(ttGetMultipleContrasts, "<Destroy>", function() {Try(tkgrab.release(ttGetMultipleContrasts));Try(tkfocus(ttMain));}))
+  Try(tkwait.window(ttGetMultipleContrasts))
+
+  return (ReturnVal)
+}
+
+
+GetSetNames <- function(numSets=2,set1="",set2="",set3="")
+{
+  Try(ttGetSetNames<-tktoplevel(ttMain))
+  Try(tkwm.deiconify(ttGetSetNames))
+  Try(tkgrab.set(ttGetSetNames))
+  Try(tkfocus(ttGetSetNames)  )
+  Try(tkwm.title(ttGetSetNames,"Set names for Venn diagram"))
+  Try(tkgrid(tklabel(ttGetSetNames,text="    ")))
+  Try(set1Tcl <- tclVar(init=set1))
+  Try(entry.set1<-tkentry(ttGetSetNames,width="40",font=affylmGUIfont2,textvariable=set1Tcl,bg="white"))
+  Try(tkgrid(tklabel(ttGetSetNames,text="Set 1 : ",font=affylmGUIfont2),entry.set1))
+  Try(tkgrid(tklabel(ttGetSetNames,text="    ")))
+  Try(tkgrid.configure(entry.set1,columnspan=2))
+  Try(set2Tcl <- tclVar(init=set2))
+  Try(if (numSets>1)
+  {
+    Try(entry.set2<-tkentry(ttGetSetNames,width="40",font=affylmGUIfont2,textvariable=set2Tcl,bg="white"))
+    Try(tkgrid(tklabel(ttGetSetNames,text="Set 2 : ",font=affylmGUIfont2),entry.set2))
+    Try(tkgrid(tklabel(ttGetSetNames,text="    ")))
+    Try(tkgrid.configure(entry.set2,columnspan=2))
+  })
+  Try(set3Tcl <- tclVar(init=set3))
+  Try(if (numSets>2)
+  {
+    Try(entry.set3<-tkentry(ttGetSetNames,width="40",font=affylmGUIfont2,textvariable=set3Tcl,bg="white"))
+    Try(tkgrid(tklabel(ttGetSetNames,text="Set 3 :   ",font=affylmGUIfont2),entry.set3))
+    Try(tkgrid(tklabel(ttGetSetNames,text="    ")))
+    Try(tkgrid.configure(entry.set3,columnspan=2))
+  })
+
+  Try(ReturnVal <- list())
+  Try(onOK <- function()
+  {
+      Try(set1 <- tclvalue(set1Tcl))
+      Try(set2 <- "")
+      Try(if (numSets>1)
+        Try(set2 <- tclvalue(set2Tcl)))
+      Try(set3 <- "")
+      Try(if (numSets>2)
+        Try(set3 <- tclvalue(set3Tcl)))
+      Try(tkgrab.release(ttGetSetNames))
+      Try(tkdestroy(ttGetSetNames))
+      Try(tkfocus(ttMain))
+      Try(ReturnVal <<- list(set1=set1,set2=set2,set3=set3))
+  })
+  onCancel <- function() {Try(tkgrab.release(ttGetSetNames));Try(tkdestroy(ttGetSetNames));Try(tkfocus(ttMain));ReturnVal <<- list()}
+  OK.but <-tkbutton(ttGetSetNames,text="   OK   ",command=onOK,font=affylmGUIfont2)
+  Cancel.but <-tkbutton(ttGetSetNames,text=" Cancel ",command=onCancel,font=affylmGUIfont2)
+  Try(tkgrid(tklabel(ttGetSetNames,text="    "),OK.but,Cancel.but))
+  Try(tkgrid(tklabel(ttGetSetNames,text="    ")))
+  Try(tkbind(ttGetSetNames, "<Destroy>", function() {Try(tkgrab.release(ttGetSetNames));Try(tkfocus(ttMain));}))
+  Try(tkfocus(ttGetSetNames))
+  Try(tkwait.window(ttGetSetNames))
+
+  return (ReturnVal)
+}
+
+GetContrastNamesForHeatDiagram <- function(numContrasts=2,ContrastNames=c("Contrast 1","Contrast 2"))
+{
+  Try(ttGetContrastNamesForHeatDiagram<-tktoplevel(ttMain))
+  Try(tkwm.deiconify(ttGetContrastNamesForHeatDiagram))
+  Try(tkgrab.set(ttGetContrastNamesForHeatDiagram))
+  Try(tkfocus(ttGetContrastNamesForHeatDiagram)  )
+  Try(tkwm.title(ttGetContrastNamesForHeatDiagram,"Contrast names for heat diagram"))
+  Try(tkgrid(tklabel(ttGetContrastNamesForHeatDiagram,text="    ")))
+  
+  Try(namesTcl <- list())
+  Try(entryBoxes <- list())
+  
+  Try(for (i in (1:numContrasts))
+  {
+    Try(namesTcl[[i]] <- tclVar(init=ContrastNames[i]))
+    Try(entryBoxes[[i]]<-tkentry(ttGetContrastNamesForHeatDiagram,width="40",font=affylmGUIfont2,textvariable=namesTcl[[i]],bg="white"))
+    Try(tkgrid(tklabel(ttGetContrastNamesForHeatDiagram,text=paste("Contrast",i),font=affylmGUIfont2),entryBoxes[[i]]))
+    Try(tkgrid(tklabel(ttGetContrastNamesForHeatDiagram,text="    ")))
+    Try(tkgrid.configure(entryBoxes[[i]],columnspan=2))
+  })
+
+  Try(ReturnVal <- c())
+  Try(onOK <- function()
+  {
+      Try(ReturnVal <<- c())
+      Try(for (i in (1:numContrasts))
+      {
+        Try(ReturnVal[i] <<- tclvalue(namesTcl[[i]]))
+        Try(names(ReturnVal)[i] <<- paste("Contrast",i,sep=""))
+      })
+      Try(tkgrab.release(ttGetContrastNamesForHeatDiagram))
+      Try(tkdestroy(ttGetContrastNamesForHeatDiagram))
+      Try(tkfocus(ttMain))
+  })
+  onCancel <- function() {Try(tkgrab.release(ttGetContrastNamesForHeatDiagram));Try(tkdestroy(ttGetContrastNamesForHeatDiagram));Try(tkfocus(ttMain));ReturnVal <<- c()}
+  OK.but <-tkbutton(ttGetContrastNamesForHeatDiagram,text="   OK   ",command=onOK,font=affylmGUIfont2)
+  Cancel.but <-tkbutton(ttGetContrastNamesForHeatDiagram,text=" Cancel ",command=onCancel,font=affylmGUIfont2)
+  Try(tkgrid(tklabel(ttGetContrastNamesForHeatDiagram,text="    "),OK.but,Cancel.but))
+  Try(tkgrid(tklabel(ttGetContrastNamesForHeatDiagram,text="    ")))
+  Try(tkbind(ttGetContrastNamesForHeatDiagram, "<Destroy>", function() {Try(tkgrab.release(ttGetContrastNamesForHeatDiagram));Try(tkfocus(ttMain));}))
+  Try(tkfocus(ttGetContrastNamesForHeatDiagram))
+  Try(tkwait.window(ttGetContrastNamesForHeatDiagram))
+
+  return (ReturnVal)
+}
