@@ -1194,20 +1194,10 @@ ViewContrastsMatrixInTable <- function(contrastsMatrixList,contrastParameterizat
   Try(myRarray <- "    ")
   Try(for (i in (1:NumRows))
   {
-      Try(if (contrastsMatrix=="Design")      
-      {
-        Try(if(is.null(rownames(contrastsMatrix)))
-          Try(RowName <- SlideNamesVec[i])
-        else
-          Try(RowName <- rownames(contrastsMatrix)[i]))        
-      }
-      else # Contrasts
-      {
-        Try(if (is.null(rownames(contrastsMatrix)))
-          Try(RowName <- paste("Param",i))
-        else
-          Try(RowName <- rownames(contrastsMatrix)[i]))
-      })
+      Try(if (is.null(rownames(contrastsMatrix)))
+        Try(RowName <- paste("Param",i))
+      else
+        Try(RowName <- rownames(contrastsMatrix)[i]))
       Try(RowNamesVec <- c(RowNamesVec,RowName))
       Try(myRarray <- c(myRarray,paste(RowName)))
   })
@@ -1225,11 +1215,6 @@ ViewContrastsMatrixInTable <- function(contrastsMatrixList,contrastParameterizat
       }      
     }      
 
-#      Try(n <- evalq(TclVarCount <- TclVarCount + 1, .TkRoot$env))
-#      Try(tclArrayName <- paste("::RTcl", n, sep = ""))  
-#      Try(l <- list(env = new.env()))
-#      Try(assign(tclArrayName, NULL, envir = l$env))
-#      Try(reg.finalizer(l$env, function(env) tkcmd("unset", ls(env)))
       Try(tclArrayVar1 <- tclArrayVar())
       Try(tclArrayName <- ls(tclArrayVar1$env))
 
@@ -1263,10 +1248,7 @@ ViewContrastsMatrixInTable <- function(contrastsMatrixList,contrastParameterizat
 
       onSaveContrastsMatrixAs <- function()
       {
-        Try(if (contrastsMatrix=="Design")        
-          Try(contrastsMatrixFileName <- tclvalue(tkgetSaveFile(filetypes="{{Design Matrix Files} {.txt}} {{All files} *}")))
-        else
-          Try(contrastsMatrixFileName <- tclvalue(tkgetSaveFile(filetypes="{{Contrasts Matrix Files} {.txt}} {{All files} *}"))))         
+        Try(contrastsMatrixFileName <- tclvalue(tkgetSaveFile(filetypes="{{Contrasts Matrix Files} {.txt}} {{All files} *}")))
         Try(if (!nchar(contrastsMatrixFileName)) return())
         Try(len <- nchar(contrastsMatrixFileName))
         if (len<=4)
@@ -1336,8 +1318,11 @@ ViewContrastsMatrixAsPairs <- function(contrastsMatrix,contrastsMatrixList,contr
   Try(tkgrid.configure(TitleLabel,columnspan=4))
   Try(tkgrid(tklabel(ttViewContrastsMatrixAsPairs,text="    ")))  
   Try(ParameterOrContrastLabel <- tklabel(ttViewContrastsMatrixAsPairs,text="Contrast",font=.affylmGUIglobals$affylmGUIfont2b))
-  # Note that plusOrMinus IS A VECTOR (can be different for each contrast).
-  Try(plusOrMinus <- contrastsMatrixList$plusOrMinus)
+#  # Note that plusOrMinus IS A VECTOR (can be different for each contrast).
+#  Try(plusOrMinus <- contrastsMatrixList$plusOrMinus)
+
+  Try(plusOrMinus <- rep("-",NumContrasts))
+
   Try(tkgrid(tklabel(ttViewContrastsMatrixAsPairs,text="    "),
              ParameterOrContrastLabel))
 
@@ -1791,7 +1776,23 @@ ComputeLinearModelFit <- function()
   Try(colnames(design) <- gsub("factor\\(Targets\\$Target\\)","",colnames(design)))
   Try(rownames(design) <- Targets$FileName)
   Try(assign("design",design,affylmGUIenvironment))  
-  Try(fit <- lm.series(exprs(NormalizedAffyData),design,weights=NULL))
+
+  Try(if (exists("NormMethod",envir=affylmGUIenvironment))
+    Try(NormMethod <- get("NormMethod",envir=affylmGUIenvironment))
+  else
+  {
+    Try(NormMethod <- "RMA")
+    Try(assign("NormMethod",NormMethod,affylmGUIenvironment))
+  })
+
+  Try(if (NormMethod=="PLM")
+  {
+    Try(if (length(NormalizedAffyData@se.exprs)>0) 
+      Try(weights <- 1/pmax(NormalizedAffyData@se.exprs, 1e-05)^2))
+    Try(fit <- lm.series(exprs(NormalizedAffyData),design,weights=weights))
+  }
+  else
+    Try(fit <- lm.series(exprs(NormalizedAffyData),design)))
   Try(assign("LinearModelFit.Available",TRUE,affylmGUIenvironment))
   Try(assign("fit",fit,affylmGUIenvironment))
   Try(tkdelete(.affylmGUIglobals$mainTree,"LinearModelFit.Status"))        
