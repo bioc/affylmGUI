@@ -1,4 +1,4 @@
-\title{Graphical User Interface for the limma microarray package by Gordon Smyth}
+\title{Graphical User Interface for the limma microarray package}
 \name{affylmGUI}
 \alias{affylmGUI}
 \alias{AboutaffylmGUI}
@@ -98,8 +98,9 @@
 \alias{affyHelp}
 \alias{affylmGUIhelp}
 \alias{limmaHelp}
+\alias{onDestroy}
 
-\description{Graphical User Interface for Affy analysis using the limma microarray package by Gordon Smyth}}
+\description{Graphical User Interface for Affy analysis using the limma microarray package}}
 
 \usage{
 AboutaffylmGUI()
@@ -200,7 +201,7 @@ affylmGUI(BigfontsForaffylmGUIpresentation=FALSE)
 affyHelp()
 affylmGUIhelp()
 limmaHelp()
-
+onDestroy()
 }
 
 

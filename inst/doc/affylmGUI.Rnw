@@ -18,8 +18,8 @@
 \date{April 6, 2004}
 \maketitle
 
-affylmGUI is a Graphical User Interface for doing Affymetrix analysis with the Limma package (LInear Models for MicroArray Data).
-For Affymetrix analysis with the Limma package, see limmaGUI.
+affylmGUI is a Graphical User Interface for doing Affymetrix analysis with the limma package (LInear Models for MicroArray Data).
+For Affymetrix analysis with the limma package, see limmaGUI.
 
 The affylmGUI Documentation can be accessed online or by installing the affylmGUI package locally.
 Then at the R prompt you can type

@@ -78,12 +78,19 @@
 		else
 			cat(paste("\nTo begin, type affylmGUI()\n"))
 
-		BeginAffyLimmaGUI <- tclvalue(tkmessageBox(title="affylmGUI",message="Begin affylmGUI?",type="yesno",icon="question"))
-		if (BeginAffyLimmaGUI=="yes") 
-			affylmGUI()
-		else
-			if (.Platform$OS.type=="windows")
-				bringToTop(-1)
+    # I only get .First.lib to ask the user whether they want to start the GUI with
+    # a message box for the Windows OS.  I encountered some problems under linux
+    # for the case where the Tcl/Tk extensions can't be found (so affylmGUI tries
+    # to exit), and speculated that there could be problems arising from running
+    # the whole affylmGUI() program before finishing .First.lib.
+    if (.Platform$OS.type=="windows")
+    {
+      BeginAffyLimmaGUI <- tclvalue(tkmessageBox(title="affylmGUI",message="Begin affylmGUI?",type="yesno",icon="question"))
+      if (BeginAffyLimmaGUI=="yes") 
+        affylmGUI()
+      else
+        bringToTop(-1)
+    }
   }
 }
 

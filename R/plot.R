@@ -836,7 +836,6 @@ VennDiagramPlot <- function()
   Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment))  
   Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))    
   Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
-  Try(LinearModelComputed <- get("LinearModelComputed", envir=affylmGUIenvironment))   
   Try(design <- get("design", envir=affylmGUIenvironment))
   
   Try(if (ArraysLoaded==FALSE)

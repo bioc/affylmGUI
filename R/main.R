@@ -55,37 +55,56 @@ Require <- function(pkg)
     return (result)
 }
 
-
 TclRequire <- function(tclPkg)
 {
     if ((data.class(result<-try(tclRequire(tclPkg),TRUE))=="try-error") || (is.logical(result) && result==FALSE))
     {
+      affylmGUIglobals <- .affylmGUIglobals
+      affylmGUIglobals$TclRequireFailed <- TRUE
+      assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv)
       Try(winTitle<-"Tcl/Tk Extension(s) Not Found")
       Try(message<-paste("Cannot find Tcl/Tk package \"", tclPkg,
-      "\".  Exit affylmGUI (recommended)?\n\n",
-      "affylmGUI requires the Tcl/Tk extensions, BWidget and Tktable.  You must have Tcl/Tk installed\n",
-      "on your computer, not just the minimal Tcl/Tk installation which comes with R.  If you do have\n",
-      "Tcl/Tk installed, including the extensions (e.g. using the ActiveTcl distribution in Windows),\n",
-      "make sure that R can find the path to the Tcl library, e.g. C:\\Tcl\\lib (on Windows) or\n",
-      "/usr/lib (on Linux/Unix) or /sw/lib on Mac OSX.\n\n",
-      "If you don't know how to set environment variables in Windows, one way to make sure the R can\n",
-      "find the Tcl/Tk extensions Tktable2.8 and bwidget1.6 is to copy them from your ActiveTcl installation\n",
-      "e.g. in C:\\Tcl\\lib into the Tcl subdirectory of your R installation\n\n",
+      "\".  affylmGUI cannot continue.\n\n",
+      "affylmGUI requires the Tcl/Tk extensions, BWidget and Tktable.\n",
+      "You must have Tcl/Tk installed on your computer, not just the minimal\n",
+      "Tcl/Tk installation which comes with R (for Windows).  If you do have\n",
+      "Tcl/Tk installed, including the extensions (e.g. using the ActiveTcl\n",
+      "distribution in Windows), make sure that R can find the path to the\n",
+      "Tcl library, e.g. C:\\Tcl\\lib (on Windows) or /usr/lib (on Linux/Unix)\n",
+      "or /sw/lib on Mac OSX.\n\n",
+      "If you don't know how to set environment variables in Windows, one way\n",
+      "to make sure that R can find the Tcl/Tk extensions Tktable2.8 and bwidget1.6\n",
+      "is to copy them from your ActiveTcl installation e.g. in C:\\Tcl\\lib into\n",
+      "the Tcl subdirectory of your R installation.\n",
       "If you do understand how to set environment variables...\n",
-      "make sure that you have the TCL_LIBRARY environment variable set to the appropriate path, e.g.\n",
-      "C:\\Tcl\\lib\\tcl8.4 and the MY_TCLTK environment variable set to a non-empty string, e.g. \"Yes\".\n\n",
+      "make sure that you have the TCL_LIBRARY environment variable set to the\n",
+      "appropriate path, e.g.C:\\Tcl\\lib\\tcl8.4 and the MY_TCLTK environment\n",
+      "variable set to a non-empty string, e.g. \"Yes\".\n\n",
       "If using Windows, be sure to read the R for windows FAQ at\nhttp://www.stats.ox.ac.uk/pub/R/rw-FAQ.html\n\n",
-      "If your Tcl/Tk extensions still can't be found, try ",
+      "If your Tcl/Tk extensions still can't be found, try\n",
       "addTclPath(\"<path to Tcl library>\").\nThis could be put in $HOME/.Rprofile\n\n",
-      "If you need further ",
-      "instructions, please contact your system administrator and consider emailing\n ",
-      "r-help@stat.math.ethz.ch, or browse through the R-help archives for a similar question.",
+      "If you need further instructions, please contact your system administrator\n",
+      "and consider emailing r-help@stat.math.ethz.ch, or browse through the R-help\n",
+      "archives for a similar question.\n\n",
+      "The URLs for Tktable and BWidget are:\n",
+      "http://tktable.sourceforge.net\n",
+      "http://tcllib.sourceforge.net",      
       sep=""))
       
-      Try(ttTclTkExtension <- tktoplevel(.affylmGUIglobals$ttMain))
+      # Don't make ttMain a parent of this, because we might want to use TclRequire before
+      # defining ttMain.
+      Try(ttTclTkExtension <- tktoplevel())
+      onDestroy <- function()
+      {
+        if (exists(".affylmGUIglobals",envir=.GlobalEnv)&&"ttMain" %in% names(.affylmGUIglobals))
+          try(tkdestroy(.affylmGUIglobals$ttMain),silent=TRUE)        
+        else
+          stop("Tcl/Tk extensions (Tktable and BWidget) not found!")
+        stop("Aborted from affylmGUI.")
+      }
+	    Try(tkbind(ttTclTkExtension, "<Destroy>", onDestroy))
       Try(tkwm.title(ttTclTkExtension,winTitle))
       Try(tkwm.deiconify(ttTclTkExtension))
-      Try(tkgrab.set(ttTclTkExtension))
       Try(scr <- tkscrollbar(ttTclTkExtension, repeatinterval=5,
                              command=function(...)tkyview(txt,...)))
       Try(txt <- tktext(ttTclTkExtension,bg="white",yscrollcommand=function(...)tkset(scr,...)))
@@ -95,11 +114,13 @@ TclRequire <- function(tclPkg)
       Try(tkinsert(txt,"end",message))
       Try(tkconfigure(txt, state="disabled"))
       Try(tkfocus(txt))
-      Try(onYes <- function() 
+      Try(onOK <- function() 
       {
-        Try(tkgrab.release(ttTclTkExtension))
-        Try(tkdestroy(ttTclTkExtension))
-        try(tkdestroy(.affylmGUIglobals$ttMain))
+        try(tkdestroy(ttTclTkExtension),silent=TRUE)
+        if (exists(".affylmGUIglobals",envir=.GlobalEnv)&&"ttMain" %in% names(.affylmGUIglobals))
+          try(tkdestroy(.affylmGUIglobals$ttMain),silent=TRUE)        
+        else
+          stop("Tcl/Tk extensions (Tktable and BWidget) not found!")
         Try(LimmaFileName <- get("LimmaFileName",envir=affylmGUIenvironment))    
         Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
         if (limmaDataSetNameText!="Untitled")
@@ -111,25 +132,17 @@ TclRequire <- function(tclPkg)
           try(if (tclvalue(mbVal)=="yes")
               try(SaveLimmaFile(),silent=TRUE),silent=TRUE)
          }
-
-        quit()                
+         stop("Tcl/Tk extensions (Tktable and BWidget) not found!")
       })
-      Try(onNo <- function()
-      {
-        Try(tkgrab.release(ttTclTkExtension))
-        Try(tkdestroy(ttTclTkExtension))      
-      })
-      Try(Yes.but <- tkbutton(ttTclTkExtension,text="  Yes  ",command=onYes,font=.affylmGUIglobals$affylmGUIfont2))  
-      Try(No.but <- tkbutton(ttTclTkExtension,text="  No  ",command=onNo,font=.affylmGUIglobals$affylmGUIfont2)) 
+      Try(OK.but <- tkbutton(ttTclTkExtension,text="  OK  ",command=onOK))  
       Try(tkgrid.configure(txt,columnspan=2))
       Try(tkgrid(tklabel(ttTclTkExtension,text="    ")))
-      Try(tkgrid(tklabel(ttTclTkExtension,text="Exit affylmGUI (recommended)?",font=.affylmGUIglobals$affylmGUIfont2),columnspan=2))
+      Try(tkgrid(tklabel(ttTclTkExtension,text="affylmGUI will now exit."),columnspan=2))
       Try(tkgrid(tklabel(ttTclTkExtension,text="    ")))      
-      Try(tkgrid(Yes.but,No.but))
-      Try(tkgrid.configure(Yes.but,sticky="e"))
-      Try(tkgrid.configure(No.but,sticky="w"))      
+      Try(tkgrid(OK.but))
+      Try(tkgrid.configure(OK.but,sticky="e"))
       Try(tkgrid(tklabel(ttTclTkExtension,text="    ")))    
-      Try(tkfocus(Yes.but))
+      Try(tkfocus(OK.but))
       Try(tkwait.window(ttTclTkExtension))            
     }
 }
@@ -156,6 +169,25 @@ affyHelp <- function()
 	Try(tkmessageBox(title="affy Help",message=paste("Opening affy help...\nIf nothing happens, please open :\n",affyHelpIndex,"\nyourself.",sep="")))
 }
 
+Try(onDestroy <- function()
+{
+	Try(.JustAskedWhetherToSave <- get(".JustAskedWhetherToSave",envir=.GlobalEnv))    
+	Try(if (.JustAskedWhetherToSave==FALSE)
+	{
+		Try(LimmaFileName <- get("LimmaFileName",envir=affylmGUIenvironment))    
+		Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
+		if (limmaDataSetNameText!="Untitled")
+		{
+			Try(if (LimmaFileName=="Untitled" && limmaDataSetNameText!="Untitled") LimmaFileName <- limmaDataSetNameText) # Local assignment only
+			Try(mbVal <- tkmessageBox(title="Aborting from affylmGUI",
+						message=paste("Save changes to ",LimmaFileName,"?",sep=""),
+						icon="question",type="yesno",default="yes"))
+			try(if (tclvalue(mbVal)=="yes")
+					try(SaveLimmaFile(),silent=TRUE),silent=TRUE)              
+		}
+		Try(assign(".JustAskedWhetherToSave",TRUE,.GlobalEnv))
+	})
+})    
 
 affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE)
 {
@@ -284,13 +316,20 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE)
   })
   # Try(assign("affylmGUIfontMenu",tkfont.create(family="arial",size=10),.GlobalEnv))
 
-  Try(affylmGUIglobals$ttMain <- tktoplevel())
+  Try(affylmGUIglobals$ttMain <- tktoplevel())  
   Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
+  Try(tkbind(.affylmGUIglobals$ttMain, "<Destroy>", onDestroy))
+
+  TclRequire("BWidget")
+  if ("TclRequireFailed" %in% names(.affylmGUIglobals))
+    stop("Error occurred in TclRequire(\"BWidget\")")
+  TclRequire("Tktable")
+  if ("TclRequireFailed" %in% names(.affylmGUIglobals))  
+    stop("Error occurred in TclRequire(\"Tktable\")")
 
   # Try(assign("opar",par(bg="white"),.GlobalEnv))
   Try(oldOptions <- options(warn=-1)) # Otherwise R complains that I'm trying to set main in plots, i.e. set a plot title)
 # Maybe it would be nice to eventually use the MainFrame widget from BWidget so we can have a nice toolbar etc.
-  TclRequire("BWidget")
 
   Try(if (.affylmGUIglobals$affylmGUIpresentation==FALSE)
     Try(mainFrame <- tkframe(.affylmGUIglobals$ttMain,relief="groove",borderwidth="2"))
@@ -425,27 +464,6 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE)
   
   #Try(tkwm.resizable(.affylmGUIglobals$ttMain,"true","false"))
 
-  Try(onDestroy <- function()
-  {
-    Try(.JustAskedWhetherToSave <- get(".JustAskedWhetherToSave",envir=.GlobalEnv))    
-    Try(if (.JustAskedWhetherToSave==FALSE)
-    {
-      Try(LimmaFileName <- get("LimmaFileName",envir=affylmGUIenvironment))    
-      Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
-      if (limmaDataSetNameText!="Untitled")
-      {
-        Try(if (LimmaFileName=="Untitled" && limmaDataSetNameText!="Untitled") LimmaFileName <- limmaDataSetNameText) # Local assignment only
-        Try(mbVal <- tkmessageBox(title="Aborting from affylmGUI",
-              message=paste("Save changes to ",LimmaFileName,"?",sep=""),
-              icon="question",type="yesno",default="yes"))
-        try(if (tclvalue(mbVal)=="yes")
-            try(SaveLimmaFile(),silent=TRUE),silent=TRUE)              
-      }
-      Try(assign(".JustAskedWhetherToSave",TRUE,.GlobalEnv))
-    })
-  })    
-
-  Try(tkbind(.affylmGUIglobals$ttMain, "<Destroy>", onDestroy))
   Try(tkbind(.affylmGUIglobals$ttMain, "<Control-N>", NewLimmaFile))
   Try(tkbind(.affylmGUIglobals$ttMain, "<Control-S>", SaveLimmaFile))
   Try(tkbind(.affylmGUIglobals$ttMain, "<Control-O>", OpenLimmaFile))
@@ -473,12 +491,6 @@ initGlobals <- function()
   assign("affylmGUIVersion",getPackageVersion("affylmGUI"),affylmGUIenvironment)
   assign("limmaVersion",getPackageVersion("limma"),affylmGUIenvironment)  
   assign("LimmaFileName","Untitled",affylmGUIenvironment)
-  assign("maLayout",list(),affylmGUIenvironment)
-  assign("MA" , list(M=matrix(data=0,nrow=1,ncol=1),A=matrix(data=0,nrow=1,ncol=1)),affylmGUIenvironment)
-  assign("MAraw" , list(),affylmGUIenvironment)
-  assign("MAwithinArrays" , list(),affylmGUIenvironment)
-  assign("MAbetweenArrays" , list(),affylmGUIenvironment)  
-  assign("MAboth" , list(),affylmGUIenvironment)    
   assign("RawAffyData" , 0,affylmGUIenvironment)
   assign("CDFFile" , "",affylmGUIenvironment)
   assign("ContrastParameterizationList" , list(),affylmGUIenvironment)
@@ -490,24 +502,15 @@ initGlobals <- function()
   assign("NumParameters" , 0,affylmGUIenvironment)
   assign("SlideNamesVec" , c(),affylmGUIenvironment)
   assign("Targets" , data.frame(),affylmGUIenvironment)
-  assign("ndups" , 1,affylmGUIenvironment)
-  assign("spacing" , 1,affylmGUIenvironment)
   assign("limmaDataSetNameText" , "Untitled",affylmGUIenvironment)
   Try(tclvalue(.affylmGUIglobals$limmaDataSetNameTcl) <- "Untitled")
   assign("ArraysLoaded",FALSE,affylmGUIenvironment)
-  assign("LinearModelComputed",rep(FALSE,100),affylmGUIenvironment)  # Maximum of 100 parameterizations for now.
-  assign("WeightingType","none", affylmGUIenvironment)
-  assign("AreaLowerLimit",160, affylmGUIenvironment)
-  assign("AreaUpperLimit",170, affylmGUIenvironment)
-  assign("FlagSpotWeighting", 0.1, affylmGUIenvironment)
   assign("RawAffyData.Available",FALSE,affylmGUIenvironment)
   assign("NormalizedAffyData.Available",FALSE,affylmGUIenvironment)
   assign("LinearModelFit.Available",FALSE,affylmGUIenvironment)
-  assign("Layout.Available",FALSE,affylmGUIenvironment)  
   assign("numConnectedSubGraphs",1,affylmGUIenvironment)
   assign("connectedSubGraphs",list(),affylmGUIenvironment)  
   assign("NumRNATypes",2,affylmGUIenvironment)
-  assign("WithinArrayNormalizationMethod","printtiploess",affylmGUIenvironment)
   assign("NormalizedAffyData",0,affylmGUIenvironment)
   assign("geneNames",c(),affylmGUIenvironment)
   assign("geneSymbols",c(),affylmGUIenvironment)  
