@@ -20,7 +20,6 @@
 \alias{deleteItemFromList}
 \alias{DensityPlot}
 \alias{evalRcode}
-\alias{ExportTopTable}
 \alias{ExportHTMLreport}
 \alias{ExportNormalizedExpressionValues}
 \alias{generalPlotFunction}
@@ -65,7 +64,6 @@
 \alias{onExit}
 \alias{OpenCDFandTargetsfiles}
 \alias{OpenCDFFile}
-\alias{OpenALimmaFile}
 \alias{OpenLimmaFile}
 \alias{OpenTargetsFile}
 \alias{QQTplot}
@@ -101,8 +99,7 @@
 \alias{affylmGUIhelp}
 \alias{limmaHelp}
 \alias{onDestroy}
-\alias{GetPValueCutoff}
-\alias{fixSeps}
+
 \description{Graphical User Interface for Affy analysis using the limma microarray package}}
 
 \usage{
@@ -125,7 +122,6 @@ DeleteCustomMenuItem()
 deleteItemFromList()
 DensityPlot()
 evalRcode()
-ExportTopTable()
 ExportHTMLreport()
 ExportNormalizedExpressionValues()
 generalPlotFunction()
@@ -170,8 +166,7 @@ nstrstr()
 onExit()
 OpenCDFandTargetsfiles()
 OpenCDFFile()
-OpenALimmaFile()
-OpenLimmaFile(FileName)
+OpenLimmaFile()
 OpenTargetsFile()
 QQTplot()
 RawIntensityBoxPlot()
@@ -202,13 +197,11 @@ ViewContrastsMatrixAsPairs()
 ViewContrastsMatrixInTable()
 ViewExistingContrastParameterization()
 ViewRNATargets()
-fixSeps(string)
 affylmGUI(BigfontsForaffylmGUIpresentation=FALSE)
 affyHelp()
 affylmGUIhelp()
 limmaHelp()
 onDestroy()
-GetPValueCutoff(p.value=0.01)
 }
 
 
@@ -216,9 +209,6 @@ GetPValueCutoff(p.value=0.01)
 	\item{BigfontsForaffylmGUIpresentation}{If set to TRUE, larger fonts are used.  However, some font 
 	sizes are not controlled by affylmGUI and so must be adjusted in the operating system, e.g.
 	in the Control Panel in Windows under Display, Appearance.}
-	\item{p.value}{A p-value cutoff.}	
-	\item{FileName}{A file name.}
-	\item{string}{A character string.}
 }
 
 \details{
