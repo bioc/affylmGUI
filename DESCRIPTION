@@ -9,3 +9,5 @@ Depends: limma, tcltk, tkrplot, affy, affyPLM, R2HTML, xtable, R (>= 1.8.1)
 Description: A Graphical User Interface for affy analysis using the limma Microarray package by Gordon Smyth.
 License: GPL version 2 or newer
 URL: http://bioinf.wehi.edu.au/affylmGUI/
+ReleaseLevel: devel
+
