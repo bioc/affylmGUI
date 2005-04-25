@@ -91,7 +91,7 @@
 \alias{Try}
 \alias{TryReadImgProcFile}
 \alias{UpDownOrBoth}
-\alias{vennDiagramlimmaGUI}
+\alias{vennDiagramaffylmGUI}
 \alias{VennDiagramPlot}
 \alias{ViewContrastsMatrixAsPairs}
 \alias{ViewContrastsMatrixInTable}
@@ -103,6 +103,7 @@
 \alias{onDestroy}
 \alias{GetPValueCutoff}
 \alias{fixSeps}
+\alias{PlotOptions}
 \description{Graphical User Interface for Affy analysis using the limma microarray package}}
 
 \usage{
@@ -196,7 +197,7 @@ topTable2()
 Try()
 TryReadImgProcFile()
 UpDownOrBoth()
-vennDiagramlimmaGUI()
+vennDiagramaffylmGUI()
 VennDiagramPlot()
 ViewContrastsMatrixAsPairs()
 ViewContrastsMatrixInTable()
@@ -209,6 +210,7 @@ affylmGUIhelp()
 limmaHelp()
 onDestroy()
 GetPValueCutoff(p.value=0.01)
+PlotOptions()
 }
 
 

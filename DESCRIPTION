@@ -1,6 +1,6 @@
 Package: affylmGUI
-Version: 1.2.5
-Date: 22 September 2004
+Version: 1.2.6
+Date: 9 November 2004
 Title: GUI for affy analysis using limma package
 Author:	James Wettenhall and Ken Simpson
 	Division of Genetics and Bioinformatics, WEHI.
@@ -10,4 +10,3 @@ Suggests: tkrplot, affyPLM, R2HTML, xtable
 Description: A Graphical User Interface for affy analysis using the limma Microarray package
 License: GPL version 2 or newer
 URL: http://bioinf.wehi.edu.au/affylmGUI/
-Packaged: Wed Sep 22 11:22:41 2004; wettenhall

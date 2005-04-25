@@ -54,6 +54,8 @@
     item    plotMenu        command         "Log Odds (Volcano) Plot (for one contrast)"    LogOddsPlot
     item    plotMenu        command         "Heat Diagram"                                  HeatDiagramPlot
     item    plotMenu        command         "Venn Diagram"                                  VennDiagramPlot
+    item    plotMenu        separator       ""                                              ""
+    item    plotMenu        command         "Options"                                       PlotOptions
     item    topMenu         cascade         "Plot"                                          plotMenu
     menu    helpMenu        topMenu         ""                                              ""
     item    helpMenu        command         "affylmGUI Help"                                affylmGUIhelp

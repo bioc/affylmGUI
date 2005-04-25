@@ -1,14 +1,6 @@
 
 ImageArrayPlot <- function()
 {
-# Late Nov, 2003.  There's still the problem that tkrplot uses too much memory on my Windows machine for this
-#                  type of image plot, but the Tk Img extension does not seem to be a good platform-independent
-#                  solution as it is hard to install a working version in Linux, so the current solution is to
-#                  ask the user whether to plot the image in a Tk window or within R.
-# Nov, 2003.  The Tcl/Tk Img extension is not easy to install in Linux (doesn't seem to be compatible with the
-#             latest Tcl/Tk source (8.4.x) ) so I'm going to try tkrplot again.
-# Oct, 2003. Unfortunately this doesn't work using the standard tkrplot method because the images are too large.
-# So it requires the Img Tcl/Tk extension.
   Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment)) 
   Try(LocalHScale <- .affylmGUIglobals$Myhscale)
   Try(LocalVScale <- .affylmGUIglobals$Myvscale)   
@@ -24,7 +16,6 @@ ImageArrayPlot <- function()
   Try(if (slide==0) return())
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 
-#  Try(jpeg(filename="temp.jpg"))
   Try(plotFunction <- function() 
   {
     Try(opar<-par(bg="white"))
@@ -35,14 +26,6 @@ ImageArrayPlot <- function()
     Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
     Try(tmp<-par(opar))
   })
-#  Try(dev.off())
-#  Try(tt <- tktoplevel(.affylmGUIglobals$ttMain))
-#  Try(tkwm.title(tt,paste("Image Plot for",colnames(RawAffyData@exprs)[slide])))
-#  TclRequire("Img")
-#  Try(image1 <- tclVar())
-#  Try(tkcmd("image","create","photo",image1,file="temp.jpg"))
-#  Try(img <- tklabel(tt,image=image1))
-#  Try(tkpack(img))
   Try(plotTitle<-SlideNamesVec[slide])
   Try(plotLabels <- GetPlotLabels(plotTitle,"",""))
   Try(if (length(plotLabels)==0) return())
@@ -50,14 +33,17 @@ ImageArrayPlot <- function()
   Try(xLabel    <- plotLabels$xLabel)
   Try(yLabel    <- plotLabels$yLabel)
   
-  Try(WhetherToUseTkrplot <- tclvalue(tkmessageBox(title="Where To Plot Array Image",type="yesnocancel",
+Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  Try(WhetherToUseRplot <- tclvalue(tkmessageBox(title="Where To Plot Array Image",type="yesnocancel",
     message="Plot this image in R rather than a new (Tk) window? (Requires less memory.)",icon="question")))
-  Try(if (WhetherToUseTkrplot=="cancel") 
+  else
+    Try(WhetherToUseRplot <- "yes"))
+  Try(if (WhetherToUseRplot=="cancel") 
   {
     Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
     return()
   })
-  Try(if (WhetherToUseTkrplot=="yes")
+  Try(if (WhetherToUseRplot=="yes")
     plotFunction()
   else
   {
@@ -65,20 +51,20 @@ ImageArrayPlot <- function()
     Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
     Try(tkwm.withdraw(ttGraph))
     Try(tkwm.title(ttGraph,plotTitle))
-    Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
     Try(tkwm.title(ttGraph,paste("Image Plot for",SlideNamesVec[slide])))
-    SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
-    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
-    Try(tkgrid(imgLimmaGUI))
-    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)  
+    Try(tkgrid(imgaffylmGUI))
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
       Try(tkdestroy(ttGraph))
     else
     {
       Try(tkwm.deiconify(ttGraph))
-      Try(tkfocus(imgLimmaGUI))   
+      Try(tkfocus(imgaffylmGUI))   
     })
 
-    CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+    CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))  
   })
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 }
@@ -173,24 +159,33 @@ IntensityHistogram <- function()
   Try(plotTitle <- plotLabels$plotTitle)
   Try(xLabel    <- plotLabels$xLabel)
   Try(yLabel    <- plotLabels$yLabel)
-  Require("tkrplot")  
-  Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
-  Try(tkwm.withdraw(ttGraph))
-  Try(tkwm.title(ttGraph,plotTitle))
-  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-  Try(tkwm.title(ttGraph,plotTitle))
-  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
-  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
-  Try(tkgrid(imgLimmaGUI))
-  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
-    Try(tkdestroy(ttGraph))
+
+  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  {
+    Require("tkrplot")  
+    Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+    Try(tkwm.withdraw(ttGraph))
+    Try(tkwm.title(ttGraph,plotTitle))
+    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+    Try(tkwm.title(ttGraph,plotTitle))
+    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)  
+    Try(tkgrid(imgaffylmGUI))
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+      Try(tkdestroy(ttGraph))
+    else
+    {
+      Try(tkwm.deiconify(ttGraph))
+      Try(tkfocus(imgaffylmGUI))   
+    })
+  }
   else
   {
-    Try(tkwm.deiconify(ttGraph))
-    Try(tkfocus(imgLimmaGUI))   
+    Try(plot.new())
+    Try(plotFunction())
   })
 
-  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+  CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))  
 }
 
 
@@ -242,24 +237,33 @@ DensityPlot <- function()
   Try(plotTitle <- plotLabels$plotTitle)
   Try(xLabel    <- plotLabels$xLabel)
   Try(yLabel    <- plotLabels$yLabel)
-  Require("tkrplot")  
-  Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
-  Try(tkwm.withdraw(ttGraph))
-  Try(tkwm.title(ttGraph,plotTitle))
-  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-  Try(tkwm.title(ttGraph,plotTitle))
-  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
-  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
-  Try(tkgrid(imgLimmaGUI))
-  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
-    Try(tkdestroy(ttGraph))
+  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  {
+    Require("tkrplot")  
+    Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+    Try(tkwm.withdraw(ttGraph))
+    Try(tkwm.title(ttGraph,plotTitle))
+    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+    Try(tkwm.title(ttGraph,plotTitle))
+    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)  
+    Try(tkgrid(imgaffylmGUI))
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+      Try(tkdestroy(ttGraph))
+    else
+    {
+      Try(tkwm.deiconify(ttGraph))
+      Try(tkfocus(imgaffylmGUI))   
+    })
+  }
   else
   {
-    Try(tkwm.deiconify(ttGraph))
-    Try(tkfocus(imgLimmaGUI))   
+    Try(plot.new())
+    Try(plotFunction())
   })
+  
 
-  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+  CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))  
 }
 
 
@@ -288,24 +292,33 @@ RawIntensityBoxPlot <- function()
   Try(plotTitleList <- GetPlotTitle(plotTitle)) 
   Try(if (length(plotTitleList)==0) return())
   Try(plotTitle <- plotTitleList$plotTitle)    
-  Require("tkrplot")  
-  Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
-  Try(tkwm.withdraw(ttGraph))
-  Try(tkwm.title(ttGraph,plotTitle))
-  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-  Try(tkwm.title(ttGraph,plotTitle))
-  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
-  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
-  Try(tkgrid(imgLimmaGUI))
-  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
-    Try(tkdestroy(ttGraph))
+
+  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  {
+    Require("tkrplot")  
+    CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))  
+    Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+    Try(tkwm.withdraw(ttGraph))
+    Try(tkwm.title(ttGraph,plotTitle))
+    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+    Try(tkwm.title(ttGraph,plotTitle))
+    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)  
+    Try(tkgrid(imgaffylmGUI))
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+      Try(tkdestroy(ttGraph))
+    else
+    {
+      Try(tkwm.deiconify(ttGraph))
+      Try(tkfocus(imgaffylmGUI))   
+    })
+  }
   else
   {
-    Try(tkwm.deiconify(ttGraph))
-    Try(tkfocus(imgLimmaGUI))   
+    Try(plot.new())
+    Try(plotFunction())
   })
 
-  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
 }
 
 
@@ -350,76 +363,34 @@ NormalizedIntensityBoxPlot <- function()
   Try(plotTitleList <- GetPlotTitle(plotTitle)) 
   Try(if (length(plotTitleList)==0) return())
   Try(plotTitle <- plotTitleList$plotTitle)    
-  Require("tkrplot")  
-  Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
-  Try(tkwm.withdraw(ttGraph))
-  Try(tkwm.title(ttGraph,plotTitle))
-  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-  Try(tkwm.title(ttGraph,plotTitle))
-  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
-  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
-  Try(tkgrid(imgLimmaGUI))
-  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
-    Try(tkdestroy(ttGraph))
+
+  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  {
+    Require("tkrplot")  
+    CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))  
+    Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+    Try(tkwm.withdraw(ttGraph))
+    Try(tkwm.title(ttGraph,plotTitle))
+    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+    Try(tkwm.title(ttGraph,plotTitle))
+    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)  
+    Try(tkgrid(imgaffylmGUI))
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+      Try(tkdestroy(ttGraph))
+    else
+    {
+      Try(tkwm.deiconify(ttGraph))
+      Try(tkfocus(imgaffylmGUI))   
+    })
+  }
   else
   {
-    Try(tkwm.deiconify(ttGraph))
-    Try(tkfocus(imgLimmaGUI))   
+    Try(plot.new())
+    Try(plotFunction())
   })
 
-  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
 }
-
-#HeatMap <- function()
-#{
-#  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
-#  Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment)) 
-#  Try(NormalizedAffyData <- get("NormalizedAffyData", envir=affylmGUIenvironment)) 
-#  Try(LocalHScale <- .affylmGUIglobals$Myhscale)
-#  Try(LocalVScale <- .affylmGUIglobals$Myvscale)   
-#  Try(if (ArraysLoaded==FALSE)
-#  {
-#    Try(tkmessageBox(title="Heat Map",message="Error: No arrays have been loaded.",icon="error",default="ok"))
-#    return()
-#  })  
-#  Try(plotFunction <- function() 
-#  {
-#    Try(opar<-par(bg="white"))
-#    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-#    Try(low  <- col2rgb("green")/256)
-#    Try(high <- col2rgb("red")/256)
-#    Try(ncolors<-256)
-#    Try(col <- rgb(seq(low[1], high[1], len = ncolors), seq(low[2], 
-#            high[2], len = ncolors), seq(low[3], high[3], len = ncolors)))
-#    Try(require(mva))
-#    Try(rsd <- apply(exprs(NormalizedAffyData),1,sd))
-#    Try(sel <- order(rsd, decreasing = TRUE)[1:50])
-#    Try(tmp <- exprs(NormalizedAffyData)[sel,])
-#    Try(colnames(tmp) <- SlideNamesVec)
-#    Try(heatmap(tmp,col=col))
-#    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-#    Try(tmp<-par(opar))
-#  })
-#  Try(plotTitle<-"Heat Map")
-#  Require("tkrplot")  
-#  Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
-#  Try(tkwm.withdraw(ttGraph))
-#  Try(tkwm.title(ttGraph,plotTitle))
-#  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-#  Try(tkwm.title(ttGraph,plotTitle))
-#  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
-#  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
-#  Try(tkgrid(imgLimmaGUI))
-#  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
-#    Try(tkdestroy(ttGraph))
-#  else
-#  {
-#    Try(tkwm.deiconify(ttGraph))
-#    Try(tkfocus(imgLimmaGUI))   
-#  })
-#
-#  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
-#}
 
 
 # The idea of having this function below came about from allowing customized menu items.
@@ -449,27 +420,31 @@ generalPlotFunction <- function(code="",WindowTitle="")
     Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
     return()            
   }
-  Require("tkrplot")
 
-  Try(plotFunction <- get("plotFunction",envir=affylmGUIenvironment))
-  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=1,vscale=1))
-  Try(tkwm.title(ttGraph,plotTitle))
-  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
-  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
-
-  Try(tkgrid(imgLimmaGUI))
-  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
-    Try(tkdestroy(ttGraph))
+  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  {
+    Require("tkrplot")
+    CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
+    Try(plotFunction <- get("plotFunction",envir=affylmGUIenvironment))
+    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=1,vscale=1))
+    Try(tkwm.title(ttGraph,plotTitle))
+    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)  
+    Try(tkgrid(imgaffylmGUI))
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+      Try(tkdestroy(ttGraph))
+    else
+    {
+      Try(tkwm.deiconify(ttGraph))
+      Try(tkfocus(imgaffylmGUI))   
+    })
+  }
   else
   {
-    Try(tkwm.deiconify(ttGraph))
-    Try(tkfocus(imgLimmaGUI))   
-  })
+    Try(plot.new())
+    Try(plotFunction())
+  })  
 
-  CopyToClip <- function()
-  {
-    Try(tkrreplot(imgLimmaGUI))
-  }
 }
 
 
@@ -715,19 +690,19 @@ SetupPlotMenus <- function(tt,initialfile,plotFunction,img)
   Try(editMenu <- tkmenu(topMenu, tearoff=FALSE))
   Try(resizeMenu <- tkmenu(topMenu, tearoff=FALSE))  
 
-  Try(tkadd(fileMenu, "command", label="Save As PNG",command=function() SaveGraphAsPNG(initialfile=initialfile,plotFunction=plotFunction))) # ) # ,font=limmaGUIfontMenu))
-  Try(tkadd(fileMenu, "command", label="Save As JPEG",command=function() SaveGraphAsJpeg(initialfile=initialfile,plotFunction=plotFunction))) # ) # ,font=limmaGUIfontMenu))  
-  Try(tkadd(fileMenu, "command", label="Save As Postscript",command=function() SaveGraphAsPostscript(initialfile=initialfile,plotFunction=plotFunction))) # ) # ,font=limmaGUIfontMenu))
-  Try(tkadd(fileMenu, "command", label="Save As PDF",command=function() SaveGraphAsPDF(initialfile=initialfile,plotFunction=plotFunction))) # ) # ,font=limmaGUIfontMenu))    
+  Try(tkadd(fileMenu, "command", label="Save As PNG",command=function() SaveGraphAsPNG(initialfile=initialfile,plotFunction=plotFunction))) 
+  Try(tkadd(fileMenu, "command", label="Save As JPEG",command=function() SaveGraphAsJpeg(initialfile=initialfile,plotFunction=plotFunction)))
+  Try(tkadd(fileMenu, "command", label="Save As Postscript",command=function() SaveGraphAsPostscript(initialfile=initialfile,plotFunction=plotFunction))) 
+  Try(tkadd(fileMenu, "command", label="Save As PDF",command=function() SaveGraphAsPDF(initialfile=initialfile,plotFunction=plotFunction))) 
   Try(tkadd(fileMenu, "separator"))
-  Try(tkadd(fileMenu, "command", label="Close",command=function() tkdestroy(tt))) # ) # ,font=limmaGUIfontMenu))
-  Try(tkadd(topMenu, "cascade", label="File",menu=fileMenu)) # ) # ,font=limmaGUIfontMenu))
+  Try(tkadd(fileMenu, "command", label="Close",command=function() tkdestroy(tt))) 
+  Try(tkadd(topMenu, "cascade", label="File",menu=fileMenu))
 
-  Try(tkadd(editMenu, "command", label="Copy <Ctrl-C>",command=function() CopyGraph(img=img))) # ) # ,font=limmaGUIfontMenu))
-  Try(tkadd(topMenu, "cascade", label="Edit", menu=editMenu)) # ) # ,font=limmaGUIfontMenu))
+  Try(tkadd(editMenu, "command", label="Copy <Ctrl-C>",command=function() CopyGraph(img=img))) 
+  Try(tkadd(topMenu, "cascade", label="Edit", menu=editMenu))
 
-  Try(tkadd(resizeMenu, "command", label="Resize Window",command=function() Resize(img=img,plotFunction=plotFunction))) # ) # ,font=limmaGUIfontMenu))
-  Try(tkadd(topMenu, "cascade", label="Resize", menu=resizeMenu)) # ) # ,font=limmaGUIfontMenu))
+  Try(tkadd(resizeMenu, "command", label="Resize Window",command=function() Resize(img=img,plotFunction=plotFunction))) 
+  Try(tkadd(topMenu, "cascade", label="Resize", menu=resizeMenu)) 
   return (list(topMenu=topMenu,fileMenu=fileMenu,editMenu=editMenu,resizeMenu=resizeMenu))
 }
 
@@ -921,7 +896,7 @@ VennDiagramPlot <- function()
   plotVennDiagram <- function()
   {
     Try(opar<-par(bg="white"))
-    Try(vennDiagramlimmaGUI(vc,include=include,names=as.vector(setNames),cex=0.85,mar=rep(1,4)))
+    Try(vennDiagramaffylmGUI(vc,include=include,names=as.vector(setNames),cex=0.85,mar=rep(1,4)))
     Try(TempGraphPar<-par(opar))
   }
   
@@ -958,19 +933,28 @@ VennDiagramPlot <- function()
   Try(tkfocus(.affylmGUIglobals$ttMain))
   Try(ttVennDiagramPlot <- tktoplevel(.affylmGUIglobals$ttMain))  
   Try(tkwm.title(ttVennDiagramPlot,plotTitle))
-  Try(Require("tkrplot"))
-  Try(img <- tkrplot(ttVennDiagramPlot,plotVennDiagram,hscale=LocalHScale,vscale=LocalVScale))
-  Try(SetupPlotKeyBindings(tt=ttVennDiagramPlot,img=img))
-  Try(SetupPlotMenus(tt=ttVennDiagramPlot,initialfile=paste(limmaDataSetNameText,"VennDiagram",sep=""),
+
+  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  {
+    Try(Require("tkrplot"))
+    Try(img <- tkrplot(ttVennDiagramPlot,plotVennDiagram,hscale=LocalHScale,vscale=LocalVScale))
+    Try(SetupPlotKeyBindings(tt=ttVennDiagramPlot,img=img))
+    Try(SetupPlotMenus(tt=ttVennDiagramPlot,initialfile=paste(limmaDataSetNameText,"VennDiagram",sep=""),
                  plotFunction=plotVennDiagram,img=img))
   
-  Try(tkgrid(img))
-  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")) 
+    Try(tkgrid(img))
+    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")) 
 
-  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",img)))<10)  # Nothing plotted.
-    Try(tkdestroy(ttVennDiagramPlot))
-  else  
-    Try(tkfocus(ttVennDiagramPlot)))  
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",img)))<10)  # Nothing plotted.
+      Try(tkdestroy(ttVennDiagramPlot))
+    else  
+      Try(tkfocus(ttVennDiagramPlot)))  
+  }
+  else
+  {
+    Try(plot.new())
+    Try(plotFunction())
+  })
 }
 
 
@@ -1012,7 +996,7 @@ UpDownOrBoth <- function()
 }
 
 
-vennDiagramlimmaGUI <- function(object,include="both",names,cex=1.5,mar=rep(1,4),...) {
+vennDiagramaffylmGUI <- function(object,include="both",names,cex=1.5,mar=rep(1,4),...) {
 # Plot Venn diagram
 # Gordon Smyth and James Wettenhall
 # 4 July 2003.  Last modified 23 September 2003.
@@ -1237,18 +1221,26 @@ HeatDiagramPlot <- function()
 
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch")) 
   Try(tkfocus(.affylmGUIglobals$ttMain))
-  Try(ttHeatDiagramPlot <- tktoplevel(.affylmGUIglobals$ttMain))  
-  tkwm.title(ttHeatDiagramPlot,plotTitle)
-  Try(Require("tkrplot"))
 
-  img <-tkrplot(ttHeatDiagramPlot,plotHD,hscale=LocalHScale,vscale=LocalVScale) 
-  Try(SetupPlotKeyBindings(tt=ttHeatDiagramPlot,img=img))
-  Try(SetupPlotMenus(tt=ttHeatDiagramPlot,initialfile=paste(limmaDataSetNameText,"HeatDiagram",sep=""),
+  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  {
+    Try(ttHeatDiagramPlot <- tktoplevel(.affylmGUIglobals$ttMain))  
+    Try(tkwm.title(ttHeatDiagramPlot,plotTitle))
+    Try(Require("tkrplot"))
+    Try(img <-tkrplot(ttHeatDiagramPlot,plotHD,hscale=LocalHScale,vscale=LocalVScale))
+    Try(SetupPlotKeyBindings(tt=ttHeatDiagramPlot,img=img))
+    Try(SetupPlotMenus(tt=ttHeatDiagramPlot,initialfile=paste(limmaDataSetNameText,"HeatDiagram",sep=""),
                  plotFunction=plotHD,img=img))
   
-  tkgrid(img)
-  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")) 
-  tkfocus(ttHeatDiagramPlot)
+    Try(tkgrid(img))
+    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")) 
+    Try(tkfocus(ttHeatDiagramPlot))
+  }
+  else
+  {
+    Try(plot.new())
+    Try(plotFunction())
+  })
 }
 
 affyPlotMA <- function()
@@ -1323,24 +1315,32 @@ affyPlotMA <- function()
   Try(xLabel    <- plotLabels$xLabel)
   Try(yLabel    <- plotLabels$yLabel)
     
-  Require("tkrplot")  
-  Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
-  Try(tkwm.withdraw(ttGraph))
-  Try(tkwm.title(ttGraph,plotTitle))
-  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-  Try(tkwm.title(ttGraph,plotTitle))
-  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
-  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
-  Try(tkgrid(imgLimmaGUI))
-  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
-    Try(tkdestroy(ttGraph))
+  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  {
+    Require("tkrplot")  
+    CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))  
+    Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+    Try(tkwm.withdraw(ttGraph))
+    Try(tkwm.title(ttGraph,plotTitle))
+    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+    Try(tkwm.title(ttGraph,plotTitle))
+    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)  
+    Try(tkgrid(imgaffylmGUI))
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+      Try(tkdestroy(ttGraph))
+    else
+    {
+      Try(tkwm.deiconify(ttGraph))
+      Try(tkfocus(imgaffylmGUI))   
+    })
+  }
   else
   {
-    Try(tkwm.deiconify(ttGraph))
-    Try(tkfocus(imgLimmaGUI))   
+    Try(plot.new())
+    Try(plotFunction())
   })
 
-  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
 }
 
 
@@ -1533,25 +1533,33 @@ affyPlotMAcontrast <- function()
   Try(plotTitle <- plotLabels$plotTitle)
   Try(xLabel    <- plotLabels$xLabel)
   Try(yLabel    <- plotLabels$yLabel)
-      
-  Require("tkrplot")  
-  Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
-  Try(tkwm.withdraw(ttGraph))
-  Try(tkwm.title(ttGraph,plotTitle))
-  Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-  Try(tkwm.title(ttGraph,plotTitle))
-  SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
-  SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
-  Try(tkgrid(imgLimmaGUI))
-  Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
-    Try(tkdestroy(ttGraph))
+
+  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  {
+    Require("tkrplot")  
+    CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))  
+    Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+    Try(tkwm.withdraw(ttGraph))
+    Try(tkwm.title(ttGraph,plotTitle))
+    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+    Try(tkwm.title(ttGraph,plotTitle))
+    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)  
+    Try(tkgrid(imgaffylmGUI))
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+      Try(tkdestroy(ttGraph))
+    else
+    {
+      Try(tkwm.deiconify(ttGraph))
+      Try(tkfocus(imgaffylmGUI))   
+    })
+  }
   else
   {
-    Try(tkwm.deiconify(ttGraph))
-    Try(tkfocus(imgLimmaGUI))   
+    Try(plot.new())
+    Try(plotFunction())
   })
 
-  CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
 }
 
 GetGeneLabelsOptions <- function()
@@ -1694,17 +1702,25 @@ QQTplot <- function()
 
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
   Try(tkfocus(.affylmGUIglobals$ttMain))
-  Try(ttQQTplot <- tktoplevel(.affylmGUIglobals$ttMain))
-  Try(tkwm.title(ttQQTplot,plotTitle))
-  Try(Require("tkrplot"))
 
-  Try(img <-tkrplot(ttQQTplot,plotQQT,hscale=LocalHScale,vscale=LocalVScale))
-  Try(SetupPlotKeyBindings(tt=ttQQTplot,img=img))
-  Try(SetupPlotMenus(tt=ttQQTplot,initialfile=paste(limmaDataSetNameText,"QQTPlot",ContrastNamesVec[contrast],sep=""),
+  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  {
+    Try(Require("tkrplot"))
+    Try(ttQQTplot <- tktoplevel(.affylmGUIglobals$ttMain))
+    Try(tkwm.title(ttQQTplot,plotTitle))
+    Try(img <-tkrplot(ttQQTplot,plotQQT,hscale=LocalHScale,vscale=LocalVScale))
+    Try(SetupPlotKeyBindings(tt=ttQQTplot,img=img))
+    Try(SetupPlotMenus(tt=ttQQTplot,initialfile=paste(limmaDataSetNameText,"QQTPlot",ContrastNamesVec[contrast],sep=""),
                  plotFunction=plotQQT,img=img))
+    Try(tkgrid(img))
+    Try(tkfocus(ttQQTplot))
+  }
+  else
+  {
+    Try(plot.new())
+    Try(plotFunction())
+  })  
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")) 
-  Try(tkgrid(img))
-  Try(tkfocus(ttQQTplot))
 }
 
 LogOddsPlot <- function()
@@ -1861,19 +1877,26 @@ LogOddsPlot <- function()
 
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch")) 
   Try(tkfocus(.affylmGUIglobals$ttMain))  
-  Try(ttLogOddsPlot <- tktoplevel(.affylmGUIglobals$ttMain))  
-  Try(tkwm.title(ttLogOddsPlot,plotTitle))
-  Try(Require("tkrplot"))
 
-  Try(img <-tkrplot(ttLogOddsPlot,plotLogOdds,hscale=LocalHScale,vscale=LocalVScale))
-  Try(SetupPlotKeyBindings(tt=ttLogOddsPlot,img=img))
-  Try(SetupPlotMenus(tt=ttLogOddsPlot,initialfile=paste(limmaDataSetNameText,"LogOddsPlot",ContrastNamesVec[contrast],sep=""),
+  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  {
+    Try(ttLogOddsPlot <- tktoplevel(.affylmGUIglobals$ttMain))  
+    Try(tkwm.title(ttLogOddsPlot,plotTitle))
+    Try(Require("tkrplot"))
+    Try(img <-tkrplot(ttLogOddsPlot,plotLogOdds,hscale=LocalHScale,vscale=LocalVScale))
+    Try(SetupPlotKeyBindings(tt=ttLogOddsPlot,img=img))
+    Try(SetupPlotMenus(tt=ttLogOddsPlot,initialfile=paste(limmaDataSetNameText,"LogOddsPlot",ContrastNamesVec[contrast],sep=""),
                  plotFunction=plotLogOdds,img=img))
   
-  Try(tkgrid(img))
+    Try(tkgrid(img))
+    Try(tkfocus(ttLogOddsPlot))
+  }
+  else
+  {
+    Try(plot.new())
+    Try(plotFunction())
+  })  
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-  Try(tkfocus(ttLogOddsPlot))
-
 }
 
 
@@ -1936,11 +1959,18 @@ ImageQualityPlot <- function()
   Try(plotTitle <- plotLabels$plotTitle)
   Try(xLabel    <- plotLabels$xLabel)
   Try(yLabel    <- plotLabels$yLabel)
-  
-  Try(WhetherToUseTkrplot <- tclvalue(tkmessageBox(title="Where To Plot Array Image",type="yesnocancel",
+
+Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+  Try(WhetherToUseRplot <- tclvalue(tkmessageBox(title="Where To Plot Array Image",type="yesnocancel",
     message="Plot this image in R rather than a new (Tk) window? (Requires less memory.)",icon="question")))
-  Try(if (WhetherToUseTkrplot=="cancel") return())
-  Try(if (WhetherToUseTkrplot=="yes")
+  else
+    Try(WhetherToUseRplot <- "yes"))
+  Try(if (WhetherToUseRplot=="cancel") 
+  {
+    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+    return()
+  })
+  Try(if (WhetherToUseRplot=="yes")
     plotFunction()
   else
   {
@@ -1948,20 +1978,20 @@ ImageQualityPlot <- function()
     Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
     Try(tkwm.withdraw(ttGraph))
     Try(tkwm.title(ttGraph,plotTitle))
-    Try(imgLimmaGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
     Try(tkwm.title(ttGraph,paste("Image Plot for",SlideNamesVec[slide])))
-    SetupPlotKeyBindings(tt=ttGraph,img=imgLimmaGUI)
-    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgLimmaGUI)  
-    Try(tkgrid(imgLimmaGUI))
-    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgLimmaGUI)))<10)  # Nothing plotted.
+    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)  
+    Try(tkgrid(imgaffylmGUI))
+    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
       Try(tkdestroy(ttGraph))
     else
     {
       Try(tkwm.deiconify(ttGraph))
-      Try(tkfocus(imgLimmaGUI))   
+      Try(tkfocus(imgaffylmGUI))   
     })
 
-    CopyToClip <- function() Try(tkrreplot(imgLimmaGUI))  
+    CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))  
   })
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 }

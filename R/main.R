@@ -212,6 +212,9 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE)
   Try(initGlobals())
 
   Try(affylmGUIglobals <- get(".affylmGUIglobals",envir=.GlobalEnv))  
+  Try(affylmGUIglobals$graphicsDevice <- "tkrplot")
+  Try(if (Sys.info()["sysname"]=="Darwin")  
+    Try(affylmGUIglobals$graphicsDevice <- "R"))
   Try(affylmGUIglobals$Myhscale <- 1)
   Try(affylmGUIglobals$Myvscale <- 1)
   Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
@@ -2647,12 +2650,14 @@ evalRcode <- function()
   Try(code <- tclvalue(tkget(txt,"0.0","end")))
   if (runType!="runTextOnly")
   {
-     Try(LocalHScale <- .affylmGUIglobals$Myhscale)
-     Try(LocalVScale <- .affylmGUIglobals$Myvscale)   
-
-    Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
-    Try(tkwm.withdraw(ttGraph))
-    Try(tkwm.title(ttGraph,"Graphical Results from R Code Evaluation"))
+    Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
+    {
+      Try(LocalHScale <- .affylmGUIglobals$Myhscale)
+      Try(LocalVScale <- .affylmGUIglobals$Myvscale)   
+      Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+      Try(tkwm.withdraw(ttGraph))
+      Try(tkwm.title(ttGraph,"Graphical Results from R Code Evaluation"))
+    })
     Try(codeGraph <- paste("assign(\"plotFunction\",function () {\nopar<-par(bg=\"white\")\nTry({\n",code,"\n})\n\ntempGraphPar <- par(opar)\n},affylmGUIenvironment)\n",sep=""))
   }
 
@@ -2716,26 +2721,35 @@ evalRcode <- function()
     Try(sink(type="message"))
     Try(sink())
     Try(try(close(RoutFileObjectGraph),TRUE))
-    Require("tkrplot")
 
-    Try(plotFunction <- get("plotFunction",envir=affylmGUIenvironment))
-    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
-    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)  
 
-    Try(tkgrid(imgaffylmGUI))
-    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
-      Try(tkdestroy(ttGraph))
-    else
+    Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
     {
-      Try(tkwm.deiconify(ttGraph))
-      Try(tkfocus(imgaffylmGUI))   
-    })
-    
-    CopyToClip <- function()
-    {
-      Try(tkrreplot(imgaffylmGUI))
+      Require("tkrplot")
+      Try(plotFunction <- get("plotFunction",envir=affylmGUIenvironment))
+      Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+      SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+      SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)  
+  
+      Try(tkgrid(imgaffylmGUI))
+      Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+        Try(tkdestroy(ttGraph))
+      else
+      {
+        Try(tkwm.deiconify(ttGraph))
+        Try(tkfocus(imgaffylmGUI))   
+      })
+      
+      CopyToClip <- function()
+      {
+        Try(tkrreplot(imgaffylmGUI))
+      }
     }
+   else
+   {
+     Try(plot.new())
+     Try(plotFunction())
+   })    
   }
 
   if (runType!="runGraphicsOnly") 
