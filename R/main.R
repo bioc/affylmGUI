@@ -427,7 +427,7 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE)
 
   Try(etc <- system.file("etc",package="affylmGUI"))
   Try(cat(paste("\nSearching for user-defined affylmGUI commands in",etc,"...\n")))
-  Try(source.files <- list.files(etc, pattern="*.R$"))
+  Try(source.files <- list.files(etc, pattern="\\.R$"))
     Try(for (file in source.files) {
         Try(source(file.path(etc, file)))
         Try(cat(paste("Sourced:", file, "\n")))
