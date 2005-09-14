@@ -893,7 +893,7 @@ VennDiagramPlot <- function()
 
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")) 
     
-  plotVennDiagram <- function()
+  plotFunction <- function()
   {
     Try(opar<-par(bg="white"))
     Try(vennDiagramaffylmGUI(vc,include=include,names=as.vector(setNames),cex=0.85,mar=rep(1,4)))
@@ -931,16 +931,16 @@ VennDiagramPlot <- function()
 
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch")) 
   Try(tkfocus(.affylmGUIglobals$ttMain))
-  Try(ttVennDiagramPlot <- tktoplevel(.affylmGUIglobals$ttMain))  
-  Try(tkwm.title(ttVennDiagramPlot,plotTitle))
 
   Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
   {
+    Try(ttVennDiagramPlot <- tktoplevel(.affylmGUIglobals$ttMain))  
+    Try(tkwm.title(ttVennDiagramPlot,plotTitle))
     Try(Require("tkrplot"))
-    Try(img <- tkrplot(ttVennDiagramPlot,plotVennDiagram,hscale=LocalHScale,vscale=LocalVScale))
+    Try(img <- tkrplot(ttVennDiagramPlot,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
     Try(SetupPlotKeyBindings(tt=ttVennDiagramPlot,img=img))
     Try(SetupPlotMenus(tt=ttVennDiagramPlot,initialfile=paste(limmaDataSetNameText,"VennDiagram",sep=""),
-                 plotFunction=plotVennDiagram,img=img))
+                 plotFunction=plotFunction,img=img))
   
     Try(tkgrid(img))
     Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")) 
@@ -1199,7 +1199,7 @@ HeatDiagramPlot <- function()
   else
     colnames(eb$t) <- contrastNamesVec) # Local assignment only.
 
-  plotHD <- function() 
+  plotFunction <- function() 
   {
     Try(opar<-par(bg="white"))
     Try(heatdiagram(abs(eb$t),fit$coefficients,primary=1,
@@ -1227,10 +1227,10 @@ HeatDiagramPlot <- function()
     Try(ttHeatDiagramPlot <- tktoplevel(.affylmGUIglobals$ttMain))  
     Try(tkwm.title(ttHeatDiagramPlot,plotTitle))
     Try(Require("tkrplot"))
-    Try(img <-tkrplot(ttHeatDiagramPlot,plotHD,hscale=LocalHScale,vscale=LocalVScale))
+    Try(img <-tkrplot(ttHeatDiagramPlot,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
     Try(SetupPlotKeyBindings(tt=ttHeatDiagramPlot,img=img))
     Try(SetupPlotMenus(tt=ttHeatDiagramPlot,initialfile=paste(limmaDataSetNameText,"HeatDiagram",sep=""),
-                 plotFunction=plotHD,img=img))
+                 plotFunction=plotFunction,img=img))
   
     Try(tkgrid(img))
     Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")) 
@@ -1678,21 +1678,18 @@ QQTplot <- function()
     Try(cex <- 0.3)
   else
     Try(cex <- 0.2))    
-  plotQQT <- function() 
+  plotFunction <- function() 
   {
     Try(opar<-par(bg="white"))
     Try(if (NumContrasts>1) 
-      qqt(fit$t[,contrast],df=fit$df.residual+fit$df.prior,pch=16,cex=cex)
+      qqt(fit$t[,contrast],df=fit$df.residual+fit$df.prior,pch=16,cex=cex,main=plotTitle)
     else 
-      qqt(fit$t,df=fit$df.residual+fit$df.prior,pch=16,cex=cex))
-    Try(title(plotTitle))
+      qqt(fit$t,df=fit$df.residual+fit$df.prior,pch=16,cex=cex,main=plotTitle))
     abline(0,1) 
     Try(tempGraphPar <- par(opar))
   }
   Try(LocalHScale <- .affylmGUIglobals$Myhscale)
-  Try(LocalVScale <- .affylmGUIglobals$Myvscale)   
-   
-#  Try(plotTitle <- paste("Student's t Quantile-Quantile Plot for",ContrastNamesVec[contrast]))
+  Try(LocalVScale <- .affylmGUIglobals$Myvscale)
   Try(plotTitle <- ContrastNamesVec[contrast])
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")) 
   Try(plotTitleList <- GetPlotTitle(plotTitle)) 
@@ -1708,10 +1705,10 @@ QQTplot <- function()
     Try(Require("tkrplot"))
     Try(ttQQTplot <- tktoplevel(.affylmGUIglobals$ttMain))
     Try(tkwm.title(ttQQTplot,plotTitle))
-    Try(img <-tkrplot(ttQQTplot,plotQQT,hscale=LocalHScale,vscale=LocalVScale))
+    Try(img <-tkrplot(ttQQTplot,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
     Try(SetupPlotKeyBindings(tt=ttQQTplot,img=img))
     Try(SetupPlotMenus(tt=ttQQTplot,initialfile=paste(limmaDataSetNameText,"QQTPlot",ContrastNamesVec[contrast],sep=""),
-                 plotFunction=plotQQT,img=img))
+                 plotFunction=plotFunction,img=img))
     Try(tkgrid(img))
     Try(tkfocus(ttQQTplot))
   }
@@ -1846,7 +1843,7 @@ LogOddsPlot <- function()
     
   })
 
-  plotLogOdds <- function()
+  plotFunction <- function()
   {
     Try(opar<-par(bg="white"))
     Try(if (NumContrasts>1)
@@ -1883,10 +1880,10 @@ LogOddsPlot <- function()
     Try(ttLogOddsPlot <- tktoplevel(.affylmGUIglobals$ttMain))  
     Try(tkwm.title(ttLogOddsPlot,plotTitle))
     Try(Require("tkrplot"))
-    Try(img <-tkrplot(ttLogOddsPlot,plotLogOdds,hscale=LocalHScale,vscale=LocalVScale))
+    Try(img <-tkrplot(ttLogOddsPlot,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
     Try(SetupPlotKeyBindings(tt=ttLogOddsPlot,img=img))
     Try(SetupPlotMenus(tt=ttLogOddsPlot,initialfile=paste(limmaDataSetNameText,"LogOddsPlot",ContrastNamesVec[contrast],sep=""),
-                 plotFunction=plotLogOdds,img=img))
+                 plotFunction=plotFunction,img=img))
   
     Try(tkgrid(img))
     Try(tkfocus(ttLogOddsPlot))
