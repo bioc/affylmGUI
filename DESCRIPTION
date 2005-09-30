@@ -4,11 +4,11 @@ Date: 16 Sep 2005
 Title: GUI for affy analysis using limma package
 Author:	James Wettenhall and Ken Simpson
 	Division of Genetics and Bioinformatics, WEHI.
-Maintainer: James Wettenhall <wettenhall@wehi.edu.au>
+Maintainer: James Wettenhall <wettenhall@wehi.edu.au> Keith Satterley <keith@wehi.edu.au>
 Depends: limma, tcltk, affy
 Suggests: tkrplot, affyPLM, R2HTML, xtable
 Description: A Graphical User Interface for affy analysis using the limma Microarray package
+biocViews: Microarray, OneChannel, DataImport, QualityControl, Preprocessing, Statistics, DifferentialExpression, MultipleComparisons
 License: GPL version 2 or newer
 URL: http://bioinf.wehi.edu.au/affylmGUI/
-biocViews: Microarray,OneChannel,DataImport,Preprocessing,DifferentialExpression
 Packaged: Fri Jun 10 15:09:45 2005; wettenhall
