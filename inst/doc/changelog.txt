@@ -1,0 +1,46 @@
+
+------------------------- affylmGUI ChangeLog -------------------------
+10 April 2006 affylmGUI 1.5.4
+	Remove dependence on reposTools package in main.R and plot.R
+	Replace tkcmd with tcl in about 50 places
+	Replacing tkcmd(open...) with tclopen(..., similarly for tkcmd read and close
+	  did not work, reverted to deprecated tkcmd syntax - need to sort this out.
+	Add additional reference to CITATION text file
+
+17 January 2006 affylmGUI 1.5.3
+	Add citation entries for gcrma and rma
+
+30 November 2005 affylmGUI 1.4.3
+	Add ChangeLog item to Help Menu - shows 20 lines
+	Add the showChangeLog function to main.R
+	Add Citations item to Help Menu.
+	Add Sentence on Main window telling users about the Citations item
+	on the Help Menu.
+	Fix limma help function on Help menu.
+	Make message for help functions appear in R console rather than as a
+	separate tkmessage box.
+	Add utility.R to R subdirectory which contains the changeLog
+	function and the limmaUsersGuide function.
+
+8 November 2005 affylmGUI 1.4.2
+- Add this changelog.txt file to the doc sub-directory of the inst sub-directory.
+
+4 November 2005 affylmGUI 1.4.2
+- Include PlotOptions.R in distribution to Bioconductor devel site
+- Modify main.R - Adjust Menu box for Top Table was changed to only
+  display None, BH, BY and Holm as alternative Adjustment methods
+- Modify main.R to include Adjustment method in heading of top table plot
+
+October 2005 14 2005: affylmGUI 1.4.0.
+	affylmGUI version upgraded from 1.3 to 1.4.0 for release
+	by Bioconductor for release with Bioconductor
+	version 1.7 (for release after R 2.2.0)
+	Maintainer changed from James Wettenhall to Keith Satterley
+
+
+PRE-HISTORY
+
+affylmGUI was developed by James Wettenhall, Gordon Smyth and Ken
+Simpson between 2003 and October 2005.
+
+=======================================================================

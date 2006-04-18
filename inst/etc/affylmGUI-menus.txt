@@ -62,5 +62,7 @@
     item    helpMenu        command         "affy Help"                                     affyHelp 
     item    helpMenu        command         "Limma Help"                                    limmaHelp
     item    helpMenu        separator       ""                                              ""
+    item    helpMenu        command         "Citations"                                     showCitations
+    item    helpMenu        command         "ChangeLog"                                     showChangeLog
     item    helpMenu        command         "About affylmGUI"                               AboutaffylmGUI
     item    topMenu         cascade         "Help"                                          helpMenu

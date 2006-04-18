@@ -100,6 +100,9 @@
 \alias{affyHelp}
 \alias{affylmGUIhelp}
 \alias{limmaHelp}
+\alias{ALGlimmaUsersGuide}
+\alias{showCitations}
+\alias{showChangeLog}
 \alias{onDestroy}
 \alias{GetPValueCutoff}
 \alias{fixSeps}
@@ -208,6 +211,9 @@ affylmGUI(BigfontsForaffylmGUIpresentation=FALSE)
 affyHelp()
 affylmGUIhelp()
 limmaHelp()
+ALGlimmaUsersGuide()
+showCitations()
+showChangeLog()
 onDestroy()
 GetPValueCutoff(p.value=0.01)
 PlotOptions()
@@ -215,10 +221,10 @@ PlotOptions()
 
 
 \arguments{
-	\item{BigfontsForaffylmGUIpresentation}{If set to TRUE, larger fonts are used.  However, some font 
+	\item{BigfontsForaffylmGUIpresentation}{If set to TRUE, larger fonts are used.  However, some font
 	sizes are not controlled by affylmGUI and so must be adjusted in the operating system, e.g.
 	in the Control Panel in Windows under Display, Appearance.}
-	\item{p.value}{A p-value cutoff.}	
+	\item{p.value}{A p-value cutoff.}
 	\item{FileName}{A file name.}
 	\item{string}{A character string.}
 }
@@ -226,7 +232,7 @@ PlotOptions()
 \details{
 This function launches a Graphical User Interface for the limma package by Gordon Smyth.
 The GUI uses Tk widgets (via the R TclTk interface by Peter Dalgaard) in order to provide
-a simple interface to the limma functions for linear modelling of microarrays and 
+a simple interface to the limma functions for linear modelling of microarrays and
 identification of differentially expressed genes.
 }
 

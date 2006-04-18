@@ -1,0 +1,129 @@
+citHeader(
+  "affylmGUI is an implementation of a body of methodological research by the authors and coworkers. Please cite the appropriate methodological papers whenever you use results from the limma software in a publication. Such citations are the main means by which the authors receive professional credit for their work.
+
+  Citing limma and affylmGUI in publications will usually involve citing one or more of the methodology papers that the limma software is based on as well as citing the limma(Ref.2)  and affylmGUI(Ref.5) software packages themselves.
+
+  If you use limma/affylmGUI for differential expression analysis, please cite reference 1 which describes the linear modeling approach implemented by lmFit and the empirical Bayes statistics implemented by eBayes, topTable etc.
+
+  To cite the limma software itself please refer to reference 2 which describes the software package in the context of the Bioconductor project and surveys the range of experimental designs for which the package can be used, including spotspecific dye-effects. The pre-processing capabilities of the package are also described but more briefly, with examples of background correction, spot quality weights and filtering with control spots. This article is also the best current reference for the normexp background correction method.
+
+  To cite the GC robust multiarray average (GCRMA) background correction method please refer to citation 3.
+
+  To cite the robust multiarray average (RMA) background correction method please refer to citation 4."
+)
+
+citEntry(
+  note        = "If you use affylmGUI/limma for differential expression analysis, please cite this article which describes the linear modeling approach implemented by lmFit and the empirical Bayes statistics implemented by eBayes, topTable etc.",
+  entry       = "article",
+  title       = "Linear models and empirical Bayes methods for assessing differential expression in microarray experiments.",
+  author      = person(first="Gordon",middle="K",last="Smyth"),
+  journal     = "Statistical Applications in Genetics and Molecular Biology",
+  volume      = 3,
+  pages       = "No.1 Article 3",
+  textVersion =
+  paste(
+    "1. Smyth, G. K. (2004). Linear models and empirical Bayes methods for assessing",
+    "differential expression in microarray experiments.",
+    "Statistical Applications in Genetics and Molecular Biology",
+    "Vol. 3, No. 1, Article 3."
+  )
+)
+
+citEntry(
+  note        = "To cite the limma software itself please refer to this article which describes the software package in the context of the Bioconductor project and surveys the range of experimental designs for which the package can be used, including spotspecific dye-effects. The pre-processing capabilities of the package are also described but more briefly, with examples of background correction, spot quality weights and filtering with control spots. This article is also the best current reference for the normexp background correction method.",
+  entry       = "inbook",
+  title       = "Limma: linear models for microarray data.",
+  author      =  person(first = "Gordon", middle = "K", last="Smyth"),
+  booktitle   = "Bioinformatics and Computational Biology Solutions using R and Bioconductor",
+  editor      = "R. Gentleman, V. Carey, S. Dudoit, R. Irizarry, W. Huber",
+  publisher   = "Springer",
+  address     = "New York",
+  year        = 2005,
+  pages       = "397-420",
+  textVersion =
+  paste(
+    "2. Smyth, G. K. (2005). Limma: linear models for microarray",
+    "data. In: 'Bioinformatics and Computational Biology Solutions",
+    "using R and Bioconductor'. R. Gentleman, V. Carey, S. Dudoit,",
+    "R. Irizarry, W. Huber (eds), Springer, New York, pages 397–420."
+  )
+)
+
+citEntry(
+  note        = "To cite the gcrma background correction method (GCRMA) please refer to this article which describes gcrma background adjustment procedure.",
+  entry       = "article",
+  title       = "A Model Based Background Adjustment for Oligonucleotide Expression Arrays.",
+  author      = personList(
+                  person(first="Zhijin",middle="",last="Wu"),
+                  person(first="Rafael",middle="A",last="Irizarry"),
+                  person(first="Robert",middle="",last="Gentleman"),
+                  person(first="Francisco",middle="Martinez",last="Murillo"),
+                  person(first="Forrest",middle="",last="Spencer")
+                ),
+  journal     = "Journal of the American Statistical Association",
+  year        = 2004,
+  volume      = 99,
+  pages       = "909-917",
+  textVersion =
+  paste(
+    "3. Zhijin Wu1, Rafael A. Irizarry, Robert Gentleman, Francisco Martinez-Murillo, Forrest Spencer. (2004).",
+    "A Model Based Background Adjustment for Oligonucleotide Expression Arrays",
+    "In the Journal of the American Statistical Association.",
+    "Volume 99, Pages 909–917."
+  )
+)
+
+citEntry(
+  note        = "To cite the robust multiarray average background correction method (RMA) please refer to this article which describes this procedure.",
+  entry       = "article",
+  title       = "Exploration, normalization, and summaries of high density oligonucleotide array probe level data.",
+  author      = personList(
+                  person(first="Rafael",  middle="A",last="Irizarry"),
+                  person(first="Bridget", middle="", last="Hobbs"),
+                  person(first="Francois",middle="", last="Collin"),
+                  person(first="Yasmin",  middle="D",last="Beazer-Barclay"),
+                  person(first="Kristen", middle="J",last="Antonellis,"),
+                  person(first="Uwe",     middle="", last="Scherf"),
+                  person(first="Terence", middle="P",last="Speed")
+                ),
+  journal     = "Biostatistics",
+  year        = 2003,
+  volume      = 4,
+  number      = 2,
+  pages       = "249-264",
+  textVersion =
+  paste(
+    "4. Rafael A. Irizarry, Bridget Hobbs, Francois Collin, Yasmin D. Beazer-Barclay, Kristen J. Antonellis,",
+    "Uwe Scherf, Terence P. Speed. (2003).",
+    "Exploration, normalization, and summaries of high density oligonucleotide array probe level data",
+    "In the Journal Biostatistics.",
+    "Volume 4(2), Pages 249–264."
+  )
+)
+
+citEntry(
+  note        = "The affylmGUI software itself should be cited using this article.",
+  entry       = "article",
+  title       = "affylmGUI: a graphical user interface for linear modeling of single channel microarray data",
+  author      = personList(
+                  person(first = "James", middle = "M", last="Wettenhall"),
+                  person(first = "Ken",   middle = "M", last="Simpson"),
+                  person(first = "Keith",               last="Satterley"),
+                  person(first = "Gordon",middle = "K", last="Smyth")
+                ),
+  journal     = "Bioinformatics",
+  year        = 2006,
+  volume      = 22,
+  pages       = "897-899",
+  textVersion =
+  paste(
+    "5. James M. Wettenhall, Ken M. Simpson, Keith Satterley and Gordon K. Smyth.",
+    "affylmGUI: a graphical user interface for linear",
+    "modeling of single channel microarray data.",
+    "Bioinformatics, 22:897–899, 2006."
+  )
+)
+
+citFooter(
+  ""
+)
