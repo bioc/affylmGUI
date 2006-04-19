@@ -13,41 +13,41 @@
 
 #    AbsGraphFileName <- paste(GraphRelativeDirectory,.Platform$file.sep,GraphFileName,sep="")
     AbsGraphFileName <- file.path(GraphAbsoluteDirectory, GraphFileName)
-    if (GraphSaveAs=="png") 
+    if (GraphSaveAs=="png")
     {
       if (is.null(plotFunction))
         dev.print(png, file = AbsGraphFileName, width=Width,height=Height,pointsize=PointSize,bg=BG)
       else
       {
-        Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")  
+        Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
           Try(bitmap(file = AbsGraphFileName,bg=BG,res=res))
         else
           Try(png(filename = AbsGraphFileName, width=Width,height=Height,pointsize=PointSize,bg=BG)))
-        plotFunction()      
+        plotFunction()
         dev.off()
       }
     }
-    else if (GraphSaveAs=="jpg") 
+    else if (GraphSaveAs=="jpg")
     {
       if (is.null(plotFunction))
         dev.print(jpeg, file = AbsGraphFileName, width=Width,height=Height,pointsize=PointSize,bg=BG)
       else
       {
-        Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")  
+        Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
           Try(bitmap(filename = AbsGraphFileName,bg=BG,res=res,type="jpeg"))
         else
           Try(jpeg(filename = AbsGraphFileName, width=Width,height=Height,pointsize=PointSize,bg=BG)))
-        plotFunction()      
+        plotFunction()
         dev.off()
       }
     }
-    else if (GraphSaveAs=="gif") 
+    else if (GraphSaveAs=="gif")
     {
       if (is.null(plotFunction))
         dev.print(gif, file = AbsGraphFileName, width=Width,height=Height,pointsize=PointSize,bg=BG)
       else
       {
-        stop("When passing a plot function to HTMLplot, device must be jpg or png.")      
+        stop("When passing a plot function to HTMLplot, device must be jpg or png.")
       }
     }
     else stop("GraphSaveAs must be either jpg, png or gif")
@@ -64,7 +64,7 @@
 
 GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL)
 {
-  Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))  
+  Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
 
   Try(ttHTMLreportDialog<-tktoplevel(.affylmGUIglobals$ttMain))
   Try(tkwm.deiconify(ttHTMLreportDialog))
@@ -73,10 +73,10 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
   Try(tkwm.title(ttHTMLreportDialog,"HTML Report"))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),tklabel(ttHTMLreportDialog,text="    ")))
 
-  Try(TargetsTcl                    <- tclVar("1"))  
+  Try(TargetsTcl                    <- tclVar("1"))
   Try(NormalizationMethodTcl        <- tclVar("1"))
   Try(RawIntensityBoxPlotTcl        <- tclVar("1"))
-  Try(NormalizedIntensityBoxPlotTcl <- tclVar("1"))  
+  Try(NormalizedIntensityBoxPlotTcl <- tclVar("1"))
   Try(DesignMatrixTcl               <- tclVar("1"))
 
   Try(if (NumContrastParameterizations>0)
@@ -91,15 +91,15 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
     Try(Top50ToptablesTcl             <- tclVar("1"))
   else
     Try(Top50ToptablesTcl             <- tclVar("0")))
-  Try(if (NumContrastParameterizations>0)    
+  Try(if (NumContrastParameterizations>0)
     Try(CompleteToptablesTcl          <- tclVar("1"))
   else
     Try(CompleteToptablesTcl          <- tclVar("0")))
-  Try(if (NumContrastParameterizations>0)  
-    Try(Top50ToptablesTcl    <- tclVar("1"))    
+  Try(if (NumContrastParameterizations>0)
+    Try(Top50ToptablesTcl    <- tclVar("1"))
   else
     Try(Top50ToptablesTcl    <- tclVar("0")))
-  Try(CompleteToptablesTcl <- tclVar("0"))      
+  Try(CompleteToptablesTcl <- tclVar("0"))
 
   Try(TargetsCheckbox                     <- tkcheckbutton(ttHTMLreportDialog,variable=TargetsTcl))
   Try(NormalizationMethodCheckbox         <- tkcheckbutton(ttHTMLreportDialog,variable=NormalizationMethodTcl))
@@ -108,20 +108,20 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
   Try(DesignMatrixCheckbox                <- tkcheckbutton(ttHTMLreportDialog,variable=DesignMatrixTcl))
   Try(ContrastMatrixCheckbox              <- tkcheckbutton(ttHTMLreportDialog,variable=ContrastMatrixTcl))
   Try(MAPlotsContrastsCheckbox            <- tkcheckbutton(ttHTMLreportDialog,variable=MAPlotsContrastsTcl))
-  Try(Top50ToptablesCheckbox              <- tkcheckbutton(ttHTMLreportDialog,variable=Top50ToptablesTcl))              
-  Try(CompleteToptablesCheckbox           <- tkcheckbutton(ttHTMLreportDialog,variable=CompleteToptablesTcl))                
+  Try(Top50ToptablesCheckbox              <- tkcheckbutton(ttHTMLreportDialog,variable=Top50ToptablesTcl))
+  Try(CompleteToptablesCheckbox           <- tkcheckbutton(ttHTMLreportDialog,variable=CompleteToptablesTcl))
 
   Try(lbl2 <- tklabel(ttHTMLreportDialog,text="Components to be Included in the HTML Report",font=.affylmGUIglobals$affylmGUIfont2))
   tkgrid(tklabel(ttHTMLreportDialog,text="    "),lbl2)
   Try(tkgrid.configure(lbl2,columnspan=3,sticky="w"))
   tkgrid(tklabel(ttHTMLreportDialog,text="    "))
-  
+
   Try(currentLabel <- tklabel(ttHTMLreportDialog,text="RNA Targets",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),TargetsCheckbox,currentLabel))
   Try(tkgrid.configure(TargetsCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
   Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Normalization Method",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),NormalizationMethodCheckbox,currentLabel))
-  Try(tkgrid.configure(NormalizationMethodCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))  
+  Try(tkgrid.configure(NormalizationMethodCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
   Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Raw Intensity Box Plot",font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),RawIntensityBoxPlotCheckbox,currentLabel))
   Try(tkgrid.configure(RawIntensityBoxPlotCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
@@ -148,31 +148,31 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
   if (NumContrastParameterizations==0)
   {
     Try(tkconfigure(ContrastMatrixCheckbox,state="disabled"))
-    Try(tkconfigure(MAPlotsContrastsCheckbox,state="disabled"))    
-    Try(tkconfigure(Top50ToptablesCheckbox,state="disabled"))    
-    Try(tkconfigure(CompleteToptablesCheckbox,state="disabled"))      
+    Try(tkconfigure(MAPlotsContrastsCheckbox,state="disabled"))
+    Try(tkconfigure(Top50ToptablesCheckbox,state="disabled"))
+    Try(tkconfigure(CompleteToptablesCheckbox,state="disabled"))
   }
-  
+
   tkgrid(tklabel(ttHTMLreportDialog,text="    "))
   tkgrid(tklabel(ttHTMLreportDialog,text="    "))
   ReturnVal <- list()
   onOK <- function()
   {
       if (tclvalue(TargetsTcl)=="1") ReturnVal[["Targets"]] <- TRUE else ReturnVal[["Targets"]] <- FALSE
-      if (tclvalue(NormalizationMethodTcl)=="1") ReturnVal[["NormalizationMethod"]] <- TRUE else ReturnVal[["NormalizationMethod"]] <- FALSE      
+      if (tclvalue(NormalizationMethodTcl)=="1") ReturnVal[["NormalizationMethod"]] <- TRUE else ReturnVal[["NormalizationMethod"]] <- FALSE
       if (tclvalue(RawIntensityBoxPlotTcl)=="1") ReturnVal[["RawIntensityBoxPlot"]] <- TRUE else ReturnVal[["RawIntensityBoxPlot"]] <- FALSE
       if (tclvalue(NormalizedIntensityBoxPlotTcl)=="1") ReturnVal[["NormalizedIntensityBoxPlot"]] <- TRUE else ReturnVal[["NormalizedIntensityBoxPlot"]] <- FALSE
-      
+
       if (tclvalue(DesignMatrixTcl)=="1") ReturnVal[["DesignMatrix"]] <- TRUE else ReturnVal[["DesignMatrix"]] <- FALSE
       if (tclvalue(ContrastMatrixTcl)=="1") ReturnVal[["ContrastsMatrix"]] <- TRUE else ReturnVal[["ContrastsMatrix"]] <- FALSE
       if (tclvalue(MAPlotsContrastsTcl)=="1") ReturnVal[["MAPlotsContrasts"]] <- TRUE else ReturnVal[["MAPlotsContrasts"]] <- FALSE
       if (tclvalue(Top50ToptablesTcl)=="1") ReturnVal[["Top50ToptablesTcl"]] <- TRUE else ReturnVal[["Top50Toptables"]] <- FALSE
       if (tclvalue(CompleteToptablesTcl)=="1") ReturnVal[["CompleteToptablesTcl"]] <- TRUE else ReturnVal[["CompleteToptablesTcl"]] <- FALSE
-      
+
       Try(tkgrab.release(ttHTMLreportDialog));Try(tkdestroy(ttHTMLreportDialog));Try(tkfocus(.affylmGUIglobals$ttMain))
       ReturnVal <<- ReturnVal
   }
-  onCancel <- function() {Try(tkgrab.release(ttHTMLreportDialog));Try(tkdestroy(ttHTMLreportDialog));Try(tkfocus(.affylmGUIglobals$ttMain)); ReturnVal <<- list()}      
+  onCancel <- function() {Try(tkgrab.release(ttHTMLreportDialog));Try(tkdestroy(ttHTMLreportDialog));Try(tkfocus(.affylmGUIglobals$ttMain)); ReturnVal <<- list()}
   OK.but <-tkbutton(ttHTMLreportDialog,text="   OK   ",command=onOK,font=.affylmGUIglobals$affylmGUIfont2)
   Cancel.but <-tkbutton(ttHTMLreportDialog,text=" Cancel ",command=onCancel,font=.affylmGUIglobals$affylmGUIfont2)
   tkgrid(tklabel(ttHTMLreportDialog,text="    "),tklabel(ttHTMLreportDialog,text="    "),OK.but,Cancel.but,tklabel(ttHTMLreportDialog,text="    "),tklabel(ttHTMLreportDialog,text="    "))
@@ -185,8 +185,8 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
   Try(tkwait.window(ttHTMLreportDialog))
 
   return (ReturnVal)
-  
-  
+
+
 }
 
 ###########################################################################################################################
@@ -199,11 +199,11 @@ ExportHTMLreport <- function()
   Require("R2HTML")
 
   Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
-  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))   
-  Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))  
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+  Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
   Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
   Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
-  
+
   if (ArraysLoaded==FALSE)
   {
       Try(tkmessageBox(title="Export HTML Report",message="No arrays have been loaded.  Please try New or Open from the File menu.",type="ok",icon="error"))
@@ -215,7 +215,7 @@ ExportHTMLreport <- function()
   {
 		Try(contrastParameterizationIndex <- ChooseContrastParameterization())
 		Try(if (contrastParameterizationIndex==0) return()) # Cancel
-    
+
     Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment))
 		Try(.affylmGUIglobals$ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
 		Try(contrastsMatrix <- as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts))
@@ -224,20 +224,20 @@ ExportHTMLreport <- function()
     Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
   	Try(fit <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$fit)
   	Try(fit <- eBayes(fit))
-    
+
     Try(ComponentsToExport <- GetComponentsToExportInHTMLreport(contrastParameterizationIndex))
  }
  else
      Try(ComponentsToExport <- GetComponentsToExportInHTMLreport())
-  
+
   Try(if (length(ComponentsToExport)==0) return())
 
-  Try(fileNameWithPath<- tkgetSaveFile(initialfile=limmaDataSetNameText,filetypes="{{HTML Files} {.html .htm}} {{All files} *}"))  
+  Try(fileNameWithPath<- tkgetSaveFile(initialfile=limmaDataSetNameText,filetypes="{{HTML Files} {.html .htm}} {{All files} *}"))
   Try(if (nchar(tclvalue(fileNameWithPath))==0)
     return())
-  Try(path     <- tclvalue(tkfile.dir (tclvalue(fileNameWithPath))))
-  Try(fileName <- tclvalue(tkfile.tail(tclvalue(fileNameWithPath))))
-   
+  Try(path     <- tclvalue(tkfile.dir (tclvalue(fileNameWithPath))))###tkfile.dir is deprecated but tclfile.dir fails
+  Try(fileName <- tclvalue(tkfile.tail(tclvalue(fileNameWithPath))))###tkfile.tail is deprecated but tclfile.tail fails
+
   Try(len <- nchar(fileName))
   if (len<4)
       Try(fileName <- paste(fileName,".html",sep=""))
@@ -246,53 +246,53 @@ ExportHTMLreport <- function()
           Try(fileName <- paste(fileName,".html",sep=""))
 
   Try(fileNameWithoutExtension <- substring(fileName,1,nchar(fileName)-5))
-                                                                
+
   Try(HTMLfilePath <- paste(path,.Platform$file.sep,fileNameWithoutExtension,"_files",sep=""))
   Try(HTMLfileRelativePath <- paste(fileNameWithoutExtension,"_files",sep=""))
   Try(dir.create(HTMLfilePath))
-  
-  Try(fileNameWithPath <- paste(path,"/",fileName,sep=""))                                                 
+
+  Try(fileNameWithPath <- paste(path,"/",fileName,sep=""))
 
   Try(R2HTMLpath <- system.file(package="R2HTML","output"))
   Try(cssFileSource <- paste(R2HTMLpath,"/","R2HTML.css",sep=""))
-  Try(cssFileDestination <- paste(path,"/","R2HTML.css",sep=""))  
+  Try(cssFileDestination <- paste(path,"/","R2HTML.css",sep=""))
   Try(R2HTMLlogoSource <- paste(R2HTMLpath,"/","R2HTMLlogo.gif",sep=""))
-  Try(R2HTMLlogoDestination <- paste(path,"/","R2HTMLlogo.gif",sep=""))  
-  Try(file.copy(cssFileSource,cssFileDestination,overwrite=TRUE))  
-  Try(file.copy(R2HTMLlogoSource,R2HTMLlogoDestination,overwrite=TRUE))    
+  Try(R2HTMLlogoDestination <- paste(path,"/","R2HTMLlogo.gif",sep=""))
+  Try(file.copy(cssFileSource,cssFileDestination,overwrite=TRUE))
+  Try(file.copy(R2HTMLlogoSource,R2HTMLlogoDestination,overwrite=TRUE))
 
   Try(HTMLtarget <- HTMLInitFile(path,filename=fileNameWithoutExtension,Title=paste(limmaDataSetNameText,"- Statistical Microarray Analysis using affylmGUI"), HTMLframe=FALSE,BackGroundColor="#FFFFFF"))
 
   Try(HTML.title(paste(limmaDataSetNameText,"- Statistical Microarray Analysis using affylmGUI"),HR=1))
 
-  Try(ExportTargets                    <- ComponentsToExport$Targets)  
-  Try(ExportNormalizationMethod        <- ComponentsToExport$NormalizationMethod)    
-  Try(ExportRawIntensityBoxPlot        <- ComponentsToExport$RawIntensityBoxPlot)    
-  Try(ExportNormalizedIntensityBoxPlot <- ComponentsToExport$NormalizedIntensityBoxPlot)      
+  Try(ExportTargets                    <- ComponentsToExport$Targets)
+  Try(ExportNormalizationMethod        <- ComponentsToExport$NormalizationMethod)
+  Try(ExportRawIntensityBoxPlot        <- ComponentsToExport$RawIntensityBoxPlot)
+  Try(ExportNormalizedIntensityBoxPlot <- ComponentsToExport$NormalizedIntensityBoxPlot)
   Try(ExportDesignMatrix               <- ComponentsToExport$DesignMatrix)
-  Try(ExportContrastsMatrix            <- ComponentsToExport$ContrastsMatrix)  
+  Try(ExportContrastsMatrix            <- ComponentsToExport$ContrastsMatrix)
   Try(ExportMAPlotsContrasts           <- ComponentsToExport$MAPlotsContrasts)
-  Try(ExportTop50Toptables             <- ComponentsToExport$Top50Toptables)    
-  Try(ExportCompleteToptables          <- ComponentsToExport$CompleteToptables)      
+  Try(ExportTop50Toptables             <- ComponentsToExport$Top50Toptables)
+  Try(ExportCompleteToptables          <- ComponentsToExport$CompleteToptables)
 
   if (ExportRawIntensityBoxPlot || ExportNormalizedIntensityBoxPlot || ExportMAPlotsContrasts)
   {
-    Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")  
+    Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
     {
-      Try(pngParams <- GetJpegOrPngX11Params(graphFileType="PNG"))  
+      Try(pngParams <- GetJpegOrPngX11Params(graphFileType="PNG"))
       Try(if (length(pngParams)==0) return())
       Try(plotBG        <- pngParams$bg)
-      Try(plotRes       <- pngParams$res)    
+      Try(plotRes       <- pngParams$res)
     }
     else
     {
       Try(pngParams <- GetJpegOrPngParams(graphFileType="PNG"))
-      Try(if (length(pngParams)==0) return())    
+      Try(if (length(pngParams)==0) return())
       Try(plotWidth     <- pngParams$width)
       Try(plotHeight    <- pngParams$height)
       Try(plotPointSize <- pngParams$pointsize)
       Try(plotBG        <- pngParams$bg)
-    })    
+    })
   }
 
   Try(HTML.title("Contents",HR=2))
@@ -307,7 +307,7 @@ ExportHTMLreport <- function()
   Try(if (ExportCompleteToptables) Try(HTMLli(txt="<a href=\"#CompleteToptables\"><b>Complete Tables of Genes Ranked in order of Evidence for Differential Expression</b></a>")))
 
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-  Try(tkfocus(.affylmGUIglobals$ttMain))    
+  Try(tkfocus(.affylmGUIglobals$ttMain))
 
   if (ExportTargets)
   {
@@ -318,7 +318,7 @@ ExportHTMLreport <- function()
         displayVector[i] <- "d")
     Try(TargetsXtable <- xtable(Targets,display=displayVector))
     Try(HTML.title("<a name=\"Targets\">RNA Targets</a>",HR=2))
-    Try(print(TargetsXtable,type="html",file=fileNameWithPath,append=TRUE))    
+    Try(print(TargetsXtable,type="html",file=fileNameWithPath,append=TRUE))
   }
 
   if (ExportNormalizationMethod)
@@ -334,38 +334,38 @@ ExportHTMLreport <- function()
   {
     Try(HTML.title("<a name=\"RawIntensityBoxPlot\">Raw (Unnormalized) Intensity Box Plot</a>",HR=2))
     Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-    Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment))    
-     Try(plotFunction <- function() 
+    Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment))
+     Try(plotFunction <- function()
     {
       Try(opar<-par(bg="white",cex=0.7))
       Try(boxplot(RawAffyData,col="red",las=2,names=SlideNamesVec))
       Try(title(plotTitle))
       Try(tmp<-par(opar))
-    }) 
+    })
     Try(plotTitle <- "Raw intensity distribution for each slide")
-    Try(HTMLplotUsingFunction(Caption = plotTitle, File = fileNameWithPath, GraphRelativeDirectory = HTMLfileRelativePath , 
-        GraphAbsoluteDirectory = HTMLfilePath, GraphFileName = "RawIntensityBoxPlot", 
+    Try(HTMLplotUsingFunction(Caption = plotTitle, File = fileNameWithPath, GraphRelativeDirectory = HTMLfileRelativePath ,
+        GraphAbsoluteDirectory = HTMLfilePath, GraphFileName = "RawIntensityBoxPlot",
         GraphSaveAs = "png", GraphBorder = 1,  Align = "left", plotFunction=plotFunction,
-        Width=plotWidth,Height=plotHeight,PointSize=plotPointSize,BG=plotBG,res=plotRes))      
+        Width=plotWidth,Height=plotHeight,PointSize=plotPointSize,BG=plotBG,res=plotRes))
   }
-  
+
   if (ExportNormalizedIntensityBoxPlot)
   {
     Try(HTML.title("<a name=\"NormalizedIntensityBoxPlot\">Normalized Intensity Box Plot</a>",HR=2))
     Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
-    Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment))    
-		Try(plotFunction <- function() 
+    Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment))
+		Try(plotFunction <- function()
 		{
 			Try(opar<-par(bg="white",cex=0.7))
 			Try(boxplot(data.frame(exprs(NormalizedAffyData)),col="blue",las=2,names=SlideNamesVec))
-			Try(title(plotTitle))			
+			Try(title(plotTitle))
 			Try(tmp<-par(opar))
-		}) 
+		})
 		Try(plotTitle<-"Normalized intensity distribution for each slide")
-    Try(HTMLplotUsingFunction(Caption = plotTitle, File = fileNameWithPath, GraphRelativeDirectory = HTMLfileRelativePath , 
-        GraphAbsoluteDirectory = HTMLfilePath, GraphFileName = "NormalizedIntensityBoxPlot", 
+    Try(HTMLplotUsingFunction(Caption = plotTitle, File = fileNameWithPath, GraphRelativeDirectory = HTMLfileRelativePath ,
+        GraphAbsoluteDirectory = HTMLfilePath, GraphFileName = "NormalizedIntensityBoxPlot",
         GraphSaveAs = "png", GraphBorder = 1,  Align = "left", plotFunction=plotFunction,
-        Width=plotWidth,Height=plotHeight,PointSize=plotPointSize,BG=plotBG,res=plotRes))      
+        Width=plotWidth,Height=plotHeight,PointSize=plotPointSize,BG=plotBG,res=plotRes))
   }
 
 
@@ -376,7 +376,7 @@ ExportHTMLreport <- function()
     Try(displayVector[0] <- "s")
     Try(DesignXtable <- xtable(design,display=displayVector))
     Try(HTML.title("<a name=\"DesignMatrix\">Design Matrix</a>",HR=2))
-    Try(print(DesignXtable,type="html",file=fileNameWithPath,append=TRUE))    
+    Try(print(DesignXtable,type="html",file=fileNameWithPath,append=TRUE))
   }
 
   if (ExportContrastsMatrix)
@@ -385,11 +385,11 @@ ExportHTMLreport <- function()
     Try(displayVector[0] <- "s")
     Try(ContrastsXtable <- xtable(contrastsMatrix,display=displayVector))
     Try(HTML.title("<a name=\"ContrastsMatrix\">Contrasts Matrix</a>",HR=2))
-    Try(print(ContrastsXtable,type="html",file=fileNameWithPath,append=TRUE))      
+    Try(print(ContrastsXtable,type="html",file=fileNameWithPath,append=TRUE))
   }
 
   if (ExportMAPlotsContrasts)
-  {		
+  {
     Try(HTML.title("<a name=\"MAPlotsContrasts\">M A Plots for Contrasts</a>",HR=2))
 		Try(A <- rowMeans(exprs(NormalizedAffyData)))
 		Try(pch <- 16)
@@ -400,14 +400,14 @@ ExportHTMLreport <- function()
       Try(plotTitle<-paste("M A Plot (",ContrastNamesVec[contrast],")",sep=""))
       Try(HTML.title(plotTitle,HR=2))
       Try(M <- fit$coefficients[,contrast])
-		  Try(plotFunction <- function() 
+		  Try(plotFunction <- function()
 		  {
 		   Try(opar<-par(bg="white"))
 		   Try(plot(A,M,pch=pch,cex=cex,xlab="A",ylab="M",main=plotTitle))
 		   Try(tmp<-par(opar))
-		  }) 
-      Try(HTMLplotUsingFunction(Caption = plotTitle, File = fileNameWithPath, GraphRelativeDirectory = HTMLfileRelativePath , 
-        GraphAbsoluteDirectory = HTMLfilePath, GraphFileName = paste("contrastMAplot.",contrast,sep=""), 
+		  })
+      Try(HTMLplotUsingFunction(Caption = plotTitle, File = fileNameWithPath, GraphRelativeDirectory = HTMLfileRelativePath ,
+        GraphAbsoluteDirectory = HTMLfilePath, GraphFileName = paste("contrastMAplot.",contrast,sep=""),
         GraphSaveAs = "png", GraphBorder = 1,  Align = "left", plotFunction=plotFunction,
         Width=plotWidth,Height=plotHeight,PointSize=plotPointSize,BG=plotBG,res=plotRes))
 		})
@@ -425,18 +425,18 @@ ExportHTMLreport <- function()
       Try(assign("cdfName",cdfName,affylmGUIenvironment))
     }
 
-    Try(cdfenv<-getCdfInfo(RawAffyData))      
+    Try(cdfenv<-getCdfInfo(RawAffyData))
 		Try(genelist <- data.frame(ID=I(ls(cdfenv))))
 
 		Try(geneNames <- get("geneNames",envir=affylmGUIenvironment))
-		Try(geneSymbols <- get("geneSymbols",envir=affylmGUIenvironment))		
+		Try(geneSymbols <- get("geneSymbols",envir=affylmGUIenvironment))
 		Try(if (length(geneNames)==0||length(geneSymbols)==0)
 		{
-			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))  
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
 			Try(cdfName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
 			Require("reposTools")
-			Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))    
+			Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))
 			Try(matchIndex <- match(cdfName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
 			Try(if (!is.na(matchIndex))
 			{
@@ -462,8 +462,8 @@ ExportHTMLreport <- function()
 		else
 		{
 			Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols),as.matrix(geneNames)))
-			Try(colnames(genelist) <- c("ID","Symbol","Name"))  
-		})    
+			Try(colnames(genelist) <- c("ID","Symbol","Name"))
+		})
   }
 
   if (ExportTop50Toptables)
@@ -474,7 +474,7 @@ ExportHTMLreport <- function()
 	  Try(if (!("Amean" %in% names(fit)))
 	    fit$Amean <- rowMeans(exprs(NormalizedAffyData)))
     Try(fit$genes <- genelist)
-    
+
     for (coef in (1:NumContrasts))
     {
       Try(options(digits=3))
@@ -482,44 +482,44 @@ ExportHTMLreport <- function()
       Try(toptableDisplay <- rep("s",ncol(table1)+1))
       Try(toptableDisplay[1] <- "d")
       Try(for (i in (2:(ncol(table1)+1)))
-      {                
-        Try(if (colnames(table1)[i-1]=="M")       toptableDisplay[i] <- "f")      
-        Try(if (colnames(table1)[i-1]=="A")       toptableDisplay[i] <- "f")              
-        Try(if (colnames(table1)[i-1]=="t")       toptableDisplay[i] <- "f")                      
-        Try(if (colnames(table1)[i-1]=="P.Value") toptableDisplay[i] <- "e")                                            
-        Try(if (colnames(table1)[i-1]=="B") toptableDisplay[i] <- "f")                                      
+      {
+        Try(if (colnames(table1)[i-1]=="M")       toptableDisplay[i] <- "f")
+        Try(if (colnames(table1)[i-1]=="A")       toptableDisplay[i] <- "f")
+        Try(if (colnames(table1)[i-1]=="t")       toptableDisplay[i] <- "f")
+        Try(if (colnames(table1)[i-1]=="P.Value") toptableDisplay[i] <- "e")
+        Try(if (colnames(table1)[i-1]=="B") toptableDisplay[i] <- "f")
       })
       Try(toptableXtable <- xtable(table1,display=toptableDisplay))
       Try(HTML.title(paste("Top 50 Differentially Expressed Genes for",ContrastNamesVec[coef]),HR=3))
       Try(print(toptableXtable,type="html",file=fileNameWithPath,append=TRUE))
     }
-  
+
   }
-  
-  if (ExportCompleteToptables) 
+
+  if (ExportCompleteToptables)
   {
-    Try(HTML.title(paste("<a name=\"CompleteToptables\">Complete Tables of Genes Ranked in order of Evidence for Differential Expression for each contrast in Contrasts Parameterization ",ContrastParameterizationNamesVec[contrastParameterizationIndex],"</a>",sep=""),HR=2))     
+    Try(HTML.title(paste("<a name=\"CompleteToptables\">Complete Tables of Genes Ranked in order of Evidence for Differential Expression for each contrast in Contrasts Parameterization ",ContrastParameterizationNamesVec[contrastParameterizationIndex],"</a>",sep=""),HR=2))
 
     Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
 	  Try(if (!("Amean" %in% names(fit)))
 	    fit$Amean <- rowMeans(exprs(NormalizedAffyData)))
     Try(fit$genes <- genelist)
-    
+
     for (coef in (1:NumContrasts))
     {
       Try(options(digits=3))
       Try(table1 <- topTable2(coef=coef,number=nrow(genelist),genelist=genelist,fit=fit))
       Try(ToptableAbsoluteFilename <- paste(HTMLfilePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".xls",sep=""))
       Try(ToptableRelativeFilename <- paste(HTMLfileRelativePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".xls",sep=""))
-      Try(write.table(table1,file=ToptableAbsoluteFilename,quote=FALSE,col.names=NA,sep="\t"))      
+      Try(write.table(table1,file=ToptableAbsoluteFilename,quote=FALSE,col.names=NA,sep="\t"))
       Try(HTML.title(paste("Complete Table of Genes Ranked in order of Evidence for Differential Expression for ",ContrastNamesVec[coef]),HR=3))
-      Try(HTMLli(txt=paste("<a href=\"",ToptableRelativeFilename,"\"><b>",paste("CompleteToptable_Contrast",coef,".xls",sep=""),"</b></a>",sep=""))) 
-    }  
+      Try(HTMLli(txt=paste("<a href=\"",ToptableRelativeFilename,"\"><b>",paste("CompleteToptable_Contrast",coef,".xls",sep=""),"</b></a>",sep="")))
+    }
   }
-  
+
 
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-  Try(tkfocus(.affylmGUIglobals$ttMain))    
+  Try(tkfocus(.affylmGUIglobals$ttMain))
   Try(HTMLhr())
   Try(HTMLli(txt="This report was generated by "))
   Try(HTMLli(txt=paste("affylmGUI Version",getPackageVersion("affylmGUI"),"(by James Wettenhall), using")))

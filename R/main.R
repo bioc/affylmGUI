@@ -637,10 +637,6 @@ OpenCDFFile <- function()
   Try(tclvalue(.affylmGUIglobals$CDFfileBoxTitle) <- "Chip Definition (CDF) File")
   Try(tclvalue(.affylmGUIglobals$CDFfileName) <-paste(CDFFile))
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-  ###Require("reposTools")
-  ###Try(cdfRepos <- getReposEntry("http://www.bioconductor.org/data/cdfenvs/repos"))
-  ###Try(install.packages2(cdfName,cdfRepos))
-  ###Try(install.packages(pkgs=cdfName,repos = "http://www.bioconductor.org/packages/data/annotation/1.7"))##first try by keith to remove reposrTools dependency
   Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))###inserted by keith
   Try(assign("cdfName",cdfName,affylmGUIenvironment))
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
@@ -692,7 +688,6 @@ tclArrayVar <- function()
     Try(name <- paste("::RTcl", n,sep = ""))
     Try(l <- list(env = new.env()))
     Try(assign(name, NULL, envir = l$env))
-    ###Try(reg.finalizer(l$env, function(env) tkcmd("unset", ls(env))))###keith - tkcmd deprecated - replace by next line
     Try(reg.finalizer(l$env, function(env) tcl("unset", ls(env))))
     Try(class(l) <- "tclArrayVar")
     Try(.Tcl(paste("set ",name,"(0,0) \"\"",sep="")))
@@ -2101,10 +2096,6 @@ showTopTable <- function(...,export=FALSE)
   Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])
   if(!(cdfName %in% .packages(all.available=TRUE)))
   {
-    ###Require("reposTools")
-    ###Try(cdfRepos <- getReposEntry("http://www.bioconductor.org/data/cdfenvs/repos"))
-    ###Try(install.packages2(cdfName,cdfRepos))
-  	###Try(install.packages(pkgs=cdfName,repos = "http://www.bioconductor.org/packages/data/annotation/1.7"))###first try by keith to eliminate dependencies on reposTools
   	Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))
     Try(assign("cdfName",cdfName,affylmGUIenvironment))
   }
@@ -2123,16 +2114,8 @@ showTopTable <- function(...,export=FALSE)
     matchIndex <- NA
     if(!(cdfName %in% .packages(all.available=TRUE)))
     {
-      ###Require("reposTools")
-      ###Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))
-  		###Try(install.packages(pkgs=cdfName,repos = "http://www.bioconductor.org/packages/data/annotation/1.7"))###first try by keith to eliminate dependencies on reposTools
   		Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))###inserted by keith
-      ###Try(matchIndex <- match(cdfName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
-      ###Try(if(!is.na(matchIndex))
-      ###    Try(install.packages2(cdfName,annoPackages))
-      ###)
     }
-    ###Try(if(!is.na(matchIndex) || (cdfName %in% .packages(all.available=TRUE)))
     Try(if( (cdfName %in% .packages(all.available=TRUE)) )###inserted by keith
     {
       Require(cdfName)
@@ -2318,12 +2301,9 @@ showTopTable <- function(...,export=FALSE)
     tkpack(xscr, side="bottom", fill="x")
     tkpack(txt, side="left", fill="both", expand="yes")
 
-    chn <- tclvalue(tkcmd("open", tempfile1))###keith - tkcmd deprecated - replace by next line -but it failed, so revert!!!
-    ###chn <- tclvalue(tclopen("open", tempfile1))###didn't work
-    tkinsert(txt, "end", tclvalue(tkcmd("read", chn)))###keith - tkcmd deprecated - replace by next line -but it failed, so revert!!!
-    ###tkinsert(txt, "end", tclvalue(tclread("read", chn)))###didn't work
-    tkcmd("close", chn)###keith - tkcmd deprecated - replace by next line -but it failed, so revert!!!
-    ###tclclose("close", chn)###didn't work
+    chn <- tclvalue(tclopen( tempfile1))
+    tkinsert(txt, "end", tclvalue(tclread( chn)))
+    tclclose( chn)
     tkconfigure(txt, state="disabled")
     tkmark.set(txt,"insert","0.0")
     tkfocus(txt)
@@ -2657,8 +2637,9 @@ evalRcode <- function()
 
   SaveRSourceFile <- function()
   {
-    Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tkfile.tail(wfile)),initialdir=tclvalue(tkfile.dir(wfile)),
-           filetypes="{{R Source Files} {.R}} {{All files} *}")))
+  	###tkfile.dir/.tail are deprecated, but tclfile.dir/tail fails. try tcl("file","tail")
+    ###Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tkfile.tail(wfile)),initialdir=tclvalue(tkfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
+    Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tcl(wfile,"tail")),initialdir=tclvalue(tkfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
     if(nchar(fileName)==0) return()
     Try(len <- nchar(fileName))
     if(len<=2)
@@ -3821,11 +3802,7 @@ ChooseCDF <- function()
   tkgrid(scr,row=2,column=4,columnspan=1,rowspan=4,sticky="wns")
 
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-  #Require("reposTools")
-  #Try(cdfPackages <- getReposEntry("http://www.bioconductor.org/data/cdfenvs/repos"))
-  #Try(cdfDataFrame <- cdfPackages@repdatadesc@repdatadesc)
   Try(cdfPackages <- available.packages(contriburl = contrib.url(getOption("repositories2"))))
-  #Try(len <- nrow(cdfDataFrame))
   Try(len <- nrow(cdfPackages))
   Try(for (i in (1:len)) tkinsert(tl,"end",paste(cdfPackages[i,"Package"],cdfPackages[i,"Version"][[1]])))
   tkselection.set(tl,0)
