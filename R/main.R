@@ -183,7 +183,7 @@ showCitations <- function()
 
 showChangeLog <- function(n=20)
 {
-	Try(tkmessageBox(title="ChangeLog",message="See the R console for the first 20 lines of the ChangeLog file.\nTo see more lines, use the Changelog(n=nnn) function, where nnn is the number of lines to view."))
+	Try(tkmessageBox(title="ChangeLog",message="See the R console for the first 20 lines of the ChangeLog file.\nTo see more lines, use the ALGchangeLog(n=nnn) function, where nnn is the number of lines to view."))
 	Try(ALGchangeLog(20))
 }
 

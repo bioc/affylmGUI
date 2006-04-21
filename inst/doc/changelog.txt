@@ -1,5 +1,11 @@
 
 ------------------------- affylmGUI ChangeLog -------------------------
+21 April affylmGUI 1.5.4
+	Fixed tkcmd(open,filename...) etc. Used tclopen(filename...)
+	similarly for tkcmd(read/close).
+	Fixed ALGchangeLog - case wrong in some places
+	utility.R not uploaded last time.
+
 10 April 2006 affylmGUI 1.5.4
 	Remove dependence on reposTools package in main.R and plot.R
 	Replace tkcmd with tcl in about 50 places
