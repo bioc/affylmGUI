@@ -1,5 +1,12 @@
 
 ------------------------- affylmGUI ChangeLog -------------------------
+25 August 2006 affylmGUI 1.7.1
+	Modify installation of annotation package code in HeatDiagramPlot function if(length(geneSymbols)==0)
+	Modify installation of annotation package code in affyPlotMAcontrast function if(length(geneSymbols)==0)
+	Modify installation of annotation package code in LogOddsPlot function if(length(geneSymbols)==0)
+
+	Remove "\usepackage{Sweave}" from affylmGUI.Rnw and extract.Rnw
+
 21 April affylmGUI 1.5.4
 	Fixed tkcmd(open,filename...) etc. Used tclopen(filename...)
 	similarly for tkcmd(read/close).
