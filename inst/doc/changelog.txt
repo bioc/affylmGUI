@@ -1,10 +1,18 @@
 
 ------------------------- affylmGUI ChangeLog -------------------------
-25 August 2006 affylmGUI 1.7.1
-	Modify installation of annotation package code in HeatDiagramPlot function if(length(geneSymbols)==0)
-	Modify installation of annotation package code in affyPlotMAcontrast function if(length(geneSymbols)==0)
-	Modify installation of annotation package code in LogOddsPlot function if(length(geneSymbols)==0)
-
+15 September 2006 affylmGUI 1.7.1
+	Modify installation of annotation package code(Plot.R) in HeatDiagramPlot function if(length(geneSymbols)==0)
+	Modify installation of annotation package code(Plot.R) in affyPlotMAcontrast function if(length(geneSymbols)==0)
+	Modify installation of annotation package code(Plot.R) in LogOddsPlot function if(length(geneSymbols)==0)
+	Modify (affylmGUI-menus.txt) by adding (One Slide) or (All Slides) to many plot options
+	Added the "Intensity Density Plot(All slides)" Plot Menu option which calls the function "DensityPlotAll"
+	Added the function "DensityPlotAll" to Plot.R which plots all slide's Density plot on the one graph.
+	Added the "RNA Digestion Plot(All Slides)" Plot Menu option which calls the function "RNADigestionPlotAll".
+	Added the "NUSE-Normalized Unscaled Std.Errors Plot" Plot Menu option which calls the function "NUSEPlotAll".
+	Added the "RLE-Relative Log Expression Plot" Plot Menu option which calls the function "RLEPlotAll".
+	Renamed the Image Quality Plot on the Plot Menu to the "Weights pseudo chip Image(One slide) Plot".
+	The NUSE, RLE & Weights pseudo chip Image plots call affyPLM each time they are called and dont store the results.
+	Added appropriate entries in the affylmGUI.Rd file
 	Remove "\usepackage{Sweave}" from affylmGUI.Rnw and extract.Rnw
 
 21 April affylmGUI 1.5.4

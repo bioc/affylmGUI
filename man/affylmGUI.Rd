@@ -19,6 +19,10 @@
 \alias{DeleteCustomMenuItem}
 \alias{deleteItemFromList}
 \alias{DensityPlot}
+\alias{DensityPlotAll}
+\alias{RNADigestionPlotAll}
+\alias{NUSEPlotAll}
+\alias{RLEPlotAll}
 \alias{evalRcode}
 \alias{ExportTopTable}
 \alias{ExportHTMLreport}
@@ -57,6 +61,7 @@
 \alias{ImageQualityPlot}
 \alias{initGlobals}
 \alias{IntensityHistogram}
+\alias{IntensityHistogramAll}
 \alias{LogOddsPlot}
 \alias{NewLimmaFile}
 \alias{NormalizedIntensityBoxPlot}
@@ -128,6 +133,10 @@ DeleteContrastParameterization()
 DeleteCustomMenuItem()
 deleteItemFromList()
 DensityPlot()
+DensityPlotAll()
+RNADigestionPlotAll()
+NUSEPlotAll()
+RLEPlotAll()
 evalRcode()
 ExportTopTable()
 ExportHTMLreport()
@@ -166,6 +175,7 @@ ImageArrayPlot()
 ImageQualityPlot()
 initGlobals()
 IntensityHistogram()
+IntensityHistogramAll()
 LogOddsPlot()
 NewLimmaFile()
 NormalizedIntensityBoxPlot()

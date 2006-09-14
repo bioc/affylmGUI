@@ -1,6 +1,5 @@
 
-ImageArrayPlot <- function()
-{
+ImageArrayPlot <- function(){
   Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
   Try(LocalHScale <- .affylmGUIglobals$Myhscale)
   Try(LocalVScale <- .affylmGUIglobals$Myvscale)
@@ -67,7 +66,7 @@ Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
     CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
   })
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-}
+}#end of ImageArrayPlot <- function()
 
 GetWhichProbes <- function(includeBoth=FALSE)
 {
@@ -114,158 +113,524 @@ GetWhichProbes <- function(includeBoth=FALSE)
 	return (ReturnVal)
 }
 
+IntensityHistogram <- function(){
+	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
+	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
+	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
+	Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
+	Try(
+		if (ArraysLoaded==FALSE){
+			Try(tkmessageBox(title="Intensity Histogram(One Slide)",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+			return()
+		}#end of if (ArraysLoaded==FALSE)
+	)
+	Try(slide <- GetSlideNum())
+	Try(if (slide==0) return())
+	#
+	Try(whichProbes <- GetWhichProbes())
+	Try(if (whichProbes=="") return())
+	#
+	Try(
+		plotFunction <- function(){
+			Try(opar<-par(bg="white"))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+			Try(
+				if (whichProbes=="pm"){
+					Try(hist(log2(pm(RawAffyData[,slide])),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
+				}
+			)
+			Try(
+				if (whichProbes=="mm"){
+					Try(hist(log2(mm(RawAffyData[,slide])),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
+				}
+			)
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			Try(tmp<-par(opar))
+		}#end of plotFunction <- function()
+	)
+	Try(
+		if (whichProbes=="pm"){
+			Try(plotTitle<-paste("PM Intensity distribution for",SlideNamesVec[slide]))
+			Try(xLabel <- "log2(PM Intensity)")
+		}
+	)
+	Try(
+		if (whichProbes=="mm"){
+			Try(plotTitle<-paste("MM Intensity distribution for",SlideNamesVec[slide]))
+			Try(xLabel <- "log2(MM Intensity)")
+		}
+	)
+	Try(plotLabels <- GetPlotLabels(plotTitle,xLabel,"Frequency"))
+	Try(if (length(plotLabels)==0) return())
+	Try(plotTitle <- plotLabels$plotTitle)
+	Try(xLabel    <- plotLabels$xLabel)
+	Try(yLabel    <- plotLabels$yLabel)
+	#
+	Try(
+		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
+			Require("tkrplot")
+			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+			Try(tkwm.withdraw(ttGraph))
+			Try(tkwm.title(ttGraph,plotTitle))
+			Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+			Try(tkwm.title(ttGraph,plotTitle))
+			SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+			SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
+			Try(tkgrid(imgaffylmGUI))
+			Try(
+				if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+					Try(tkdestroy(ttGraph))
+				else{
+					Try(tkwm.deiconify(ttGraph))
+					Try(tkfocus(imgaffylmGUI))
+				}
+			)
+		}else{
+			Try(plot.new())
+			Try(plotFunction())
+		}#end of else/if(.affylmGUIglobals$graphicsDevice=="tkrplot")
+	)#end of Try
+	#
+	CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
+}#end of IntensityHistogram <- function()
 
-IntensityHistogram <- function()
-{
-  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
-  Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
-  Try(LocalHScale <- .affylmGUIglobals$Myhscale)
-  Try(LocalVScale <- .affylmGUIglobals$Myvscale)
-  Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
-  Try(if (ArraysLoaded==FALSE)
-  {
-    Try(tkmessageBox(title="Intensity Histogram",message="Error: No arrays have been loaded.",icon="error",default="ok"))
-    return()
-  })
-  Try(slide <- GetSlideNum())
-  Try(if (slide==0) return())
+IntensityHistogramAll <- function(){
+	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
+	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
+	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
+	Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
+	Try(
+		if (ArraysLoaded==FALSE){
+			Try(tkmessageBox(title="Intensity Histogram(All Slides)",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+			return()
+		}#end of if (ArraysLoaded==FALSE)
+	)
+	#Try(slide <- GetSlideNum())
+	#Try(if (slide==0) return())
+	#
+	Try(whichProbes <- GetWhichProbes())
+	Try(if (whichProbes=="") return())
+	#
+	Try(
+		plotFunction <- function(){
+			Try(opar<-par(bg="white"))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+			Try(
+				if (whichProbes=="pm"){
+					###Try(hist(log2(pm(RawAffyData[,slide])),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
+					Try(hist(log2(pm(RawAffyData)),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
+				}
+			)
+			Try(
+				if (whichProbes=="mm"){
+					Try(hist(log2(mm(RawAffyData[,slide])),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
+				}
+			)
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			Try(tmp<-par(opar))
+		}#end of plotFunction <- function()
+	)
+	Try(
+		if (whichProbes=="pm"){
+			###Try(plotTitle<-paste("PM Intensity distribution for",SlideNamesVec[slide]))
+			Try(plotTitle<-paste("PM Intensity distribution for All Slides"))
+			Try(xLabel <- "log2(PM Intensity)")
+		}
+	)
+	Try(
+		if (whichProbes=="mm"){
+			###Try(plotTitle<-paste("MM Intensity distribution for",SlideNamesVec[slide]))
+			Try(plotTitle<-paste("MM Intensity distribution for All Slides"))
+			Try(xLabel <- "log2(MM Intensity)")
+		}
+	)
+	Try(plotLabels <- GetPlotLabels(plotTitle,xLabel,"Frequency"))
+	Try(if (length(plotLabels)==0) return())
+	Try(plotTitle <- plotLabels$plotTitle)
+	Try(xLabel    <- plotLabels$xLabel)
+	Try(yLabel    <- plotLabels$yLabel)
+	#
+	Try(
+		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
+			Require("tkrplot")
+			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+			Try(tkwm.withdraw(ttGraph))
+			Try(tkwm.title(ttGraph,plotTitle))
+			Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+			Try(tkwm.title(ttGraph,plotTitle))
+			SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+			SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
+			Try(tkgrid(imgaffylmGUI))
+			Try(
+				if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+					Try(tkdestroy(ttGraph))
+				else{
+					Try(tkwm.deiconify(ttGraph))
+					Try(tkfocus(imgaffylmGUI))
+				}
+			)
+		}else{
+			Try(plot.new())
+			Try(plotFunction())
+		}#end of else/if(.affylmGUIglobals$graphicsDevice=="tkrplot")
+	)#end of Try
+	#
+	CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
+}#end of IntensityHistogramAll <- function()
 
-  Try(whichProbes <- GetWhichProbes())
-  Try(if (whichProbes=="") return())
+DensityPlot <- function(){
+	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
+	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
+	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
+	Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
+	Try(
+		if (ArraysLoaded==FALSE){
+			Try(tkmessageBox(title="Density Plot(One Slide)",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+			return()
+		}
+	)
+	Try(slide <- GetSlideNum())
+	Try(if (slide==0) return())
+	#
+	Try(whichProbes <- GetWhichProbes(includeBoth=TRUE))
+	Try(if (whichProbes=="") return())
+	#
+	Try(
+		plotFunction <- function(){
+			Try(opar<-par(bg="white"))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+			Try(plotDensity.AffyBatch(RawAffyData[,slide],which=whichProbes,xlab=xLabel,ylab=yLabel))
+			Try(title(plotTitle))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			Try(tmp<-par(opar))
+		}#end of Try(plotFunction <- function()
+	)
+	Try(yLabel <- "Density")
+	Try(
+		if(whichProbes=="both"){
+			Try(plotTitle<-paste("Intensity distribution for",SlideNamesVec[slide]))
+			Try(xLabel <- "log2(Intensity)")
+		}
+	)
+	Try(
+		if(whichProbes=="pm"){
+			Try(plotTitle<-paste("PM Intensity distribution for",SlideNamesVec[slide]))
+			Try(xLabel <- "log2(PM Intensity)")
+		}
+	)
+	Try(
+		if(whichProbes=="mm"){
+			Try(plotTitle<-paste("MM Intensity distribution for",SlideNamesVec[slide]))
+			Try(xLabel <- "log2(MM Intensity)")
+		}
+	)
+	Try(plotLabels <- GetPlotLabels(plotTitle,xLabel,"Density"))
+	Try(if (length(plotLabels)==0) return())
+	Try(plotTitle <- plotLabels$plotTitle)
+	Try(xLabel    <- plotLabels$xLabel)
+	Try(yLabel    <- plotLabels$yLabel)
+	Try(
+		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
+			Require("tkrplot")
+			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+			Try(tkwm.withdraw(ttGraph))
+			Try(tkwm.title(ttGraph,plotTitle))
+			Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+			Try(tkwm.title(ttGraph,plotTitle))
+			SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+			SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
+			Try(tkgrid(imgaffylmGUI))
+			Try(
+				if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10){  # Nothing plotted.
+					Try(tkdestroy(ttGraph))
+				}else{
+					Try(tkwm.deiconify(ttGraph))
+					Try(tkfocus(imgaffylmGUI))
+				}
+			)
+		}else{
+			Try(plot.new())
+			Try(plotFunction())
+		}
+	)
+	CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
+}#end of DensityPlot <- function()
 
-  Try(plotFunction <- function()
-  {
-    Try(opar<-par(bg="white"))
-    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-    Try(if (whichProbes=="pm")
-      Try(hist(log2(pm(RawAffyData[,slide])),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle)))
-    Try(if (whichProbes=="mm")
-      Try(hist(log2(mm(RawAffyData[,slide])),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle)))
-    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-    Try(tmp<-par(opar))
-  })
-  Try(if (whichProbes=="pm")
-  {
-    Try(plotTitle<-paste("PM Intensity distribution for",SlideNamesVec[slide]))
-    Try(xLabel <- "log2(PM Intensity)")
-  })
-  Try(if (whichProbes=="mm")
-  {
-    Try(plotTitle<-paste("MM Intensity distribution for",SlideNamesVec[slide]))
-    Try(xLabel <- "log2(MM Intensity)")
-  })
-  Try(plotLabels <- GetPlotLabels(plotTitle,xLabel,"Frequency"))
-  Try(if (length(plotLabels)==0) return())
-  Try(plotTitle <- plotLabels$plotTitle)
-  Try(xLabel    <- plotLabels$xLabel)
-  Try(yLabel    <- plotLabels$yLabel)
+DensityPlotAll <- function(){
+	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
+	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
+	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
+	Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
+	Try(NumSlides <- get("NumSlides",envir=affylmGUIenvironment))
+	Try(
+		if (ArraysLoaded==FALSE){
+			Try(tkmessageBox(title="Density Plot(All Slides)",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+			return()
+		}
+	)
+	#Try(slide <- GetSlideNum())
+	#Try(if (slide==0) return())
+	#
+	Try(whichProbes <- GetWhichProbes(includeBoth=TRUE))
+	Try(if (whichProbes=="") return())
+	#
+	Try(
+		plotFunction <- function(){
+			Try(opar<-par(bg="white"))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+			###Try(plotDensity.AffyBatch(RawAffyData[,slide],which=whichProbes,xlab=xLabel,ylab=yLabel))
+			Try(plotDensity.AffyBatch(RawAffyData,which=whichProbes,xlab=xLabel,ylab=yLabel))
+			Try(legend(x="topright", inset=0.05,legend=c(affylmGUIenvironment$Targets$Name),lty=1:NumSlides, col = 1:NumSlides))
+			Try(title(plotTitle))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			Try(tmp<-par(opar))
+		}#end of Try(plotFunction <- function()
+	)
+	Try(yLabel <- "Density")
+	Try(
+		if(whichProbes=="both"){
+			###Try(plotTitle<-paste("Intensity distribution for",SlideNamesVec[slide]))
+			Try(plotTitle<-paste("Intensity distribution for All Slides"))
+			Try(xLabel <- "log2(Intensity)")
+		}
+	)
+	Try(
+		if(whichProbes=="pm"){
+			###Try(plotTitle<-paste("PM Intensity distribution for",SlideNamesVec[slide]))
+			Try(plotTitle<-paste("PM Intensity distribution for All Slides"))
+			Try(xLabel <- "log2(PM Intensity)")
+		}
+	)
+	Try(
+		if(whichProbes=="mm"){
+			###Try(plotTitle<-paste("MM Intensity distribution for",SlideNamesVec[slide]))
+			Try(plotTitle<-paste("MM Intensity distribution for All Slides"))
+			Try(xLabel <- "log2(MM Intensity)")
+		}
+	)
+	Try(plotLabels <- GetPlotLabels(plotTitle,xLabel,"Density"))
+	Try(if (length(plotLabels)==0) return())
+	Try(plotTitle <- plotLabels$plotTitle)
+	Try(xLabel    <- plotLabels$xLabel)
+	Try(yLabel    <- plotLabels$yLabel)
+	Try(
+		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
+			Require("tkrplot")
+			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+			Try(tkwm.withdraw(ttGraph))
+			Try(tkwm.title(ttGraph,plotTitle))
+			Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+			Try(tkwm.title(ttGraph,plotTitle))
+			SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+			SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
+			Try(tkgrid(imgaffylmGUI))
+			Try(
+				if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10){  # Nothing plotted.
+					Try(tkdestroy(ttGraph))
+				}else{
+					Try(tkwm.deiconify(ttGraph))
+					Try(tkfocus(imgaffylmGUI))
+				}
+			)
+		}else{
+			Try(plot.new())
+			Try(plotFunction())
+		}
+	)
+	CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
+}#end of DensityPlotAll <- function()
 
-  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
-  {
-    Require("tkrplot")
-    Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
-    Try(tkwm.withdraw(ttGraph))
-    Try(tkwm.title(ttGraph,plotTitle))
-    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-    Try(tkwm.title(ttGraph,plotTitle))
-    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
-    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
-    Try(tkgrid(imgaffylmGUI))
-    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
-      Try(tkdestroy(ttGraph))
-    else
-    {
-      Try(tkwm.deiconify(ttGraph))
-      Try(tkfocus(imgaffylmGUI))
-    })
-  }
-  else
-  {
-    Try(plot.new())
-    Try(plotFunction())
-  })
+RNADigestionPlotAll <- function(){
+	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
+	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
+	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
+	Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
+	Try(NumSlides <- get("NumSlides",envir=affylmGUIenvironment))
+	Try(
+		if (ArraysLoaded==FALSE){
+			Try(tkmessageBox(title="RNA Digestion Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+			return()
+		}#end of if (ArraysLoaded==FALSE)
+	)
+	#Try(slide <- GetSlideNum())
+	#Try(if (slide==0) return())
+	#
+	#Try(whichProbes <- GetWhichProbes())
+	#Try(if (whichProbes=="") return())
+	#
+	Try(
+		plotFunction <- function(){
+			Try(opar<-par(bg="white"))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+			Try(deg <- AffyRNAdeg(RawAffyData))
+			Try(plotAffyRNAdeg(deg,col=1:8))
+			#Try(legend(x=0,y=120,legend=1:NumSlides,col=1:NumSlides,lty=1))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			Try(tmp<-par(opar))
+		}#end of plotFunction <- function()
+	)
+	#Try(plotLabels <- GetPlotLabels(plotTitle,xLabel,"Frequency"))
+	#Try(if (length(plotLabels)==0) return())
+	#Try(plotTitle <- plotLabels$plotTitle)
+	Try(plotTitle<-paste("RNA Digestion Plot for All Slides"))
+	#Try(xLabel    <- plotLabels$xLabel)
+	#Try(yLabel    <- plotLabels$yLabel)
+	#
+	Try(
+		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
+			Require("tkrplot")
+			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+			Try(tkwm.withdraw(ttGraph))
+			Try(tkwm.title(ttGraph,plotTitle))
+			Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+			Try(tkwm.title(ttGraph,plotTitle))
+			SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+			SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
+			Try(tkgrid(imgaffylmGUI))
+			Try(
+				if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+					Try(tkdestroy(ttGraph))
+				else{
+					Try(tkwm.deiconify(ttGraph))
+					Try(tkfocus(imgaffylmGUI))
+				}
+			)
+		}else{
+			Try(plot.new())
+			Try(plotFunction())
+		}#end of else/if(.affylmGUIglobals$graphicsDevice=="tkrplot")
+	)#end of Try
+	#
+	CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
+}#end of RNADigestionPlotAll <- function()
 
-  CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
-}
+NUSEPlotAll <- function(){
+	#Normalized Unscaled Standard Errors (NUSE) plot.
+	#The standard error estimates obtained for each gene on each array from fitPLM
+	#are standardized across arrays so that the median standard error for that
+	#genes is 1 across all arrays.
+	#An array with elevated SEs relative to other arrays is typically of
+	#lower quality.	Try(NormMethod <- get("NormMethod", envir=affylmGUIenvironment))
+	#This function does not store teh Normalized Data.
+	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(
+		if (ArraysLoaded==FALSE){
+			Try(tkmessageBox(title="NUSE Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+			return()
+		}else{
+			#Try(tkmessageBox(title="527:DEBUG:NUSE Plot",message="Arrays ARE loaded!.",icon="error",default="ok"))
+		}#end of if (ArraysLoaded==FALSE)
+	)
+  Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
+	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
+	#Try(tkmessageBox(title="532:DEBUG:NUSE Plot",message=paste("LocalHScale = ",LocalHScale),icon="error",default="ok"))###DEBUG
+	Require("affyPLM")
+	Try(Pset <- fitPLM(RawAffyData))
+	Try(
+		plotFunction <- function(){
+			Try(opar<-par(bg="white"))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+			Try(NUSE(Pset, main = plotTitle))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			Try(tmp<-par(opar))
+		}#end of plotFunction <- function()
+	)
+	Try(plotTitle<-paste("NUSE Plot of All Slides"))
+	#
+	Try(
+		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
+			Require("tkrplot")
+			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+			Try(tkwm.withdraw(ttGraph))
+			Try(tkwm.title(ttGraph,plotTitle))
+			Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+			Try(tkwm.title(ttGraph,plotTitle))
+			SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+			SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
+			Try(tkgrid(imgaffylmGUI))
+			Try(
+				if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+					Try(tkdestroy(ttGraph))
+				else{
+					Try(tkwm.deiconify(ttGraph))
+					Try(tkfocus(imgaffylmGUI))
+				}
+			)
+		}else{
+			Try(plot.new())
+			Try(plotFunction())
+		}#end of else/if(.affylmGUIglobals$graphicsDevice=="tkrplot")
+	)#end of Try
+	#
+	CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
+}#end of NUSEPlotAll <- function()
 
-
-DensityPlot <- function()
-{
-  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
-  Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
-  Try(LocalHScale <- .affylmGUIglobals$Myhscale)
-  Try(LocalVScale <- .affylmGUIglobals$Myvscale)
-  Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
-  Try(if (ArraysLoaded==FALSE)
-  {
-    Try(tkmessageBox(title="Intensity Histogram",message="Error: No arrays have been loaded.",icon="error",default="ok"))
-    return()
-  })
-  Try(slide <- GetSlideNum())
-  Try(if (slide==0) return())
-
-  Try(whichProbes <- GetWhichProbes(includeBoth=TRUE))
-  Try(if (whichProbes=="") return())
-
-  Try(plotFunction <- function()
-  {
-    Try(opar<-par(bg="white"))
-    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-    Try(plotDensity.AffyBatch(RawAffyData[,slide],which=whichProbes,xlab=xLabel,ylab=yLabel))
-    Try(title(plotTitle))
-    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-    Try(tmp<-par(opar))
-  })
-  Try(yLabel <- "Density")
-  Try(if (whichProbes=="both")
-  {
-    Try(plotTitle<-paste("Intensity distribution for",SlideNamesVec[slide]))
-    Try(xLabel <- "log2(Intensity)")
-  })
-  Try(if (whichProbes=="pm")
-  {
-    Try(plotTitle<-paste("PM Intensity distribution for",SlideNamesVec[slide]))
-    Try(xLabel <- "log2(PM Intensity)")
-  })
-  Try(if (whichProbes=="mm")
-  {
-    Try(plotTitle<-paste("MM Intensity distribution for",SlideNamesVec[slide]))
-    Try(xLabel <- "log2(MM Intensity)")
-  })
-  Try(plotLabels <- GetPlotLabels(plotTitle,xLabel,"Density"))
-  Try(if (length(plotLabels)==0) return())
-  Try(plotTitle <- plotLabels$plotTitle)
-  Try(xLabel    <- plotLabels$xLabel)
-  Try(yLabel    <- plotLabels$yLabel)
-  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
-  {
-    Require("tkrplot")
-    Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
-    Try(tkwm.withdraw(ttGraph))
-    Try(tkwm.title(ttGraph,plotTitle))
-    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-    Try(tkwm.title(ttGraph,plotTitle))
-    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
-    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
-    Try(tkgrid(imgaffylmGUI))
-    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
-      Try(tkdestroy(ttGraph))
-    else
-    {
-      Try(tkwm.deiconify(ttGraph))
-      Try(tkfocus(imgaffylmGUI))
-    })
-  }
-  else
-  {
-    Try(plot.new())
-    Try(plotFunction())
-  })
-
-
-  CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
-}
-
+RLEPlotAll <- function(){
+	#Relative Log Expression (RLE) values.
+	#RLE values are computed for each probeset by comparing the expression value
+	#on each array against the median expression value for that probeset across all arrays.
+	#Assuming that most genes are not changing in expression across arrays means ideally
+	#most of these RLE values will be near 0.
+	#When examining this plot focus should be
+	#on the shape and position of each of the boxes.
+	#Typically arrays with poorer quality
+	#show up with boxes that are not centered about 0 and/or are more spread out.
+	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(
+		if (ArraysLoaded==FALSE){
+			Try(tkmessageBox(title="RLE Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+			return()
+		}#end of if (ArraysLoaded==FALSE)
+	)
+  Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
+	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
+	Require("affyPLM")
+	Try(Pset <- fitPLM(RawAffyData))
+	Try(
+		plotFunction <- function(){
+			Try(opar<-par(bg="white"))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+			Try(RLE(Pset, main = plotTitle))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			Try(tmp<-par(opar))
+		}#end of plotFunction <- function()
+	)
+	Try(plotTitle<-paste("RLE Plot of All Slides"))
+	#
+	Try(
+		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
+			Require("tkrplot")
+			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+			Try(tkwm.withdraw(ttGraph))
+			Try(tkwm.title(ttGraph,plotTitle))
+			Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+			Try(tkwm.title(ttGraph,plotTitle))
+			SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+			SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
+			Try(tkgrid(imgaffylmGUI))
+			Try(
+				if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
+					Try(tkdestroy(ttGraph))
+				else{
+					Try(tkwm.deiconify(ttGraph))
+					Try(tkfocus(imgaffylmGUI))
+				}
+			)
+		}else{
+			Try(plot.new())
+			Try(plotFunction())
+		}#end of else/if(.affylmGUIglobals$graphicsDevice=="tkrplot")
+	)#end of Try
+	#
+	CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
+}#end of RLEPlotAll <- function()
 
 RawIntensityBoxPlot <- function()
 {
@@ -276,7 +641,7 @@ RawIntensityBoxPlot <- function()
   Try(LocalVScale <- .affylmGUIglobals$Myvscale)
   Try(if (ArraysLoaded==FALSE)
   {
-    Try(tkmessageBox(title="Density Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+    Try(tkmessageBox(title="Raw Intensity Box Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
     return()
   })
   Try(plotFunction <- function()
@@ -288,7 +653,7 @@ RawIntensityBoxPlot <- function()
     Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
     Try(tmp<-par(opar))
   })
-  Try(plotTitle <- "Raw intensity distribution for each array")
+  Try(plotTitle <- "Raw Intensity Box Plot for each array")
   Try(plotTitleList <- GetPlotTitle(plotTitle))
   Try(if (length(plotTitleList)==0) return())
   Try(plotTitle <- plotTitleList$plotTitle)
@@ -359,7 +724,7 @@ NormalizedIntensityBoxPlot <- function()
     Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
     Try(tmp<-par(opar))
   })
-  Try(plotTitle<-"Normalized intensity distribution for each array")
+  Try(plotTitle<-"Normalized Intensity Box Plot for each array")
   Try(plotTitleList <- GetPlotTitle(plotTitle))
   Try(if (length(plotTitleList)==0) return())
   Try(plotTitle <- plotTitleList$plotTitle)
@@ -1046,59 +1411,80 @@ vennDiagramaffylmGUI <- function(object,include="both",names,cex=1.5,mar=rep(1,4
 }
 
 
-HeatDiagramDialog <- function(parameterName)
-{
-  Try(ttHeatDiagramDialog <- tktoplevel(.affylmGUIglobals$ttMain))
-  Try(tkwm.title(ttHeatDiagramDialog,"Heat Diagram Options"))
-  Try(tkwm.deiconify(ttHeatDiagramDialog))
-  Try(tkgrab.set(ttHeatDiagramDialog))
-  Try(tkfocus(ttHeatDiagramDialog))
-  Try(tkframe1 <- tkframe(ttHeatDiagramDialog))
-  Try(tkgrid(tklabel(tkframe1,text="    ")))
-  Try(tkgrid(tklabel(tkframe1,text="    "),
-             tklabel(tkframe1,text="The absolute value of the (moderated) t statistic will be used to plot",
-               font=.affylmGUIglobals$affylmGUIfont2)))
-  Try(tkgrid(tklabel(tkframe1,text="    "),
-             tklabel(tkframe1,text=paste("the heat diagram, relative to parameter ",parameterName,".",sep=""),font=.affylmGUIglobals$affylmGUIfont2),
-             tklabel(tkframe1,text="    ")))
-  Try(tkgrid(tklabel(tkframe1,text="    ")))
-  Try(primaryCutoffTcl <- tclVar("4"))
-  Try(otherCutoffTcl   <- tclVar("3"))
-  Try(entry.primaryCutoff <- tkentry(tkframe1,textvariable=primaryCutoffTcl,bg="white",width=10,font=.affylmGUIglobals$affylmGUIfont2))
-  Try(entry.otherCutoff   <- tkentry(tkframe1,textvariable=otherCutoffTcl,  bg="white",width=10,font=.affylmGUIglobals$affylmGUIfont2))
-  Try(tkgrid(tklabel(tkframe1,text="    "),tklabel(tkframe1,text=paste("D.E. cutoff for parameter ",
-    parameterName,":   ",sep=""),font=.affylmGUIglobals$affylmGUIfont2),entry.primaryCutoff,tklabel(tkframe1,text="    ")))
-  Try(tkgrid(tklabel(tkframe1,text="    "),tklabel(tkframe1,text=
-    "D.E. cutoff for other parameters:   ",font=.affylmGUIglobals$affylmGUIfont2),entry.otherCutoff,tklabel(tkframe1,text="    ")))
-  Try(tkgrid.configure(entry.primaryCutoff,sticky="w"))
-  Try(tkgrid.configure(entry.otherCutoff,sticky="w"))
-  Try(tkgrid(tklabel(tkframe1,text="    ")))
-  Try(tkgrid(tkframe1))
-  Try(tkframeOKCancel <- tkframe(ttHeatDiagramDialog))
-  ReturnVal <- list()
-  onOK <- function()
-  {
-    Try(primaryCutoffVal <- as.numeric(tclvalue(primaryCutoffTcl)))
-    Try(otherCutoffVal   <- as.numeric(tclvalue(otherCutoffTcl)))
-    Try(tkgrab.release(ttHeatDiagramDialog))
-    Try(tkdestroy(ttHeatDiagramDialog))
-    Try(tkfocus(.affylmGUIglobals$ttMain))
-    Try(ReturnVal <<- list(primaryCutoff=primaryCutoffVal,otherCutoff=otherCutoffVal))
-  }
-  Try(onCancel <- function() {Try(tkgrab.release(ttHeatDiagramDialog));Try(tkdestroy(ttHeatDiagramDialog));Try(tkfocus(.affylmGUIglobals$ttMain));Try(ReturnVal <<- list())})
-  Try(OK.but <-tkbutton(tkframeOKCancel,text="   OK   ",command=onOK,font=.affylmGUIglobals$affylmGUIfont2))
-  Try(Cancel.but <-tkbutton(tkframeOKCancel,text=" Cancel ",command=onCancel,font=.affylmGUIglobals$affylmGUIfont2))
-  Try(tkgrid(OK.but,Cancel.but))
-  Try(tkgrid(tklabel(tkframeOKCancel,text="    ")))
-  Try(tkgrid(tkframeOKCancel))
-  Try(tkfocus(entry.primaryCutoff))
-  Try(tkbind(ttHeatDiagramDialog, "<Destroy>", function() {Try(tkgrab.release(ttHeatDiagramDialog));Try(tkfocus(.affylmGUIglobals$ttMain))}))
-  Try(tkwait.window(ttHeatDiagramDialog))
-
-  return (ReturnVal)
-
-}
-
+HeatDiagramDialog <- function(parameterName){
+	Try(ttHeatDiagramDialog <- tktoplevel(.affylmGUIglobals$ttMain))
+	Try(tkwm.title(ttHeatDiagramDialog,"Heat Diagram Options"))
+	Try(tkwm.deiconify(ttHeatDiagramDialog))
+	Try(tkgrab.set(ttHeatDiagramDialog))
+	Try(tkfocus(ttHeatDiagramDialog))
+	Try(tkframe1 <- tkframe(ttHeatDiagramDialog))
+	Try(tkgrid(tklabel(tkframe1,text="    ")))
+	Try(
+		tkgrid(
+			tklabel(tkframe1,text="    "),
+			tklabel(tkframe1,text="The absolute value of the (moderated) t statistic will be used to plot",font=.affylmGUIglobals$affylmGUIfont2)
+		)#end of tkgrid
+	)#end of Try
+	Try(
+		tkgrid(
+			tklabel(tkframe1,text="    "),
+			tklabel(tkframe1,text=paste("the heat diagram, relative to parameter ",parameterName,".",sep=""),font=.affylmGUIglobals$affylmGUIfont2),
+			tklabel(tkframe1,text="    ")
+		)#end of tkgrid
+	)#end of Try
+	Try(tkgrid(tklabel(tkframe1,text="    ")))
+	Try(primaryCutoffTcl <- tclVar("4"))
+	Try(otherCutoffTcl   <- tclVar("3"))
+	Try(entry.primaryCutoff <- tkentry(tkframe1,textvariable=primaryCutoffTcl,bg="white",width=10,font=.affylmGUIglobals$affylmGUIfont2))
+	Try(entry.otherCutoff   <- tkentry(tkframe1,textvariable=otherCutoffTcl,  bg="white",width=10,font=.affylmGUIglobals$affylmGUIfont2))
+	Try(
+		tkgrid(
+			tklabel(tkframe1,text="    "),
+			tklabel(tkframe1,text=paste("D.E. cutoff for parameter ",parameterName,":   ",sep=""),font=.affylmGUIglobals$affylmGUIfont2),
+			entry.primaryCutoff,
+			tklabel(tkframe1,text="    ")
+		)#end of tkgrid
+	)#end of Try
+	Try(
+		tkgrid(
+			tklabel(tkframe1,text="    "),
+			tklabel(tkframe1,text="D.E. cutoff for other parameters:   ",font=.affylmGUIglobals$affylmGUIfont2),
+			entry.otherCutoff,
+			tklabel(tkframe1,text="    ")
+		)#end of tkgrid
+	)#end of Try
+	Try(tkgrid.configure(entry.primaryCutoff,sticky="w"))
+	Try(tkgrid.configure(entry.otherCutoff,sticky="w"))
+	Try(tkgrid(tklabel(tkframe1,text="    ")))
+	Try(tkgrid(tkframe1))
+	Try(tkframeOKCancel <- tkframe(ttHeatDiagramDialog))
+	ReturnVal <- list()
+	onOK <- function(){
+		Try(primaryCutoffVal <- as.numeric(tclvalue(primaryCutoffTcl)))
+		Try(otherCutoffVal   <- as.numeric(tclvalue(otherCutoffTcl)))
+		Try(tkgrab.release(ttHeatDiagramDialog))
+		Try(tkdestroy(ttHeatDiagramDialog))
+		Try(tkfocus(.affylmGUIglobals$ttMain))
+		Try(ReturnVal <<- list(primaryCutoff=primaryCutoffVal,otherCutoff=otherCutoffVal))
+	}#end of onOK <- function()
+	Try(
+		onCancel <- function(){
+			Try(tkgrab.release(ttHeatDiagramDialog));
+			Try(tkdestroy(ttHeatDiagramDialog));
+			Try(tkfocus(.affylmGUIglobals$ttMain));
+			Try(ReturnVal <<- list())
+		}#end of onCancel <- function()
+	)
+	Try(OK.but <-tkbutton(tkframeOKCancel,text="   OK   ",command=onOK,font=.affylmGUIglobals$affylmGUIfont2))
+	Try(Cancel.but <-tkbutton(tkframeOKCancel,text=" Cancel ",command=onCancel,font=.affylmGUIglobals$affylmGUIfont2))
+	Try(tkgrid(OK.but,Cancel.but))
+	Try(tkgrid(tklabel(tkframeOKCancel,text="    ")))
+	Try(tkgrid(tkframeOKCancel))
+	Try(tkfocus(entry.primaryCutoff))
+	Try(tkbind(ttHeatDiagramDialog, "<Destroy>", function() {Try(tkgrab.release(ttHeatDiagramDialog));Try(tkfocus(.affylmGUIglobals$ttMain))}))
+	Try(tkwait.window(ttHeatDiagramDialog))
+	return (ReturnVal)
+}#end of HeatDiagramDialog <- function(parameterName)
 
 HeatDiagramPlot <- function(){
 	Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
@@ -1904,102 +2290,111 @@ LogOddsPlot <- function()
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 }
 
-
-
-ImageQualityPlot <- function()
-{
-  Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
-  Try(LocalHScale <- .affylmGUIglobals$Myhscale)
-  Try(LocalVScale <- .affylmGUIglobals$Myvscale)
-  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
-  Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
-  Try(if (ArraysLoaded==FALSE)
-  {
-    Try(tkmessageBox(title="Image Array Plot",message="Error: No arrays have been loaded.",
-        icon="error",default="ok"))
-    return()
-  })
-
-  Try(NormMethod <- get("NormMethod", envir=affylmGUIenvironment))
-  Try(if (NormMethod!="PLM")
-  {
-    Try(tkmessageBox(title="Error! Plot requires PLM normalization",message=
-      "This plot requires PLM normalization.  Please choose \"Normalize\" from the \"Normalization Menu\" and select \"Robust Probe-level Linear Model\"",
-      icon="error"))
-    return()
-  })
-
-  Try(weightsPLM <- get("weightsPLM", envir=affylmGUIenvironment))
-
-  Try(slide <- GetSlideNum())
-  Try(if (slide==0) return())
-  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-
-  Try(plotFunction <- function()
-  {
-    Try(opar<-par(bg="white"))
-    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-		pm.index <- unique(unlist(indexProbes(RawAffyData, "pm")))
-		rows <- nrow(RawAffyData)
-		cols <- ncol(RawAffyData)
-		pm.x.locs <- pm.index%%rows
-		pm.x.locs[pm.x.locs == 0] <- rows
-		pm.y.locs <- pm.index%/%rows + 1
-		xycoor <- matrix(cbind(pm.x.locs,pm.y.locs),ncol=2)
-		xycoor2 <- matrix(cbind(pm.x.locs,pm.y.locs+1),ncol=2)
-
-		weightmatrix <- matrix(nrow=rows,ncol=cols)
-		weightmatrix[xycoor] <- weightsPLM[,slide]
-		weightmatrix[xycoor2] <- weightsPLM[,slide]
-		# this line flips the matrix around so it is correct
-		weightmatrix <- as.matrix(rev(as.data.frame(weightmatrix)))
-		image(weightmatrix,col=terrain.colors(12),xaxt='n',yaxt='n')
-    Try(title(SlideNamesVec[slide]))
-    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-    Try(tmp<-par(opar))
-  })
-  Try(plotTitle<-SlideNamesVec[slide])
-  Try(plotLabels <- GetPlotLabels(plotTitle,"",""))
-  Try(if (length(plotLabels)==0) return())
-  Try(plotTitle <- plotLabels$plotTitle)
-  Try(xLabel    <- plotLabels$xLabel)
-  Try(yLabel    <- plotLabels$yLabel)
-
-Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
-  Try(WhetherToUseRplot <- tclvalue(tkmessageBox(title="Where To Plot Array Image",type="yesnocancel",
-    message="Plot this image in R rather than a new (Tk) window? (Requires less memory.)",icon="question")))
-  else
-    Try(WhetherToUseRplot <- "yes"))
-  Try(if (WhetherToUseRplot=="cancel")
-  {
-    Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-    return()
-  })
-  Try(if (WhetherToUseRplot=="yes")
-    plotFunction()
-  else
-  {
-    Require("tkrplot")
-    Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
-    Try(tkwm.withdraw(ttGraph))
-    Try(tkwm.title(ttGraph,plotTitle))
-    Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-    Try(tkwm.title(ttGraph,paste("Image Plot for",SlideNamesVec[slide])))
-    SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
-    SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
-    Try(tkgrid(imgaffylmGUI))
-    Try(if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10)  # Nothing plotted.
-      Try(tkdestroy(ttGraph))
-    else
-    {
-      Try(tkwm.deiconify(ttGraph))
-      Try(tkfocus(imgaffylmGUI))
-    })
-
-    CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
-  })
-  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-}
+ImageQualityPlot <- function(){
+	Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
+	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
+	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
+	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(
+		if (ArraysLoaded==FALSE){
+			Try(tkmessageBox(title="Image Quality Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+			return()
+		}
+	)
+	Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
+	Require("affyPLM")
+	Try(Pset <- fitPLM(RawAffyData))
+	#Try(NormalizedAffyData <- new("exprSet"))
+	#Try(NormalizedAffyData@exprs <- coefs(Pset))
+	#Try(NormalizedAffyData@se.exprs <- se(Pset))
+	#Try(NormalizedAffyData@phenoData <- phenoData(Pset))
+	#Try(NormalizedAffyData@description <- description(Pset))
+	#Try(NormalizedAffyData@annotation <- annotation(Pset))
+	#Try(NormalizedAffyData@notes <- notes(Pset))
+	#Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
+	#Try(weightsPLM <- get("weightsPLM", envir=affylmGUIenvironment))
+	#Try(weightsPLM <- Pset@weights)
+	#Try(weightsPLM <- weights(Pset))
+	#
+	Try(slide <- GetSlideNum())
+	Try(if (slide==0) return())
+	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+	#
+	Try(
+		plotFunction <- function(){
+			Try(opar<-par(bg="white"))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+			image(Pset, which = slide, type = "sign.resids")
+			#pm.index <- unique(unlist(indexProbes(RawAffyData, "pm")))#returns a list with locations of the probes in all probe sets
+			#rows <- nrow(RawAffyData)
+			#cols <- ncol(RawAffyData)
+			#pm.x.locs <- pm.index%%rows
+			#pm.x.locs[pm.x.locs == 0] <- rows
+			#pm.y.locs <- pm.index%/%rows + 1
+			#xycoor <- matrix(cbind(pm.x.locs,pm.y.locs),ncol=2)
+			#xycoor2 <- matrix(cbind(pm.x.locs,pm.y.locs+1),ncol=2)
+			#weightmatrix <- matrix(nrow=rows,ncol=cols)
+			#Try(tkmessageBox(title="2338:DEBUG:",message=paste("nrow = ",nrow),icon="error",default="ok"))###DEBUG
+			#Try(tkmessageBox(title="2339:DEBUG:",message=paste("ncol = ",ncol),icon="error",default="ok"))###DEBUG
+			#Try(tkmessageBox(title="2340:DEBUG:",message=paste("xycoor = ",xycoor),icon="error",default="ok"))###DEBUG
+			#Try(tkmessageBox(title="2340:DEBUG:",message=paste("xycoor2 = ",xycoor2),icon="error",default="ok"))###DEBUG
+			#weightmatrix[xycoor] <- weightsPLM[,slide]
+			#weightmatrix[xycoor2] <- weightsPLM[,slide]
+			# this line flips the matrix around so it is correct
+			#weightmatrix <- as.matrix(rev(as.data.frame(weightmatrix)))
+			#image(weightmatrix,col=terrain.colors(12),xaxt='n',yaxt='n')
+			#Try(title(SlideNamesVec[slide]))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			Try(tmp<-par(opar))
+		}#end of plotFunction <- function()
+	)
+	Try(plotTitle<-SlideNamesVec[slide])
+	Try(plotLabels <- GetPlotLabels(plotTitle,"",""))
+	Try(if (length(plotLabels)==0) return())
+	Try(plotTitle <- plotLabels$plotTitle)
+	Try(xLabel    <- plotLabels$xLabel)
+	Try(yLabel    <- plotLabels$yLabel)
+	#
+	Try(
+		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
+			Try(WhetherToUseRplot <- tclvalue(tkmessageBox(title="Where To Plot Array Image",type="yesnocancel",
+			message="Plot this image in R rather than a new (Tk) window? (Requires less memory.)",icon="question")))
+		}else{
+			Try(WhetherToUseRplot <- "yes")
+		}
+	)
+	Try(
+		if (WhetherToUseRplot=="cancel"){
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			return()
+		}
+	)
+	Try(
+		if (WhetherToUseRplot=="yes"){
+			plotFunction()
+		}else{
+			Require("tkrplot")
+			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+			Try(tkwm.withdraw(ttGraph))
+			Try(tkwm.title(ttGraph,plotTitle))
+			Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+			Try(tkwm.title(ttGraph,paste("Image Plot for",SlideNamesVec[slide])))
+			SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+			SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
+			Try(tkgrid(imgaffylmGUI))
+			Try(
+				if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10){  # Nothing plotted.
+					Try(tkdestroy(ttGraph))
+				}else{
+					Try(tkwm.deiconify(ttGraph))
+					Try(tkfocus(imgaffylmGUI))
+				}
+			)
+			CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
+		}#end of else/if (WhetherToUseRplot=="yes")
+	)
+	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+}#end of ImageQualityPlot <- function()
 
 
 

@@ -41,13 +41,18 @@
     item    toptableMenu    command         "Table of Genes Ranked in order of Differential Expression"   showTopTable
     item    topMenu         cascade         "TopTable"                                      toptableMenu
     menu    plotMenu        topMenu         ""                                              ""
-    item    plotMenu        command         "Intensity Histogram"                           IntensityHistogram
-    item    plotMenu        command         "Intensity Density Plot"                        DensityPlot
+#   item    plotMenu        command         "Intensity Histogram(One slide)"                IntensityHistogram
+#   item    plotMenu        command         "Intensity Histogram(All slides)"               IntensityHistogramAll
+#   item    plotMenu        command         "Intensity Density Plot(One slide)"             DensityPlot
+    item    plotMenu        command         "Intensity Density Plot"                        DensityPlotAll
     item    plotMenu        command         "Raw Intensity Box Plot"                        RawIntensityBoxPlot
     item    plotMenu        command         "Normalized Intensity Box Plot"                 NormalizedIntensityBoxPlot
+    item    plotMenu        command         "RNA Digestion Plot"                            RNADigestionPlotAll
+    item    plotMenu        command         "NUSE-Normalized Unscaled Std.Errors Plot"      NUSEPlotAll
+    item    plotMenu        command         "RLE-Relative Log Expression Plot"              RLEPlotAll
+    item    plotMenu        command         "Weights pseudo chip Image(One slide)"          ImageQualityPlot
     item    plotMenu        command         "M A Plot (for two slides)"                     affyPlotMA
-    item    plotMenu        command         "Image Array Plot"                              ImageArrayPlot
-    item    plotMenu        command         "Image Quality Plot"                            ImageQualityPlot
+    item    plotMenu        command         "Image Array Plot(One slide)"                   ImageArrayPlot
     item    plotMenu        separator       ""                                              ""
     item    plotMenu        command         "M A Plot (for one contrast)"                   affyPlotMAcontrast
     item    plotMenu        command         "Quantile-Quantile t Statistic Plot (for one contrast)"  QQTplot

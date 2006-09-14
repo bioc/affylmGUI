@@ -5,7 +5,7 @@ GetNormalizationMethod <- function()
 
 NormalizeNow <- function()
 {
-  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment)) 
+  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
   Try(if (ArraysLoaded==FALSE)
   {
     Try(tkmessageBox(title="Normalization",message="Error: No arrays have been loaded.",
@@ -14,7 +14,7 @@ NormalizeNow <- function()
   })
   Require("affy")
   Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-  
+
   Try(NormalizationMethod <- GetNormalizationMethod())
   Try(if (NormalizationMethod=="") return())
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
@@ -36,12 +36,12 @@ NormalizeNow <- function()
     Try(Pset <- fitPLM(RawAffyData))
     Try(NormalizedAffyData <- new("exprSet"))
     Try(NormalizedAffyData@exprs <- coefs(Pset))
-    Try(NormalizedAffyData@se.exprs <- se(Pset))    
+    Try(NormalizedAffyData@se.exprs <- se(Pset))
     Try(NormalizedAffyData@phenoData <- phenoData(Pset))
     Try(NormalizedAffyData@description <- description(Pset))
     Try(NormalizedAffyData@annotation <- annotation(Pset))
     Try(NormalizedAffyData@notes <- notes(Pset))
-    Try(assign("NormMethod","PLM",affylmGUIenvironment))    
+    Try(assign("NormMethod","PLM",affylmGUIenvironment))
     Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
   })
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
@@ -49,16 +49,11 @@ NormalizeNow <- function()
   Try(assign("NormalizedAffyData",NormalizedAffyData,affylmGUIenvironment))
   Try(tkdelete(.affylmGUIglobals$mainTree,"NormalizedAffyData.Status"))
   Try(if (NormalizationMethod=="RMA")
-    Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (RMA)",font=.affylmGUIglobals$affylmGUIfontTree))    
+    Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (RMA)",font=.affylmGUIglobals$affylmGUIfontTree))
   else if(NormalizationMethod=="GCRMA")
-    Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (GCRMA)",font=.affylmGUIglobals$affylmGUIfontTree))      
+    Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (GCRMA)",font=.affylmGUIglobals$affylmGUIfontTree))
   else
-    Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (PLM)",font=.affylmGUIglobals$affylmGUIfontTree)))  
-}
-
-AboutNormalization <- function()
-{
-  Try(tkmessageBox(title="About Normalization",message="Currently the only method available is rma."))
+    Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (PLM)",font=.affylmGUIglobals$affylmGUIfontTree)))
 }
 
 GetNormalizationMethod <- function()
@@ -68,7 +63,7 @@ GetNormalizationMethod <- function()
   Try(tkgrab.set(ttGetNormalizationMethod))
   Try(tkfocus(ttGetNormalizationMethod))
   Try(tkwm.title(ttGetNormalizationMethod,"Normalization Method"))
-	
+
 	Try(tkgrid(tklabel(ttGetNormalizationMethod,text="    ")))
 	Try(NormalizationMethodTcl <- tclVar("RMA"))
   Try(rbRMA <- tkradiobutton(ttGetNormalizationMethod,text="RMA (Robust Multiarray Averaging)",variable=NormalizationMethodTcl,value="RMA",font=.affylmGUIglobals$affylmGUIfont2))
@@ -94,7 +89,7 @@ GetNormalizationMethod <- function()
 
 	Try(tkbind(ttGetNormalizationMethod,"<Destroy>",function() {ReturnVal <- "";Try(tkgrab.release(ttGetNormalizationMethod));Try(tkfocus(.affylmGUIglobals$ttMain));}))
   Try(tkbind(OK.but, "<Return>",onOK))
-  Try(tkbind(Cancel.but, "<Return>",onCancel))      
+  Try(tkbind(Cancel.but, "<Return>",onCancel))
 
 	Try(tkwait.window(ttGetNormalizationMethod))
 
@@ -114,12 +109,12 @@ ExportNormalizedExpressionValues <- function()
   Try(NormalizedAffyData.Available <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))
   Try(if (NormalizedAffyData.Available==FALSE)
     NormalizeNow())
-  Try(NormalizedAffyData.Available <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))    
+  Try(NormalizedAffyData.Available <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))
   Try(if (NormalizedAffyData.Available==FALSE)
   {
     tkmessageBox(title="Export Normalized Expression Values",message="An error or cancellation occured while trying to normalize the data.")
     return()
-  
+
   })
   Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
 	Try(FileName <- tclvalue(tkgetSaveFile(initialfile=paste(limmaDataSetNameText,"_exprs.xls",sep=""),filetypes="{{Tab-Delimited Text Files} {.txt .xls}} {{All files} *}")))
