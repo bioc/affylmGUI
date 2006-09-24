@@ -1,5 +1,12 @@
 
 ImageArrayPlot <- function(){
+	Try(Targets <- get("Targets", envir=affylmGUIenvironment))
+	Try(FileNamesVec <- c())
+	Try(
+		if("FileName" %in% colnames(Targets)){
+			FileNamesVec <- Targets$FileName
+		}
+	)
   Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
   Try(LocalHScale <- .affylmGUIglobals$Myhscale)
   Try(LocalVScale <- .affylmGUIglobals$Myvscale)
@@ -26,6 +33,7 @@ ImageArrayPlot <- function(){
     Try(tmp<-par(opar))
   })
   Try(plotTitle<-SlideNamesVec[slide])
+	Try(plotTitle<-paste("Image Array for ",SlideNamesVec[slide]," - ",FileNamesVec[slide]))
   Try(plotLabels <- GetPlotLabels(plotTitle,"",""))
   Try(if (length(plotLabels)==0) return())
   Try(plotTitle <- plotLabels$plotTitle)
@@ -112,6 +120,65 @@ GetWhichProbes <- function(includeBoth=FALSE)
 
 	return (ReturnVal)
 }
+
+GetLogPLMDataChoice <- function(){
+	Try(ttLogPLMDataChoice <- tktoplevel(.affylmGUIglobals$ttMain))
+	Try(tkwm.deiconify(ttLogPLMDataChoice))
+	Try(tkgrab.set    (ttLogPLMDataChoice))
+	Try(tkfocus       (ttLogPLMDataChoice))
+	Try(tkwm.title    (ttLogPLMDataChoice,"Log PLM Data Choice"))
+	#
+	Try(tkgrid(tklabel(ttLogPLMDataChoice,text="    ")))
+	Try(LogPLMDataChoiceTcl <- tclVar("TRUE"))
+  Try(rb1 <- tkradiobutton(ttLogPLMDataChoice,text="Log PLM Data",       variable=LogPLMDataChoiceTcl,value="TRUE", font=.affylmGUIglobals$affylmGUIfont2))
+	Try(rb2 <- tkradiobutton(ttLogPLMDataChoice,text="Do not Log PLM Data",variable=LogPLMDataChoiceTcl,value="FALSE",font=.affylmGUIglobals$affylmGUIfont2))
+	Try(tkgrid(tklabel(ttLogPLMDataChoice,text="    "),rb1))
+	Try(tkgrid(tklabel(ttLogPLMDataChoice,text="    "),rb2))
+  Try(tkgrid.configure(rb1,rb2,columnspan=2,sticky="w"))
+	Try(tkgrid(tklabel      (ttLogPLMDataChoice,text="    "),tklabel(ttLogPLMDataChoice,text="    ")))
+	#
+	Try(ReturnVal <- "")
+	Try(
+		onCancel <- function(){
+		Try(ReturnVal <<- "");
+		Try(tkgrab.release(ttLogPLMDataChoice));
+		Try(tkdestroy(ttLogPLMDataChoice));
+		Try(tkfocus(.affylmGUIglobals$ttMain))
+		}
+	)
+	Try(
+		onOK <- function(){
+			Try(ReturnVal <<- tclvalue(LogPLMDataChoiceTcl));
+			Try(tkgrab.release(ttLogPLMDataChoice));
+			Try(tkdestroy(ttLogPLMDataChoice));
+			Try(tkfocus(.affylmGUIglobals$ttMain))
+		}
+	)
+	Try(OK.but     <- tkbutton(ttLogPLMDataChoice,text="OK",command=onOK,font=.affylmGUIglobals$affylmGUIfont2))
+	Try(Cancel.but <- tkbutton(ttLogPLMDataChoice,text="Cancel",command=onCancel,font=.affylmGUIglobals$affylmGUIfont2))
+	#
+	Try(tkgrid(tklabel  (ttLogPLMDataChoice,text="    "),OK.but,Cancel.but,tklabel(ttLogPLMDataChoice,text="    ")))
+	Try(tkgrid.configure(OK.but,sticky="e"))
+	Try(tkgrid.configure(Cancel.but,sticky="w"))
+	Try(tkgrid(tklabel  (ttLogPLMDataChoice,text="    ")))
+	#
+	Try(
+		tkbind(ttLogPLMDataChoice,
+			"<Destroy>",
+			function(){
+				ReturnVal <- "";
+				Try(tkgrab.release(ttLogPLMDataChoice));
+				Try(tkfocus(.affylmGUIglobals$ttMain));
+			}
+		)
+	)
+	Try(tkbind(OK.but, "<Return>",onOK))
+	Try(tkbind(Cancel.but, "<Return>",onCancel))
+	#
+	Try(tkwait.window(ttLogPLMDataChoice))
+	#
+	return (ReturnVal)
+}# end of GetLogPLMDataChoice <- function()
 
 IntensityHistogram <- function(){
 	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
@@ -384,7 +451,7 @@ DensityPlotAll <- function(){
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 			###Try(plotDensity.AffyBatch(RawAffyData[,slide],which=whichProbes,xlab=xLabel,ylab=yLabel))
 			Try(plotDensity.AffyBatch(RawAffyData,which=whichProbes,xlab=xLabel,ylab=yLabel))
-			Try(legend(x="topright", inset=0.05,legend=c(affylmGUIenvironment$Targets$Name),lty=1:NumSlides, col = 1:NumSlides))
+			Try(legend(x="topright", inset=0.025,legend=c(affylmGUIenvironment$Targets$Name),lty=1:NumSlides, col = 1:NumSlides))
 			Try(title(plotTitle))
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 			Try(tmp<-par(opar))
@@ -457,19 +524,14 @@ RNADigestionPlotAll <- function(){
 			return()
 		}#end of if (ArraysLoaded==FALSE)
 	)
-	#Try(slide <- GetSlideNum())
-	#Try(if (slide==0) return())
-	#
-	#Try(whichProbes <- GetWhichProbes())
-	#Try(if (whichProbes=="") return())
 	#
 	Try(
 		plotFunction <- function(){
 			Try(opar<-par(bg="white"))
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-			Try(deg <- AffyRNAdeg(RawAffyData))
+			Try(deg <- AffyRNAdeg(RawAffyData,log.it=log.it.choice))
 			Try(plotAffyRNAdeg(deg,col=1:8))
-			#Try(legend(x=0,y=120,legend=1:NumSlides,col=1:NumSlides,lty=1))
+			Try(legend(x="topright",inset=0.025,legend=1:NumSlides,col=1:NumSlides,lty=1))
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 			Try(tmp<-par(opar))
 		}#end of plotFunction <- function()
@@ -477,7 +539,22 @@ RNADigestionPlotAll <- function(){
 	#Try(plotLabels <- GetPlotLabels(plotTitle,xLabel,"Frequency"))
 	#Try(if (length(plotLabels)==0) return())
 	#Try(plotTitle <- plotLabels$plotTitle)
-	Try(plotTitle<-paste("RNA Digestion Plot for All Slides"))
+	Try(log.it.choice <- GetLogPLMDataChoice()); #This should be TRUE, except set to FALSE if data has zeroes, like the Estrogen test data set.
+	Try(
+		if(log.it.choice == TRUE){
+			Try(plotTitle<-paste("RNA Digestion Plot for All Slides(logged data)"))
+		}
+	)
+	Try(
+		if(log.it.choice == FALSE){
+			Try(plotTitle<-paste("RNA Digestion Plot for All Slides(UNlogged data)"))
+		}
+	)
+	Try(
+		if(log.it.choice == ""){
+			return()
+		}
+	)
 	#Try(xLabel    <- plotLabels$xLabel)
 	#Try(yLabel    <- plotLabels$yLabel)
 	#
@@ -526,12 +603,20 @@ NUSEPlotAll <- function(){
 			#Try(tkmessageBox(title="527:DEBUG:NUSE Plot",message="Arrays ARE loaded!.",icon="error",default="ok"))
 		}#end of if (ArraysLoaded==FALSE)
 	)
-  Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
 	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
 	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
 	#Try(tkmessageBox(title="532:DEBUG:NUSE Plot",message=paste("LocalHScale = ",LocalHScale),icon="error",default="ok"))###DEBUG
-	Require("affyPLM")
-	Try(Pset <- fitPLM(RawAffyData))
+	Try(PsetData.Available <- get("PsetData.Available" , envir=affylmGUIenvironment))
+	if(!PsetData.Available){
+		Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+		Require("affyPLM")
+		Try(Pset <- fitPLM(RawAffyData))
+		Try(assign("Pset",Pset,affylmGUIenvironment))
+		Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
+		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
+	}else{
+		Try(Pset <- get("Pset", envir=affylmGUIenvironment))
+	}
 	Try(
 		plotFunction <- function(){
 			Try(opar<-par(bg="white"))
@@ -588,11 +673,19 @@ RLEPlotAll <- function(){
 			return()
 		}#end of if (ArraysLoaded==FALSE)
 	)
-  Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
 	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
 	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
-	Require("affyPLM")
-	Try(Pset <- fitPLM(RawAffyData))
+	Try(PsetData.Available <- get("PsetData.Available" , envir=affylmGUIenvironment))
+	if(!PsetData.Available){
+		Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+		Require("affyPLM")
+		Try(Pset <- fitPLM(RawAffyData))
+		Try(assign("Pset",Pset,affylmGUIenvironment))
+		Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
+		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
+	}else{
+		Try(Pset <- get("Pset", envir=affylmGUIenvironment))
+	}
 	Try(
 		plotFunction <- function(){
 			Try(opar<-par(bg="white"))
@@ -685,7 +778,6 @@ RawIntensityBoxPlot <- function()
   })
 
 }
-
 
 NormalizedIntensityBoxPlot <- function()
 {
@@ -1485,7 +1577,8 @@ HeatDiagramDialog <- function(parameterName){
 	Try(tkwait.window(ttHeatDiagramDialog))
 	return (ReturnVal)
 }#end of HeatDiagramDialog <- function(parameterName)
-
+#
+#
 HeatDiagramPlot <- function(){
 	Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
 	Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
@@ -1628,7 +1721,8 @@ HeatDiagramPlot <- function(){
 		}
 	)
 }#end of HeatDiagramPlot <- function()
-
+#
+#
 affyPlotMA <- function(){
 	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
 	Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
@@ -1730,7 +1824,8 @@ affyPlotMA <- function(){
 		}
 	)
 }#end of affyPlotMA <- function()
-
+#
+#
 GetSlideNums <- function(){
 	Try(SlideNamesVec <- get("SlideNamesVec",envir=affylmGUIenvironment))
 	Try(
@@ -1782,7 +1877,8 @@ GetSlideNums <- function(){
 	#
 	return (ReturnVal)
 }#end of GetSlideNums <- function()
-
+#
+#
 affyPlotMAcontrast <- function(){
 	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
 	Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
@@ -1954,7 +2050,8 @@ affyPlotMAcontrast <- function(){
 		}
 	)
 }#end of affyPlotMAcontrast <- function()
-
+#
+#
 GetGeneLabelsOptions <- function()
 {
   Try(ttGeneLabelsOptions <- tktoplevel(.affylmGUIglobals$ttMain))
@@ -2015,7 +2112,8 @@ GetGeneLabelsOptions <- function()
   return(ReturnVal)
 
 }
-
+#
+#
 QQTplot <- function()
 {
   Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
@@ -2112,211 +2210,222 @@ QQTplot <- function()
   })
   Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 }
-
-LogOddsPlot <- function()
-{
-  Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
-  Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment))
-  Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
-  Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
-  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
-  Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
-
-  if (ArraysLoaded==FALSE)
-  {
-      Try(tkmessageBox(title="Log Odds Plot",message="No arrays have been loaded.  Please try New or Open from the File menu.",type="ok",icon="error"))
-      Try(tkfocus(.affylmGUIglobals$ttMain))
-      return()
-  }
-
-  if (NumContrastParameterizations==0)
-  {
-    Try(tkmessageBox(title="Log Odds Plot",message="There are no contrast parameterizations loaded.  Select \"Compute Contrasts\" from the \"Linear Model\" menu.",type="ok",icon="error"))
-    Try(tkfocus(.affylmGUIglobals$ttMain))
-    return()
-  }
-
-  Try(contrastParameterizationIndex <- ChooseContrastParameterization())
-  Try(if (contrastParameterizationIndex==0) return()) # Cancel
-
-  Try(.affylmGUIglobals$ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
-  Try(ContrastNamesVec  <- colnames(as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts)))
-  Try(NumContrasts <- length(ContrastNamesVec))
-
-  Try(GetContrastReturnVal <- GetContrast(contrastParameterizationIndex))
-  Try(if (GetContrastReturnVal$contrastIndex==0) return()) # Cancel
-  Try(contrast <- GetContrastReturnVal$contrastIndex)
-  Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
-
-  Try(fit <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$fit)
-
-	Try(if (("eb" %in% names(ContrastParameterizationList[[contrastParameterizationIndex]]))&&
-										length(ContrastParameterizationList[[contrastParameterizationIndex]]$eb)>0)
-		Try(ebayesAvailable <- TRUE)
-	else
-		Try(ebayesAvailable <- FALSE))
-
-  Try(if (ebayesAvailable==FALSE)
-  {
-    Try(tkmessageBox(title="Log Odds Plot",message="Log Odds (B statistic) values are not available because of a lack of replicate arrays.",icon="error"))
-    return()
-  })
-
-
-
-  Try(fit <- eBayes(fit))
-
-  Try(GeneLabelsOptions <- GetGeneLabelsOptions())
-  Try(if (length(GeneLabelsOptions)==0) return())
-  Try(numDEgenesLabeled   <- GeneLabelsOptions$HowManyDEGeneLabels)
-  Try(GeneLabelsMaxLength <- GeneLabelsOptions$GeneLabelsMaxLength)
-  Try(IDorSymbol <- GeneLabelsOptions$IDorSymbol)
-
-  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-  Try(tkfocus(.affylmGUIglobals$ttMain))
-
-  Try(if (numDEgenesLabeled>0)
-  {
-    Try(if (NumContrasts>1)
-        Try(ord <- order(fit$lods[,contrast],decreasing=TRUE))
-    else
-        Try(ord <- order(fit$lods,decreasing=TRUE)))
-    Try(topGenes <- ord[1:numDEgenesLabeled])
-  })
-  Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows")
-    Try(cex <- 0.3)
-  else
-    Try(cex <- 0.2))
-
-  Try(if (numDEgenesLabeled>0)
-  {
-    Try(if (NumContrasts>1)
-      Try(ord <- order(fit$lods[,contrast],decreasing=TRUE))
-    else
-      Try(ord <- order(fit$lods,decreasing=TRUE)))
-    Try(topGenes <- ord[1:numDEgenesLabeled])
-
-    Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-    Try(cdfenv<-getCdfInfo(RawAffyData))
-
-		Try(genelist <- data.frame(ID=I(ls(cdfenv))))
-
-		Try(geneSymbols <- get("geneSymbols",envir=affylmGUIenvironment))
-		Try(if (length(geneSymbols)==0)
-		{
-			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-			Try(dataName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
-			###Require("reposTools")
-			###Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))
-			###Try(matchIndex <- match(dataName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
-			###Try(if (!is.na(matchIndex))
-			###{
-				Try(install.packages(pkgs=dataName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))###inserted by keith
-				###Try(install.packages2(dataName,annoPackages))
-				Require(dataName)
-				Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(mget(ls(envir=",dataName,"SYMBOL),env=",dataName,"SYMBOL))))",sep=""))
-				Try(eval(parse(text=code2eval)))
-				Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
-				Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-				Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols)))
-				Try(colnames(genelist) <- c("ID","Symbol"))
-			###}
-			###else
-			###{
-				###Try(genelist <- data.frame(ID=I(ls(cdfenv))))
-				###Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-			###})
-
+#
+#
+LogOddsPlot <- function(){
+	Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
+	Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment))
+	Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
+	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
+	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
+	if (ArraysLoaded==FALSE){
+		Try(tkmessageBox(title="Log Odds Plot",message="No arrays have been loaded.  Please try New or Open from the File menu.",type="ok",icon="error"))
+		Try(tkfocus(.affylmGUIglobals$ttMain))
+		return()
+	}
+	if (NumContrastParameterizations==0){
+		Try(tkmessageBox(title="Log Odds Plot",message="There are no contrast parameterizations loaded.  Select \"Compute Contrasts\" from the \"Linear Model\" menu.",type="ok",icon="error"))
+		Try(tkfocus(.affylmGUIglobals$ttMain))
+		return()
+	}
+	#
+	Try(contrastParameterizationIndex <- ChooseContrastParameterization())
+	Try(if (contrastParameterizationIndex==0) return()) # Cancel
+	#
+	Try(.affylmGUIglobals$ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
+	Try(ContrastNamesVec  <- colnames(as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts)))
+	Try(NumContrasts <- length(ContrastNamesVec))
+	#
+	Try(GetContrastReturnVal <- GetContrast(contrastParameterizationIndex))
+	Try(if (GetContrastReturnVal$contrastIndex==0) return()) # Cancel
+	Try(contrast <- GetContrastReturnVal$contrastIndex)
+	Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
+	#
+	Try(fit <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$fit)
+	#
+	Try(
+		if(("eb" %in% names(ContrastParameterizationList[[contrastParameterizationIndex]]))&&
+			   length(ContrastParameterizationList[[contrastParameterizationIndex]]$eb)>0){
+			Try(ebayesAvailable <- TRUE)
+		}else{
+			Try(ebayesAvailable <- FALSE)
 		}
-		else
-		{
-			Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols)))
-			Try(colnames(genelist) <- c("ID","Symbol"))
-		})
-
-  })
-
-  plotFunction <- function()
-  {
-    Try(opar<-par(bg="white"))
-    Try(if (NumContrasts>1)
-    {
-      Try(plot(fit$coef[,contrast],fit$lods[,contrast],pch=16,cex=cex,xlab="Log Fold Change",ylab="Log Odds"))
-      Try(title(plotTitle))
-      Try(if (numDEgenesLabeled>0)
-        text(fit$coef[topGenes,contrast],fit$lods[topGenes,contrast],labels=substr(genelist[topGenes,IDorSymbol],1,GeneLabelsMaxLength),cex=0.8,col="blue"))
-    }
-    else
-    {
-      Try(plot(fit$coef,fit$lods,pch=16,cex=cex,xlab="Log Fold Change",ylab="Log Odds"))
-      Try(title(plotTitle))
-      Try(if (numDEgenesLabeled>0)
-        text(fit$coef[topGenes],fit$lods[topGenes],labels=substring(genelist[topGenes,IDorSymbol],1,10),cex=0.8,col="blue"))
-    })
-    Try(tempGraphPar <- par(opar))
-  }
-  Try(LocalHScale <- .affylmGUIglobals$Myhscale)
-  Try(LocalVScale <- .affylmGUIglobals$Myvscale)
-
-  Try(plotTitle <- (ContrastNamesVec[contrast]))
-  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-  Try(tkfocus(.affylmGUIglobals$ttMain))
-  Try(plotTitleList <- GetPlotTitle(plotTitle))
-  Try(if (length(plotTitleList)==0) return())
-  Try(plotTitle <- plotTitleList$plotTitle)
-
-  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-  Try(tkfocus(.affylmGUIglobals$ttMain))
-
-  Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
-  {
-    Try(ttLogOddsPlot <- tktoplevel(.affylmGUIglobals$ttMain))
-    Try(tkwm.title(ttLogOddsPlot,plotTitle))
-    Try(Require("tkrplot"))
-    Try(img <-tkrplot(ttLogOddsPlot,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
-    Try(SetupPlotKeyBindings(tt=ttLogOddsPlot,img=img))
-    Try(SetupPlotMenus(tt=ttLogOddsPlot,initialfile=paste(limmaDataSetNameText,"LogOddsPlot",ContrastNamesVec[contrast],sep=""),
-                 plotFunction=plotFunction,img=img))
-
-    Try(tkgrid(img))
-    Try(tkfocus(ttLogOddsPlot))
-  }
-  else
-  {
-    Try(plot.new())
-    Try(plotFunction())
-  })
-  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-}
-
-ImageQualityPlot <- function(){
+	)
+	Try(
+		if(ebayesAvailable==FALSE){
+			Try(tkmessageBox(title="Log Odds Plot",message="Log Odds (B statistic) values are not available because of a lack of replicate arrays.",icon="error"))
+			return()
+		}
+	)
+	Try(fit <- eBayes(fit))
+	#
+	Try(GeneLabelsOptions <- GetGeneLabelsOptions())
+	Try(if(length(GeneLabelsOptions)==0) return())
+	Try(numDEgenesLabeled   <- GeneLabelsOptions$HowManyDEGeneLabels)
+	Try(GeneLabelsMaxLength <- GeneLabelsOptions$GeneLabelsMaxLength)
+	Try(IDorSymbol <- GeneLabelsOptions$IDorSymbol)
+	#
+	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+	Try(tkfocus(.affylmGUIglobals$ttMain))
+	#
+	Try(
+		if (numDEgenesLabeled>0){
+			Try(
+				if(NumContrasts>1){
+					Try(ord <- order(fit$lods[,contrast],decreasing=TRUE))
+				}else{
+					Try(ord <- order(fit$lods,decreasing=TRUE))
+				}
+			)
+			Try(topGenes <- ord[1:numDEgenesLabeled])
+		}
+	)
+	Try(
+		if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows"){
+			Try(cex <- 0.3)
+		}else{
+			Try(cex <- 0.2)
+		}
+	)
+	Try(
+		if (numDEgenesLabeled>0){
+			Try(
+				if (NumContrasts>1){
+					Try(ord <- order(fit$lods[,contrast],decreasing=TRUE))
+				}else{
+					Try(ord <- order(fit$lods,decreasing=TRUE))
+				}
+			)
+			Try(topGenes <- ord[1:numDEgenesLabeled])
+			#
+			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+			Try(cdfenv      <-getCdfInfo(RawAffyData))
+			Try(genelist    <- data.frame(ID=I(ls(cdfenv))))
+			Try(geneSymbols <- get("geneSymbols",envir=affylmGUIenvironment))
+			Try(
+				if (length(geneSymbols)==0){
+					Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+					Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+					Try(cdfName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
+					if(!(cdfName %in% .packages(all.available=TRUE))){
+						Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))###inserted by keith
+					}
+					Try(
+						if( (cdfName %in% .packages(all.available=TRUE)) ){
+							Require(cdfName)
+							Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(mget(ls(envir=",cdfName,"SYMBOL),env=",cdfName,"SYMBOL))))",sep=""))
+							Try(eval(parse(text=code2eval)))
+							Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
+							Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+							Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols)))
+							Try(colnames(genelist) <- c("ID","Symbol"))
+						}else{
+							Try(genelist <- data.frame(ID=I(ls(cdfenv))))
+							Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+						}
+					)
+				}else{
+					Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols)))
+					Try(colnames(genelist) <- c("ID","Symbol"))
+				}#end of else/if (length(geneSymbols)==0)
+			)
+		}#end of if (numDEgenesLabeled>0)
+	)
+	plotFunction <- function(){
+		Try(opar<-par(bg="white"))
+		Try(
+			if (NumContrasts>1){
+				Try(plot(fit$coef[,contrast],fit$lods[,contrast],pch=16,cex=cex,xlab="Log Fold Change",ylab="Log Odds"))
+				Try(title(plotTitle))
+				Try(
+					if (numDEgenesLabeled>0){
+						text(fit$coef[topGenes,contrast],fit$lods[topGenes,contrast],labels=substr(genelist[topGenes,IDorSymbol],1,GeneLabelsMaxLength),cex=0.8,col="blue")
+					}
+				)
+			}else{
+				Try(plot(fit$coef,fit$lods,pch=16,cex=cex,xlab="Log Fold Change",ylab="Log Odds"))
+				Try(title(plotTitle))
+				Try(
+					if(numDEgenesLabeled>0){
+						text(fit$coef[topGenes],fit$lods[topGenes],labels=substring(genelist[topGenes,IDorSymbol],1,10),cex=0.8,col="blue")
+					}
+				)
+			}#end of else/if (NumContrasts>1)
+		)
+		Try(tempGraphPar <- par(opar))
+	}#end of plotFunction <- function()
+	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
+	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
+	Try(plotTitle <- (ContrastNamesVec[contrast]))
+	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+	Try(tkfocus(.affylmGUIglobals$ttMain))
+	Try(plotTitleList <- GetPlotTitle(plotTitle))
+	Try(if (length(plotTitleList)==0) return())
+	Try(plotTitle <- plotTitleList$plotTitle)
+	#
+	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+	Try(tkfocus(.affylmGUIglobals$ttMain))
+	#
+	Try(
+		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
+			Try(ttLogOddsPlot <- tktoplevel(.affylmGUIglobals$ttMain))
+			Try(tkwm.title(ttLogOddsPlot,plotTitle))
+			Try(Require("tkrplot"))
+			Try(img <-tkrplot(ttLogOddsPlot,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+			Try(SetupPlotKeyBindings(tt=ttLogOddsPlot,img=img))
+			Try(
+				SetupPlotMenus(
+					tt=ttLogOddsPlot,
+					initialfile=paste(limmaDataSetNameText,"LogOddsPlot",ContrastNamesVec[contrast],sep=""),
+					plotFunction=plotFunction,img=img
+				)
+			)
+			Try(tkgrid(img))
+			Try(tkfocus(ttLogOddsPlot))
+		}else{
+			Try(plot.new())
+			Try(plotFunction())
+		}#end of else/if(.affylmGUIglobals$graphicsDevice=="tkrplot")
+	)
+	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+}#end of LogOddsPlot <- function()
+#
+#
+ImageQualityWeightPlot <- function(){
+	Try(Targets <- get("Targets", envir=affylmGUIenvironment))
+	Try(FileNamesVec <- c())
+	Try(
+		if("FileName" %in% colnames(Targets)){
+			FileNamesVec <- Targets$FileName
+		}
+	)
 	Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
+	Try(NumSlides <- get("NumSlides",envir=affylmGUIenvironment))
 	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
 	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
 	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
 	Try(
 		if (ArraysLoaded==FALSE){
-			Try(tkmessageBox(title="Image Quality Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+			Try(tkmessageBox(title="Image Quality Weights Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
 			return()
 		}
 	)
-	Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
-	Require("affyPLM")
-	Try(Pset <- fitPLM(RawAffyData))
-	#Try(NormalizedAffyData <- new("exprSet"))
-	#Try(NormalizedAffyData@exprs <- coefs(Pset))
-	#Try(NormalizedAffyData@se.exprs <- se(Pset))
-	#Try(NormalizedAffyData@phenoData <- phenoData(Pset))
-	#Try(NormalizedAffyData@description <- description(Pset))
-	#Try(NormalizedAffyData@annotation <- annotation(Pset))
-	#Try(NormalizedAffyData@notes <- notes(Pset))
-	#Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
-	#Try(weightsPLM <- get("weightsPLM", envir=affylmGUIenvironment))
-	#Try(weightsPLM <- Pset@weights)
-	#Try(weightsPLM <- weights(Pset))
+	Try(PsetData.Available <- get("PsetData.Available" , envir=affylmGUIenvironment))
+	if(!PsetData.Available){
+		Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
+		Require("affyPLM")
+		Try(Pset <- fitPLM(RawAffyData))
+		Try(assign("Pset",Pset,affylmGUIenvironment))
+		Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
+		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
+	}else{
+		#Try(tkmessageBox(title="2405:DEBUG:",message=paste("PLM model already fitted"),icon="warning",default="ok"))###DEBUG
+	}
+	Try(Pset <- get("Pset", envir=affylmGUIenvironment))
+	Try(weightsPLM <- get("weightsPLM", envir=affylmGUIenvironment))
 	#
-	Try(slide <- GetSlideNum())
+	Try(slide <- GetSlideNum(all=TRUE))
 	Try(if (slide==0) return())
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 	#
@@ -2324,20 +2433,26 @@ ImageQualityPlot <- function(){
 		plotFunction <- function(){
 			Try(opar<-par(bg="white"))
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-			image(Pset, which = slide, type = "sign.resids")
+			if (slide==1000000){
+				op <- par(mfrow = c((sqrt(NumSlides) + 1), (sqrt(NumSlides) + 1)),pty = "s",mar=c(0,0,2,0)+0.1)
+				image(Pset)#ie do all slides
+				par(op)
+			}else{
+				image(Pset, which = slide, main = plotTitle)
+			}
 			#pm.index <- unique(unlist(indexProbes(RawAffyData, "pm")))#returns a list with locations of the probes in all probe sets
 			#rows <- nrow(RawAffyData)
+			#Try(tkmessageBox(title="2412:DEBUG:",message=paste("rows = ",rows),icon="error",default="ok"))###DEBUG
 			#cols <- ncol(RawAffyData)
+			#Try(tkmessageBox(title="2414:DEBUG:",message=paste("cols = ",cols),icon="error",default="ok"))###DEBUG
 			#pm.x.locs <- pm.index%%rows
 			#pm.x.locs[pm.x.locs == 0] <- rows
 			#pm.y.locs <- pm.index%/%rows + 1
 			#xycoor <- matrix(cbind(pm.x.locs,pm.y.locs),ncol=2)
+			#Try(tkmessageBox(title="2419:DEBUG:",message=paste("xycoor = ",xycoor),icon="error",default="ok"))###DEBUG
 			#xycoor2 <- matrix(cbind(pm.x.locs,pm.y.locs+1),ncol=2)
+			#Try(tkmessageBox(title="2421:DEBUG:",message=paste("xycoor2 = ",xycoor2),icon="error",default="ok"))###DEBUG
 			#weightmatrix <- matrix(nrow=rows,ncol=cols)
-			#Try(tkmessageBox(title="2338:DEBUG:",message=paste("nrow = ",nrow),icon="error",default="ok"))###DEBUG
-			#Try(tkmessageBox(title="2339:DEBUG:",message=paste("ncol = ",ncol),icon="error",default="ok"))###DEBUG
-			#Try(tkmessageBox(title="2340:DEBUG:",message=paste("xycoor = ",xycoor),icon="error",default="ok"))###DEBUG
-			#Try(tkmessageBox(title="2340:DEBUG:",message=paste("xycoor2 = ",xycoor2),icon="error",default="ok"))###DEBUG
 			#weightmatrix[xycoor] <- weightsPLM[,slide]
 			#weightmatrix[xycoor2] <- weightsPLM[,slide]
 			# this line flips the matrix around so it is correct
@@ -2348,12 +2463,18 @@ ImageQualityPlot <- function(){
 			Try(tmp<-par(opar))
 		}#end of plotFunction <- function()
 	)
-	Try(plotTitle<-SlideNamesVec[slide])
-	Try(plotLabels <- GetPlotLabels(plotTitle,"",""))
-	Try(if (length(plotLabels)==0) return())
-	Try(plotTitle <- plotLabels$plotTitle)
-	Try(xLabel    <- plotLabels$xLabel)
-	Try(yLabel    <- plotLabels$yLabel)
+	if (slide==1000000){ #ie for all slides
+		Try(plotTitle <- "")
+		Try(xLabel    <- "")
+		Try(yLabel    <- "")
+	}else{
+		Try(plotTitle<-paste("Weights for ",SlideNamesVec[slide]," - ",FileNamesVec[slide]))
+		Try(plotLabels <- GetPlotLabels(plotTitle,"",""))
+		Try(if (length(plotLabels)==0) return())
+		Try(plotTitle <- plotLabels$plotTitle)
+		Try(xLabel    <- plotLabels$xLabel)
+		Try(yLabel    <- plotLabels$yLabel)
+	}
 	#
 	Try(
 		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
@@ -2394,8 +2515,196 @@ ImageQualityPlot <- function(){
 		}#end of else/if (WhetherToUseRplot=="yes")
 	)
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-}#end of ImageQualityPlot <- function()
+}#end of ImageQualityWeightPlot <- function()
 
+ImageQualityResidualPlot <- function(){
+	Try(Targets <- get("Targets", envir=affylmGUIenvironment))
+	Try(FileNamesVec <- c())
+	Try(
+		if("FileName" %in% colnames(Targets)){
+			FileNamesVec <- Targets$FileName
+		}
+	)
+	Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
+	Try(NumSlides <- get("NumSlides",envir=affylmGUIenvironment))
+	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
+	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
+	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(
+		if (ArraysLoaded==FALSE){
+			Try(tkmessageBox(title="Image Quality Residuals Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+			return()
+		}
+	)
+	Try(PsetData.Available <- get("PsetData.Available" , envir=affylmGUIenvironment))
+	if(!PsetData.Available){
+		Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
+		Require("affyPLM")
+		Try(Pset <- fitPLM(RawAffyData))
+		Try(assign("Pset",Pset,affylmGUIenvironment))
+		Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
+		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
+	}else{
+		#Try(tkmessageBox(title="2530:DEBUG:",message=paste("No Wait - PLM model previously calculated"),icon="warning",default="ok"))###DEBUG
+	}
+	Try(Pset <- get("Pset", envir=affylmGUIenvironment))
+	Try(weightsPLM <- get("weightsPLM", envir=affylmGUIenvironment))
+	#
+	Try(slide <- GetSlideNum(all=TRUE))
+	Try(if (slide==0) return())
+	Try(residType <- GetResidualTypeChoice())
+	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+	#
+	Try(
+		plotFunction <- function(){
+			Try(opar<-par(bg="white"))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+			if (slide==1000000){
+				op <- par(mfrow = c((sqrt(NumSlides) + 1), (sqrt(NumSlides) + 1)),pty = "s",mar=c(0,0,2,0)+0.1)
+				image(Pset, type = residType)#ie do all slides
+				par(op)
+			}else{
+				image(Pset, which = slide, type = residType, main = plotTitle)
+			}
+			#pm.index <- unique(unlist(indexProbes(RawAffyData, "pm")))#returns a list with locations of the probes in all probe sets
+			#rows <- nrow(RawAffyData)
+			#Try(tkmessageBox(title="2412:DEBUG:",message=paste("rows = ",rows),icon="error",default="ok"))###DEBUG
+			#cols <- ncol(RawAffyData)
+			#Try(tkmessageBox(title="2414:DEBUG:",message=paste("cols = ",cols),icon="error",default="ok"))###DEBUG
+			#pm.x.locs <- pm.index%%rows
+			#pm.x.locs[pm.x.locs == 0] <- rows
+			#pm.y.locs <- pm.index%/%rows + 1
+			#xycoor <- matrix(cbind(pm.x.locs,pm.y.locs),ncol=2)
+			#Try(tkmessageBox(title="2419:DEBUG:",message=paste("xycoor = ",xycoor),icon="error",default="ok"))###DEBUG
+			#xycoor2 <- matrix(cbind(pm.x.locs,pm.y.locs+1),ncol=2)
+			#Try(tkmessageBox(title="2421:DEBUG:",message=paste("xycoor2 = ",xycoor2),icon="error",default="ok"))###DEBUG
+			#weightmatrix <- matrix(nrow=rows,ncol=cols)
+			#weightmatrix[xycoor] <- weightsPLM[,slide]
+			#weightmatrix[xycoor2] <- weightsPLM[,slide]
+			# this line flips the matrix around so it is correct
+			#weightmatrix <- as.matrix(rev(as.data.frame(weightmatrix)))
+			#image(weightmatrix,col=terrain.colors(12),xaxt='n',yaxt='n')
+			#Try(title(SlideNamesVec[slide]))
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			Try(tmp<-par(opar))
+		}#end of plotFunction <- function()
+	)
+	if (slide==1000000){ #ie for all slides
+		Try(plotTitle <- "")
+		Try(xLabel    <- "")
+		Try(yLabel    <- "")
+	}else{
+		Try(plotTitle<-paste("Residuals(",residType,") for ",SlideNamesVec[slide]," - ",FileNamesVec[slide]))
+		Try(plotLabels <- GetPlotLabels(plotTitle,"",""))
+		Try(if (length(plotLabels)==0) return())
+		Try(plotTitle <- plotLabels$plotTitle)
+		Try(xLabel    <- plotLabels$xLabel)
+		Try(yLabel    <- plotLabels$yLabel)
+	}
+	#
+	Try(
+		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
+			Try(WhetherToUseRplot <- tclvalue(tkmessageBox(title="Where To Plot Array Image",type="yesnocancel",
+			message="Plot this image in R rather than a new (Tk) window? (Requires less memory.)",icon="question")))
+		}else{
+			Try(WhetherToUseRplot <- "yes")
+		}
+	)
+	Try(
+		if (WhetherToUseRplot=="cancel"){
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			return()
+		}
+	)
+	Try(
+		if (WhetherToUseRplot=="yes"){
+			plotFunction()
+		}else{
+			Require("tkrplot")
+			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
+			Try(tkwm.withdraw(ttGraph))
+			Try(tkwm.title(ttGraph,plotTitle))
+			Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
+			Try(tkwm.title(ttGraph,paste("Image Plot for",SlideNamesVec[slide])))
+			SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
+			SetupPlotMenus(tt=ttGraph,initialfile="",plotFunction,img=imgaffylmGUI)
+			Try(tkgrid(imgaffylmGUI))
+			Try(
+				if (as.numeric(tclvalue(tkwinfo("reqheight",imgaffylmGUI)))<10){  # Nothing plotted.
+					Try(tkdestroy(ttGraph))
+				}else{
+					Try(tkwm.deiconify(ttGraph))
+					Try(tkfocus(imgaffylmGUI))
+				}
+			)
+			CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
+		}#end of else/if (WhetherToUseRplot=="yes")
+	)
+	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+}#end of ImageQualityResidualPlot <- function()
+
+GetResidualTypeChoice <- function(){
+	Try(ttResidualTypeChoice <- tktoplevel(.affylmGUIglobals$ttMain))
+	Try(tkwm.deiconify(ttResidualTypeChoice))
+	Try(tkgrab.set    (ttResidualTypeChoice))
+	Try(tkfocus       (ttResidualTypeChoice))
+	Try(tkwm.title    (ttResidualTypeChoice,"Residual Image Type Choice"))
+	#
+	Try(tkgrid(tklabel(ttResidualTypeChoice,text="    ")))
+	Try(ttResidualTypeChoiceTcl <- tclVar("resids"))
+  Try(rb1 <- tkradiobutton(ttResidualTypeChoice,text="Residuals",       variable=ttResidualTypeChoiceTcl,value="resids", font=.affylmGUIglobals$affylmGUIfont2))
+	Try(rb2 <- tkradiobutton(ttResidualTypeChoice,text="Positive Residuals",variable=ttResidualTypeChoiceTcl,value="pos.resids",font=.affylmGUIglobals$affylmGUIfont2))
+	Try(rb3 <- tkradiobutton(ttResidualTypeChoice,text="Negative Residuals",variable=ttResidualTypeChoiceTcl,value="neg.resids",font=.affylmGUIglobals$affylmGUIfont2))
+	Try(rb4 <- tkradiobutton(ttResidualTypeChoice,text="Signed Residuals",variable=ttResidualTypeChoiceTcl,value="sign.resids",font=.affylmGUIglobals$affylmGUIfont2))
+	Try(tkgrid(tklabel(ttResidualTypeChoice,text="    "),rb1))
+	Try(tkgrid(tklabel(ttResidualTypeChoice,text="    "),rb2))
+	Try(tkgrid(tklabel(ttResidualTypeChoice,text="    "),rb3))
+	Try(tkgrid(tklabel(ttResidualTypeChoice,text="    "),rb4))
+  Try(tkgrid.configure(rb1,rb2,rb3,rb4,columnspan=2,sticky="w"))
+	Try(tkgrid(tklabel(ttResidualTypeChoice,text="    "),tklabel(ttResidualTypeChoice,text="    ")))
+	#
+	Try(ReturnVal <- "")
+	Try(
+		onCancel <- function(){
+		Try(ReturnVal <<- "");
+		Try(tkgrab.release(ttResidualTypeChoice));
+		Try(tkdestroy(ttResidualTypeChoice));
+		Try(tkfocus(.affylmGUIglobals$ttMain))
+		}
+	)
+	Try(
+		onOK <- function(){
+			Try(ReturnVal <<- tclvalue(ttResidualTypeChoiceTcl));
+			Try(tkgrab.release(ttResidualTypeChoice));
+			Try(tkdestroy(ttResidualTypeChoice));
+			Try(tkfocus(.affylmGUIglobals$ttMain))
+		}
+	)
+	Try(OK.but     <- tkbutton(ttResidualTypeChoice,text="OK",command=onOK,font=.affylmGUIglobals$affylmGUIfont2))
+	Try(Cancel.but <- tkbutton(ttResidualTypeChoice,text="Cancel",command=onCancel,font=.affylmGUIglobals$affylmGUIfont2))
+	#
+	Try(tkgrid(tklabel  (ttResidualTypeChoice,text="    "),OK.but,Cancel.but,tklabel(ttResidualTypeChoice,text="    ")))
+	Try(tkgrid.configure(OK.but,sticky="e"))
+	Try(tkgrid.configure(Cancel.but,sticky="w"))
+	Try(tkgrid(tklabel  (ttResidualTypeChoice,text="    ")))
+	#
+	Try(
+		tkbind(ttResidualTypeChoice,
+			"<Destroy>",
+			function(){
+				ReturnVal <- "";
+				Try(tkgrab.release(ttResidualTypeChoice));
+				Try(tkfocus(.affylmGUIglobals$ttMain));
+			}
+		)
+	)
+	Try(tkbind(OK.but, "<Return>",onOK))
+	Try(tkbind(Cancel.but, "<Return>",onCancel))
+	#
+	Try(tkwait.window(ttResidualTypeChoice))
+	#
+	return (ReturnVal)
+}# end of GetResidualTypeChoice <- function()
 
 
 GetMultipleContrasts <- function(contrastParameterizationIndex)

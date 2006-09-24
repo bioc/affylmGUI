@@ -50,7 +50,8 @@
     item    plotMenu        command         "RNA Digestion Plot"                            RNADigestionPlotAll
     item    plotMenu        command         "NUSE-Normalized Unscaled Std.Errors Plot"      NUSEPlotAll
     item    plotMenu        command         "RLE-Relative Log Expression Plot"              RLEPlotAll
-    item    plotMenu        command         "Weights pseudo chip Image(One slide)"          ImageQualityPlot
+    item    plotMenu        command         "Weights pseudo chip Image(One slide)"          ImageQualityWeightPlot
+    item    plotMenu        command         "Residuals pseudo chip Image(One slide)"        ImageQualityResidualPlot
     item    plotMenu        command         "M A Plot (for two slides)"                     affyPlotMA
     item    plotMenu        command         "Image Array Plot(One slide)"                   ImageArrayPlot
     item    plotMenu        separator       ""                                              ""

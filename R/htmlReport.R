@@ -62,8 +62,7 @@
 
 ###########################################################################################################################
 
-GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL)
-{
+GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL){
   Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
 
   Try(ttHTMLreportDialog<-tktoplevel(.affylmGUIglobals$ttMain))
@@ -185,58 +184,65 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
   Try(tkwait.window(ttHTMLreportDialog))
 
   return (ReturnVal)
-
-
-}
+}#end of GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL)
 
 ###########################################################################################################################
 
-ExportHTMLreport <- function()
-{
+ExportHTMLreport <- function(){
 # We will use the R2HTML package, but with my own HTMLplot function.
 # Will we need xtable or does R2HTML have its own HTMLtable function?
-  Require("xtable")
-  Require("R2HTML")
-
-  Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
-  Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
-  Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
-  Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
-  Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
-
-  if (ArraysLoaded==FALSE)
-  {
-      Try(tkmessageBox(title="Export HTML Report",message="No arrays have been loaded.  Please try New or Open from the File menu.",type="ok",icon="error"))
-      Try(tkfocus(.affylmGUIglobals$ttMain))
-      return()
-  }
-
-  if (NumContrastParameterizations>0)
-  {
+	Require("xtable")
+	Require("R2HTML")
+	#
+	Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
+	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
+	Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
+	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
+	#
+	if(ArraysLoaded==FALSE){
+		Try(tkmessageBox(title="Export HTML Report",message="No arrays have been loaded.  Please try New or Open from the File menu.",type="ok",icon="error"))
+		Try(tkfocus(.affylmGUIglobals$ttMain))
+		return()
+	}
+	if(NumContrastParameterizations>0){
 		Try(contrastParameterizationIndex <- ChooseContrastParameterization())
 		Try(if (contrastParameterizationIndex==0) return()) # Cancel
-
-    Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment))
+		#
+		Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment))
 		Try(.affylmGUIglobals$ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
 		Try(contrastsMatrix <- as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts))
 		Try(ContrastNamesVec  <- colnames(contrastsMatrix))
-    Try(NumContrasts <- length(ContrastNamesVec))
-    Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
-  	Try(fit <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$fit)
-  	Try(fit <- eBayes(fit))
-
-    Try(ComponentsToExport <- GetComponentsToExportInHTMLreport(contrastParameterizationIndex))
- }
- else
-     Try(ComponentsToExport <- GetComponentsToExportInHTMLreport())
-
+		Try(NumContrasts <- length(ContrastNamesVec))
+		Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
+		Try(fit <- (ContrastParameterizationList[[ContrastParameterizationNameNode]])$fit)
+		Try(fit <- eBayes(fit))
+		#
+		Try(ComponentsToExport <- GetComponentsToExportInHTMLreport(contrastParameterizationIndex))
+	}else{
+		Try(ComponentsToExport <- GetComponentsToExportInHTMLreport())
+	}
   Try(if (length(ComponentsToExport)==0) return())
-
+	#
   Try(fileNameWithPath<- tkgetSaveFile(initialfile=limmaDataSetNameText,filetypes="{{HTML Files} {.html .htm}} {{All files} *}"))
-  Try(if (nchar(tclvalue(fileNameWithPath))==0)
-    return())
-  Try(path     <- tclvalue(tkfile.dir (tclvalue(fileNameWithPath))))###tkfile.dir is deprecated but tclfile.dir fails
-  Try(fileName <- tclvalue(tkfile.tail(tclvalue(fileNameWithPath))))###tkfile.tail is deprecated but tclfile.tail fails
+
+	#Try(tkmessageBox(title="229:affylmGUI-htmlreport",message=paste("fileNameWithPath =",fileNameWithPath),icon="info",default="ok"))
+
+	Try(if (nchar(tclvalue(fileNameWithPath))==0)return())
+
+  #Try(path     <- tclvalue(tkfile.dir (tclvalue(fileNameWithPath))))###tkfile.dir is deprecated but tclfile.dir fails
+  Try(path     <- tclvalue(tclfile.dir (tclvalue(fileNameWithPath))))###tkfile.dir is deprecated but tclfile.dir fails
+	Try(tkmessageBox(title="235:affylmGUI-htmlreport",message=paste("path =",path),icon="info",default="ok"))
+  #Try(path     <- tclvalue(tclfile.dir (as.character(tclvalue(fileNameWithPath)))))
+	#Try(tkmessageBox(title="238:affylmGUI-htmlreport",message=paste("path =",path),icon="info",default="ok"))
+
+  #Try(fileName <- tclvalue(tkfile.tail(tclvalue(fileNameWithPath))))###tkfile.tail is deprecated but tclfile.tail fails
+  Try(fileName <- tclvalue(tclfile.tail(tclvalue(fileNameWithPath))))###tkfile.tail is deprecated but tclfile.tail fails
+	Try(tkmessageBox(title="242:affylmGUI-htmlreport",message=paste("fileName =",fileName),icon="info",default="ok"))
+  #Try(fileName <- tclvalue(tcl(fileNameWithPath,"tail")))
+  #Try(fileName <- tclvalue(tclfile.tail(as.character(tclvalue(fileNameWithPath)))))
+	#Try(tkmessageBox(title="affylmGUI-htmlreport",message=paste("fileName =",fileName),icon="info",default="ok"))
+
 
   Try(len <- nchar(fileName))
   if (len<4)
@@ -413,122 +419,115 @@ ExportHTMLreport <- function()
 		})
   }
 
-  if (ExportTop50Toptables || ExportCompleteToptables)
-  {
-    Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-    Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])
-    if (!(cdfName %in% .packages(all.available=TRUE)))
-    {
-      Require("reposTools")
-      Try(cdfRepos <- getReposEntry("http://www.bioconductor.org/data/cdfenvs/repos"))
-      Try(install.packages2(cdfName,cdfRepos))
-      Try(assign("cdfName",cdfName,affylmGUIenvironment))
-    }
-
-    Try(cdfenv<-getCdfInfo(RawAffyData))
-		Try(genelist <- data.frame(ID=I(ls(cdfenv))))
-
-		Try(geneNames <- get("geneNames",envir=affylmGUIenvironment))
+	if (ExportTop50Toptables || ExportCompleteToptables){
+		Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+		Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])#Get the cdfname from the RawAffyData
+		if (!(cdfName %in% .packages(all.available=TRUE))){#then check to see if the cdfname package is available on this computer
+			Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))#if it is not available then install it on this computer over the internet from the Bioc repository
+			Try(assign("cdfName",cdfName,affylmGUIenvironment))#and assign this cdfname to the  affylmGUI environment
+		}#end of if (!(cdfName %in% .packages(all.available=TRUE)))
+		Try(cdfenv<-getCdfInfo(RawAffyData))#Now get the cdfenv from the RawAffyData
+		Try(genelist <- data.frame(ID=I(ls(cdfenv))))#get the geneID's from cdfenv and put them in the genelist. Note that the genelist = GeneID + GeneSymbol+GeneName
+		Try(geneNames   <- get("geneNames"  ,envir=affylmGUIenvironment))#Try and get the geneNames and symbols from the affylmGUI environment
 		Try(geneSymbols <- get("geneSymbols",envir=affylmGUIenvironment))
-		Try(if (length(geneNames)==0||length(geneSymbols)==0)
-		{
-			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-			Try(cdfName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
-			Require("reposTools")
-			Try(annoPackages <- getReposEntry("http://www.bioconductor.org/data/metaData"))
-			Try(matchIndex <- match(cdfName,annoPackages@repdatadesc@repdatadesc[,"Package"]))
-			Try(if (!is.na(matchIndex))
-			{
-				Try(install.packages2(cdfName,annoPackages))
-				Require(cdfName)
-        Try(code2eval <- paste("Try(geneNames <- as.character(unlist(lapply(mget(ls(cdfenv),env=",cdfName,"GENENAME),function(nm) return(paste(nm,collapse=\"; \"))))))",sep=""))
-        Try(eval(parse(text=code2eval)))
-        Try(assign("geneNames",geneNames,affylmGUIenvironment))
-        Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(lapply(mget(ls(cdfenv),env=",cdfName,"SYMBOL),function(sym) return(paste(sym,collapse=\"; \"))))))",sep=""))
-        Try(eval(parse(text=code2eval)))
-				Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
-				Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+		Try(
+			if(length(geneNames)==0||length(geneSymbols)==0){
+				Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+				Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))#Get the RawAffyData for this if condition
+				Try(cdfName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])#get the cdfname form the affyData
+				if(!(cdfName %in% .packages(all.available=TRUE))){
+					Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))###inserted by keith
+				}
+			Try(
+				if( (cdfName %in% .packages(all.available=TRUE)) ){
+					Require(cdfName) #load the cdfname into memory
+					Try(code2eval <- paste("Try(geneNames <- as.character(unlist(lapply(mget(ls(cdfenv),env=",cdfName,"GENENAME),function(nm) return(paste(nm,collapse=\"; \"))))))",sep=""))
+					Try(eval(parse(text=code2eval)))
+					Try(assign("geneNames",geneNames,affylmGUIenvironment))
+					#get the geneSymbols from the cdfName
+					Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(lapply(mget(ls(cdfenv),env=",cdfName,"SYMBOL),function(sym) return(paste(sym,collapse=\"; \"))))))",sep=""))
+					Try(eval(parse(text=code2eval)))
+					Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
+					Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+					#make up the complete genelist = Id+Symbol+Name
+					Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols),as.matrix(geneNames)))
+					Try(colnames(genelist) <- c("ID","Symbol","Name"))
+				}else{
+					Try(genelist <- data.frame(ID=I(ls(cdfenv))))
+					Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+				}
+			)
+			}else{
+				#if the geneNames and geneSymbols exist, then create the genelist
 				Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols),as.matrix(geneNames)))
 				Try(colnames(genelist) <- c("ID","Symbol","Name"))
-			}
-			else
-			{
-				Try(genelist <- data.frame(ID=I(ls(cdfenv))))
-				Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-			})
+			}#end of else/if(length(geneNames)==0||length(geneSymbols)==0)
+		)
+	}#end of if (ExportTop50Toptables || ExportCompleteToptables)
+	#
+	if (ExportTop50Toptables)
+	{
+		Try(HTML.title(paste("<a name=\"Top50Toptables\">Top 50 Differentially Expressed Genes for each Contrast in Contrasts Parameterization ",
+			ContrastParameterizationNamesVec[contrastParameterizationIndex],"</a>",sep=""),HR=2))
+		Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
+		Try(if (!("Amean" %in% names(fit)))
+			fit$Amean <- rowMeans(exprs(NormalizedAffyData)))
+		Try(fit$genes <- genelist)
 
-		}
-		else
+		for (coef in (1:NumContrasts))
 		{
-			Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols),as.matrix(geneNames)))
-			Try(colnames(genelist) <- c("ID","Symbol","Name"))
-		})
-  }
+			Try(options(digits=3))
+			Try(table1 <- topTable2(coef=coef,number=50,genelist=genelist,fit=fit))
+			Try(toptableDisplay <- rep("s",ncol(table1)+1))
+			Try(toptableDisplay[1] <- "d")
+			Try(for (i in (2:(ncol(table1)+1)))
+			{
+				Try(if (colnames(table1)[i-1]=="M")       toptableDisplay[i] <- "f")
+				Try(if (colnames(table1)[i-1]=="A")       toptableDisplay[i] <- "f")
+				Try(if (colnames(table1)[i-1]=="t")       toptableDisplay[i] <- "f")
+				Try(if (colnames(table1)[i-1]=="P.Value") toptableDisplay[i] <- "e")
+				Try(if (colnames(table1)[i-1]=="B") toptableDisplay[i] <- "f")
+			})
+			Try(toptableXtable <- xtable(table1,display=toptableDisplay))
+			Try(HTML.title(paste("Top 50 Differentially Expressed Genes for",ContrastNamesVec[coef]),HR=3))
+			Try(print(toptableXtable,type="html",file=fileNameWithPath,append=TRUE))
+		}
 
-  if (ExportTop50Toptables)
-  {
-    Try(HTML.title(paste("<a name=\"Top50Toptables\">Top 50 Differentially Expressed Genes for each Contrast in Contrasts Parameterization ",
-      ContrastParameterizationNamesVec[contrastParameterizationIndex],"</a>",sep=""),HR=2))
-    Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
-	  Try(if (!("Amean" %in% names(fit)))
-	    fit$Amean <- rowMeans(exprs(NormalizedAffyData)))
-    Try(fit$genes <- genelist)
+	}
 
-    for (coef in (1:NumContrasts))
-    {
-      Try(options(digits=3))
-      Try(table1 <- topTable2(coef=coef,number=50,genelist=genelist,fit=fit))
-      Try(toptableDisplay <- rep("s",ncol(table1)+1))
-      Try(toptableDisplay[1] <- "d")
-      Try(for (i in (2:(ncol(table1)+1)))
-      {
-        Try(if (colnames(table1)[i-1]=="M")       toptableDisplay[i] <- "f")
-        Try(if (colnames(table1)[i-1]=="A")       toptableDisplay[i] <- "f")
-        Try(if (colnames(table1)[i-1]=="t")       toptableDisplay[i] <- "f")
-        Try(if (colnames(table1)[i-1]=="P.Value") toptableDisplay[i] <- "e")
-        Try(if (colnames(table1)[i-1]=="B") toptableDisplay[i] <- "f")
-      })
-      Try(toptableXtable <- xtable(table1,display=toptableDisplay))
-      Try(HTML.title(paste("Top 50 Differentially Expressed Genes for",ContrastNamesVec[coef]),HR=3))
-      Try(print(toptableXtable,type="html",file=fileNameWithPath,append=TRUE))
-    }
+	if (ExportCompleteToptables)
+	{
+		Try(HTML.title(paste("<a name=\"CompleteToptables\">Complete Tables of Genes Ranked in order of Evidence for Differential Expression for each contrast in Contrasts Parameterization ",ContrastParameterizationNamesVec[contrastParameterizationIndex],"</a>",sep=""),HR=2))
 
-  }
+		Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
+		Try(if (!("Amean" %in% names(fit)))
+			fit$Amean <- rowMeans(exprs(NormalizedAffyData)))
+		Try(fit$genes <- genelist)
 
-  if (ExportCompleteToptables)
-  {
-    Try(HTML.title(paste("<a name=\"CompleteToptables\">Complete Tables of Genes Ranked in order of Evidence for Differential Expression for each contrast in Contrasts Parameterization ",ContrastParameterizationNamesVec[contrastParameterizationIndex],"</a>",sep=""),HR=2))
-
-    Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
-	  Try(if (!("Amean" %in% names(fit)))
-	    fit$Amean <- rowMeans(exprs(NormalizedAffyData)))
-    Try(fit$genes <- genelist)
-
-    for (coef in (1:NumContrasts))
-    {
-      Try(options(digits=3))
-      Try(table1 <- topTable2(coef=coef,number=nrow(genelist),genelist=genelist,fit=fit))
-      Try(ToptableAbsoluteFilename <- paste(HTMLfilePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".xls",sep=""))
-      Try(ToptableRelativeFilename <- paste(HTMLfileRelativePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".xls",sep=""))
-      Try(write.table(table1,file=ToptableAbsoluteFilename,quote=FALSE,col.names=NA,sep="\t"))
-      Try(HTML.title(paste("Complete Table of Genes Ranked in order of Evidence for Differential Expression for ",ContrastNamesVec[coef]),HR=3))
-      Try(HTMLli(txt=paste("<a href=\"",ToptableRelativeFilename,"\"><b>",paste("CompleteToptable_Contrast",coef,".xls",sep=""),"</b></a>",sep="")))
-    }
-  }
+		for (coef in (1:NumContrasts))
+		{
+			Try(options(digits=3))
+			Try(table1 <- topTable2(coef=coef,number=nrow(genelist),genelist=genelist,fit=fit))
+			Try(ToptableAbsoluteFilename <- paste(HTMLfilePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".xls",sep=""))
+			Try(ToptableRelativeFilename <- paste(HTMLfileRelativePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".xls",sep=""))
+			Try(write.table(table1,file=ToptableAbsoluteFilename,quote=FALSE,col.names=NA,sep="\t"))
+			Try(HTML.title(paste("Complete Table of Genes Ranked in order of Evidence for Differential Expression for ",ContrastNamesVec[coef]),HR=3))
+			Try(HTMLli(txt=paste("<a href=\"",ToptableRelativeFilename,"\"><b>",paste("CompleteToptable_Contrast",coef,".xls",sep=""),"</b></a>",sep="")))
+		}
+	}
 
 
-  Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-  Try(tkfocus(.affylmGUIglobals$ttMain))
-  Try(HTMLhr())
-  Try(HTMLli(txt="This report was generated by "))
-  Try(HTMLli(txt=paste("affylmGUI Version",getPackageVersion("affylmGUI"),"(by James Wettenhall), using")))
-  Try(HTMLli(txt=paste("affy Version",getPackageVersion("affy"),"(by Rafael A. Irizarry, Laurent Gautier and Benjamin Bolstad),")))
-  Try(HTMLli(txt=paste("affyPLM Version",getPackageVersion("affyPLM"),"(by Benjamin Bolstad),")))
-  Try(HTMLli(txt=paste("limma Version",getPackageVersion("limma"),"(by Gordon Smyth),")))
-  Try(HTMLli(txt=paste("R2HTML Version",getPackageVersion("R2HTML"),"(by Eric Lecoutre) and ")))
-  Try(HTMLli(txt=paste("xtable Version",getPackageVersion("xtable"),"(by David Dahl)")))
-  Try(HTMLEndFile())
+	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+	Try(tkfocus(.affylmGUIglobals$ttMain))
+	Try(HTMLhr())
+	Try(HTMLli(txt="This report was generated by "))
+	Try(HTMLli(txt=paste("affylmGUI Version",getPackageVersion("affylmGUI"),"(by James Wettenhall), using")))
+	Try(HTMLli(txt=paste("affy Version",getPackageVersion("affy"),"(by Rafael A. Irizarry, Laurent Gautier and Benjamin Bolstad),")))
+	Try(HTMLli(txt=paste("affyPLM Version",getPackageVersion("affyPLM"),"(by Benjamin Bolstad),")))
+	Try(HTMLli(txt=paste("limma Version",getPackageVersion("limma"),"(by Gordon Smyth),")))
+	Try(HTMLli(txt=paste("R2HTML Version",getPackageVersion("R2HTML"),"(by Eric Lecoutre) and ")))
+	Try(HTMLli(txt=paste("xtable Version",getPackageVersion("xtable"),"(by David Dahl)")))
+	Try(HTMLEndFile())
 
-}
+}#end of ExportHTMLreport <- function()
 

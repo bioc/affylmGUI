@@ -39,6 +39,7 @@
 \alias{GetJpegOrPngParams}
 \alias{GetJpegOrPngX11Params}
 \alias{GetlimmaDataSetName}
+\alias{GetLogPLMDataChoice}
 \alias{GetMenuName}
 \alias{GetMultipleContrasts}
 \alias{GetNormalizationMethod}
@@ -47,6 +48,7 @@
 \alias{GetPlotLabels}
 \alias{GetPlotSize}
 \alias{GetPlotTitle}
+\alias{GetResidualTypeChoice}
 \alias{GetRNATypesFrom.ContrastsFromDropDowns.String}
 \alias{GetSetNames}
 \alias{GetSlideNum}
@@ -58,7 +60,8 @@
 \alias{HeatDiagramPlot}
 \alias{HTMLplotUsingFunction}
 \alias{ImageArrayPlot}
-\alias{ImageQualityPlot}
+\alias{ImageQualityResidualPlot}
+\alias{ImageQualityWeightPlot}
 \alias{initGlobals}
 \alias{IntensityHistogram}
 \alias{IntensityHistogramAll}
@@ -153,6 +156,7 @@ GetGeneLabelsOptions()
 GetJpegOrPngParams()
 GetJpegOrPngX11Params()
 GetlimmaDataSetName()
+GetLogPLMDataChoice()
 GetMenuName()
 GetMultipleContrasts()
 GetNormalizationMethod()
@@ -161,6 +165,7 @@ GetParameterizationName()
 GetPlotLabels()
 GetPlotSize()
 GetPlotTitle()
+GetResidualTypeChoice()
 GetRNATypesFrom.ContrastsFromDropDowns.String()
 GetSetNames()
 GetSlideNum()
@@ -172,7 +177,8 @@ HeatDiagramDialog()
 HeatDiagramPlot()
 HTMLplotUsingFunction()
 ImageArrayPlot()
-ImageQualityPlot()
+ImageQualityResidualPlot()
+ImageQualityWeightPlot()
 initGlobals()
 IntensityHistogram()
 IntensityHistogramAll()
