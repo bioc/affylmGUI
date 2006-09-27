@@ -232,17 +232,11 @@ ExportHTMLreport <- function(){
 
   #Try(path     <- tclvalue(tkfile.dir (tclvalue(fileNameWithPath))))###tkfile.dir is deprecated but tclfile.dir fails
   Try(path     <- tclvalue(tclfile.dir (tclvalue(fileNameWithPath))))###tkfile.dir is deprecated but tclfile.dir fails
-	Try(tkmessageBox(title="235:affylmGUI-htmlreport",message=paste("path =",path),icon="info",default="ok"))
-  #Try(path     <- tclvalue(tclfile.dir (as.character(tclvalue(fileNameWithPath)))))
-	#Try(tkmessageBox(title="238:affylmGUI-htmlreport",message=paste("path =",path),icon="info",default="ok"))
+	#Try(tkmessageBox(title="235:affylmGUI-htmlreport",message=paste("path =",path),icon="info",default="ok"))
 
   #Try(fileName <- tclvalue(tkfile.tail(tclvalue(fileNameWithPath))))###tkfile.tail is deprecated but tclfile.tail fails
   Try(fileName <- tclvalue(tclfile.tail(tclvalue(fileNameWithPath))))###tkfile.tail is deprecated but tclfile.tail fails
-	Try(tkmessageBox(title="242:affylmGUI-htmlreport",message=paste("fileName =",fileName),icon="info",default="ok"))
-  #Try(fileName <- tclvalue(tcl(fileNameWithPath,"tail")))
-  #Try(fileName <- tclvalue(tclfile.tail(as.character(tclvalue(fileNameWithPath)))))
-	#Try(tkmessageBox(title="affylmGUI-htmlreport",message=paste("fileName =",fileName),icon="info",default="ok"))
-
+	#Try(tkmessageBox(title="242:affylmGUI-htmlreport",message=paste("fileName =",fileName),icon="info",default="ok"))
 
   Try(len <- nchar(fileName))
   if (len<4)
