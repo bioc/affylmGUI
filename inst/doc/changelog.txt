@@ -4,14 +4,18 @@
 	Modify installation of annotation package code(Plot.R) in HeatDiagramPlot function if(length(geneSymbols)==0)
 	Modify installation of annotation package code(Plot.R) in affyPlotMAcontrast function if(length(geneSymbols)==0)
 	Modify installation of annotation package code(Plot.R) in LogOddsPlot function if(length(geneSymbols)==0)
-	Modify (affylmGUI-menus.txt) by adding (One Slide) or (All Slides) to many plot options
-	Added the "Intensity Density Plot(All slides)" Plot Menu option which calls the function "DensityPlotAll"
-	Added the function "DensityPlotAll" to Plot.R which plots all slide's Density plot on the one graph.
-	Added the "RNA Digestion Plot(All Slides)" Plot Menu option which calls the function "RNADigestionPlotAll".
+	Modify (affylmGUI-menus.txt) by adding (One Slide) to several plot options
+	The "Intensity Density Plot" on the  Plot Menu option now calls the function "DensityPlotAll",
+	which plots Densities for all slides
+		Added the function "DensityPlotAll" to Plot.R which plots all slide's Density plot on the one graph.
+	Added the "RNA Digestion Plot" option to the Plot Menu option which calls the function "RNADigestionPlotAll".
+		Added the RNADigestionPlotAll function which plots an RNA digestion plot for all slides.
 	Added the "NUSE-Normalized Unscaled Std.Errors Plot" Plot Menu option which calls the function "NUSEPlotAll".
 	Added the "RLE-Relative Log Expression Plot" Plot Menu option which calls the function "RLEPlotAll".
-	Renamed the Image Quality Plot on the Plot Menu to the "Weights pseudo chip Image(One slide) Plot".
-	The NUSE, RLE & Weights pseudo chip Image plots call affyPLM each time they are called and dont store the results.
+	Renamed the Image Quality Plot on the Plot Menu to the "Weights pseudo chip Image(s) Plot" which now
+		calls the function ImageQualityWeightPlot.
+	Added the "Residuals pseudo chip Image(s) Plot" to the Plot menu which now clls the function ImageQualityResidualPlot.
+	The NUSE, RLE & Weights pseudo chip Image plots call affyPLM and store the Pset result.
 	Added appropriate entries in the affylmGUI.Rd file
 	Remove "\usepackage{Sweave}" from affylmGUI.Rnw and extract.Rnw
 

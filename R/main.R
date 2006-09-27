@@ -2705,7 +2705,8 @@ evalRcode <- function()
 	{
 		###tkfile.dir/.tail are deprecated, but tclfile.dir/tail fails. try tcl("file","tail")
 		###Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tkfile.tail(wfile)),initialdir=tclvalue(tkfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
-		Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tcl(wfile,"tail")),initialdir=tclvalue(tcl(wfile,"dir")),filetypes="{{R Source Files} {.R}} {{All files} *}")))
+		###Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tcl(wfile,"tail")),initialdir=tclvalue(tcl(wfile,"dir")),filetypes="{{R Source Files} {.R}} {{All files} *}")))
+		Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tcltk:::tclfile.tail(wfile)),initialdir=tclvalue(tcltk:::tclfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
 		if(nchar(fileName)==0) return()
 		Try(len <- nchar(fileName))
 		if(len<=2)
@@ -2924,48 +2925,43 @@ evalRcode <- function()
 		Try(codeGraph <- paste("assign(\"plotFunction\",function () {\nopar<-par(bg=\"white\")\nTry({\n",code,"\n})\n\ntempGraphPar <- par(opar)\n},affylmGUIenvironment)\n",sep=""))
 		Try(menuNameObject <- GetMenuName())
 		Try(if(length(menuNameObject)==0) return())
-		Try(addMenuItem(codeGraph,menuNameObject$MenuName,newMenu=TRUE,menuPosition="end",
-			menuNameObject$MenuItemName,newMenuItem=TRUE,menuItemPosition="end",
-						outputHasGraphics=TRUE))
+		Try(
+			addMenuItem(
+				codeGraph,
+				menuNameObject$MenuName,
+				newMenu = TRUE,
+				menuPosition="end",
+				menuNameObject$MenuItemName,
+				newMenuItem=TRUE,
+				menuItemPosition="end",
+				outputHasGraphics=TRUE
+			)
+		)
 	}
-
+	#
 	Try(HTMLhelp <- function() help.start())
-
-	Try(topMenu <- tkmenu(ttEvalRcode ))
+	#
+	Try(topMenu  <- tkmenu(ttEvalRcode ))
 	Try(tkconfigure(ttEvalRcode , menu=topMenu))
 	Try(fileMenu <- tkmenu(topMenu, tearoff=FALSE))
-	Try(runMenu <- tkmenu(topMenu, tearoff=FALSE))
+	Try(runMenu  <- tkmenu(topMenu, tearoff=FALSE))
 	Try(editMenu <- tkmenu(topMenu, tearoff=FALSE))
 	Try(helpMenu <- tkmenu(topMenu, tearoff=FALSE))
-	Try(tkadd(fileMenu, "command", label="Open",
-	command=OpenRSourceFile))
-	Try(tkadd(fileMenu, "command", label="Save As",
-	command=SaveRSourceFile))
-	Try(tkadd(fileMenu, "command", label="Close",
-	command=function() tkdestroy(ttEvalRcode )))
-	Try(tkadd(topMenu, "cascade", label="File",
-	menu=fileMenu))
-	Try(tkadd(editMenu, "command", label="Cut <Ctrl-X>",
-	command=cutText))
-	Try(tkadd(editMenu, "command", label="Copy <Ctrl-C>",
-	command=copyText))
-	Try(tkadd(editMenu, "command", label="Paste <Ctrl-V>",
-	command=pasteText))
-	Try(tkadd(topMenu, "cascade", label="Edit",
-	menu=editMenu))
-	Try(tkadd(runMenu,"command",label="Show Text Results only",
-	command=runTextOnly))
-	Try(tkadd(runMenu,"command",label="Show Graphical Results only",
-	command=runGraphicsOnly))
-	Try(tkadd(runMenu,"command",label="Show Text and Graphics",
-	command=runTextAndGraphics))
-	Try(tkadd(topMenu, "cascade", label="Run",
-	menu=runMenu))
-
-	Try(tkadd(helpMenu,"command",label="HTML Help",
-	command=HTMLhelp))
-	Try(tkadd(topMenu,"cascade",label="Help",
-	menu=helpMenu))
+	#
+	Try(tkadd(fileMenu, "command", label="Open",                        command=OpenRSourceFile))
+	Try(tkadd(fileMenu, "command", label="Save As",                     command=SaveRSourceFile))
+	Try(tkadd(fileMenu, "command", label="Close",                       command=function() tkdestroy(ttEvalRcode )))
+	Try(tkadd(topMenu,  "cascade", label="File",                        menu=fileMenu))
+	Try(tkadd(editMenu, "command", label="Cut <Ctrl-X>",                command=cutText))
+	Try(tkadd(editMenu, "command", label="Copy <Ctrl-C>",               command=copyText))
+	Try(tkadd(editMenu, "command", label="Paste <Ctrl-V>",              command=pasteText))
+	Try(tkadd(topMenu,  "cascade", label="Edit",                        menu=editMenu))
+	Try(tkadd(runMenu,  "command", label="Show Text Results only",      command=runTextOnly))
+	Try(tkadd(runMenu,  "command", label="Show Graphical Results only", command=runGraphicsOnly))
+	Try(tkadd(runMenu,  "command", label="Show Text and Graphics",      command=runTextAndGraphics))
+	Try(tkadd(topMenu,  "cascade", label="Run",                         menu=runMenu))
+	Try(tkadd(helpMenu, "command", label="HTML Help",                   command=HTMLhelp))
+	Try(tkadd(topMenu,  "cascade", label="Help",                        menu=helpMenu))
 }
 
 OpenCDFandTargetsfiles <- function()

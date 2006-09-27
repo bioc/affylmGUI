@@ -225,17 +225,13 @@ ExportHTMLreport <- function(){
   Try(if (length(ComponentsToExport)==0) return())
 	#
   Try(fileNameWithPath<- tkgetSaveFile(initialfile=limmaDataSetNameText,filetypes="{{HTML Files} {.html .htm}} {{All files} *}"))
-
 	#Try(tkmessageBox(title="229:affylmGUI-htmlreport",message=paste("fileNameWithPath =",fileNameWithPath),icon="info",default="ok"))
-
 	Try(if (nchar(tclvalue(fileNameWithPath))==0)return())
-
   #Try(path     <- tclvalue(tkfile.dir (tclvalue(fileNameWithPath))))###tkfile.dir is deprecated but tclfile.dir fails
-  Try(path     <- tclvalue(tclfile.dir (tclvalue(fileNameWithPath))))###tkfile.dir is deprecated but tclfile.dir fails
+  Try(path     <- tclvalue(tcltk:::tclfile.dir (tclvalue(fileNameWithPath))))###tkfile.dir is deprecated but tclfile.dir fails
 	#Try(tkmessageBox(title="235:affylmGUI-htmlreport",message=paste("path =",path),icon="info",default="ok"))
-
-  #Try(fileName <- tclvalue(tkfile.tail(tclvalue(fileNameWithPath))))###tkfile.tail is deprecated but tclfile.tail fails
-  Try(fileName <- tclvalue(tclfile.tail(tclvalue(fileNameWithPath))))###tkfile.tail is deprecated but tclfile.tail fails
+	#
+  Try(fileName <- tclvalue(tcltk:::tclfile.tail(tclvalue(fileNameWithPath))))###tkfile.tail is deprecated but tclfile.tail fails
 	#Try(tkmessageBox(title="242:affylmGUI-htmlreport",message=paste("fileName =",fileName),icon="info",default="ok"))
 
   Try(len <- nchar(fileName))
