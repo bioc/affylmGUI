@@ -1,15 +1,16 @@
 
 ------------------------- affylmGUI ChangeLog -------------------------
-15 September 2006 affylmGUI 1.7.1
+29 September 2006 affylmGUI 1.7.1
+	Add documentation entries to affylmGUI.RD for all arguments of functions
 	Modify installation of annotation package code(Plot.R) in HeatDiagramPlot function if(length(geneSymbols)==0)
 	Modify installation of annotation package code(Plot.R) in affyPlotMAcontrast function if(length(geneSymbols)==0)
 	Modify installation of annotation package code(Plot.R) in LogOddsPlot function if(length(geneSymbols)==0)
 	Modify (affylmGUI-menus.txt) by adding (One Slide) to several plot options
 	The "Intensity Density Plot" on the  Plot Menu option now calls the function "DensityPlotAll",
-	which plots Densities for all slides
-		Added the function "DensityPlotAll" to Plot.R which plots all slide's Density plot on the one graph.
+		which plots Densities for all slides
+	Added the function "DensityPlotAll" to Plot.R which plots all slide's Density plot on the one graph.
 	Added the "RNA Digestion Plot" option to the Plot Menu option which calls the function "RNADigestionPlotAll".
-		Added the RNADigestionPlotAll function which plots an RNA digestion plot for all slides.
+	Added the RNADigestionPlotAll function which plots an RNA digestion plot for all slides.
 	Added the "NUSE-Normalized Unscaled Std.Errors Plot" Plot Menu option which calls the function "NUSEPlotAll".
 	Added the "RLE-Relative Log Expression Plot" Plot Menu option which calls the function "RLEPlotAll".
 	Renamed the Image Quality Plot on the Plot Menu to the "Weights pseudo chip Image(s) Plot" which now

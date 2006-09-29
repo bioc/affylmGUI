@@ -2706,7 +2706,8 @@ evalRcode <- function()
 		###tkfile.dir/.tail are deprecated, but tclfile.dir/tail fails. try tcl("file","tail")
 		###Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tkfile.tail(wfile)),initialdir=tclvalue(tkfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
 		###Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tcl(wfile,"tail")),initialdir=tclvalue(tcl(wfile,"dir")),filetypes="{{R Source Files} {.R}} {{All files} *}")))
-		Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tcltk:::tclfile.tail(wfile)),initialdir=tclvalue(tcltk:::tclfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
+		#Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tcltk:::tclfile.tail(wfile)),initialdir=tclvalue(tcltk:::tclfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
+		Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tclfile.tail(wfile)),initialdir=tclvalue(tcltk:::tclfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
 		if(nchar(fileName)==0) return()
 		Try(len <- nchar(fileName))
 		if(len<=2)
@@ -2918,26 +2919,6 @@ evalRcode <- function()
 	Try(runTextOnly <- function() runOverall("runTextOnly"))
 	Try(runGraphicsOnly <- function() runOverall("runGraphicsOnly"))
 	Try(runTextAndGraphics <- function() runOverall("runTextAndGraphics"))
-
-	MakeaffylmGUIMenu <- function()
-	{
-		Try(code <- tclvalue(tkget(txt,"0.0","end")))
-		Try(codeGraph <- paste("assign(\"plotFunction\",function () {\nopar<-par(bg=\"white\")\nTry({\n",code,"\n})\n\ntempGraphPar <- par(opar)\n},affylmGUIenvironment)\n",sep=""))
-		Try(menuNameObject <- GetMenuName())
-		Try(if(length(menuNameObject)==0) return())
-		Try(
-			addMenuItem(
-				codeGraph,
-				menuNameObject$MenuName,
-				newMenu = TRUE,
-				menuPosition="end",
-				menuNameObject$MenuItemName,
-				newMenuItem=TRUE,
-				menuItemPosition="end",
-				outputHasGraphics=TRUE
-			)
-		)
-	}
 	#
 	Try(HTMLhelp <- function() help.start())
 	#
