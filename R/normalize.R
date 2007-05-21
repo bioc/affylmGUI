@@ -26,14 +26,14 @@ NormalizeNow <- function(){
 			Require("affyPLM")
 			Try(Pset <- fitPLM(RawAffyData))
 			Try(NormalizedAffyData <- new("exprSet"))
-			Try(NormalizedAffyData@exprs <- coefs(Pset))
-			Try(NormalizedAffyData@se.exprs <- se(Pset))
-			Try(NormalizedAffyData@phenoData <- phenoData(Pset))
-			Try(NormalizedAffyData@description <- description(Pset))
-			Try(NormalizedAffyData@annotation <- annotation(Pset))
-			Try(NormalizedAffyData@notes <- notes(Pset))
+			Try(exprs(NormalizedAffyData) <- coefs(Pset))
+			Try(se.exprs(NormalizedAffyData) <- se(Pset))
+			Try(phenoData(NormalizedAffyData) <- phenoData(Pset))
+			Try(description(NormalizedAffyData) <- description(Pset))
+			Try(annotation(NormalizedAffyData) <- annotation(Pset))
+			Try(notes(NormalizedAffyData) <- notes(Pset))
 			Try(assign("NormMethod","PLM",affylmGUIenvironment))
-			Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
+			Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
 		}
 	)
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
@@ -135,5 +135,5 @@ ExportNormalizedExpressionValues <- function(){
 	}else if ((substring(FileName,len-3,len)!=".txt") &&(substring(FileName,len-3,len)!=".xls")){
 		Try(FileName <- paste(FileName,".xls",sep=""))
 	}
-	Try(write.table(NormalizedAffyData@exprs,file=FileName,sep="\t",quote=FALSE,col.names=NA))
+	Try(write.table(exprs(NormalizedAffyData),file=FileName,sep="\t",quote=FALSE,col.names=NA))
 }#end of ExportNormalizedExpressionValues <- function()

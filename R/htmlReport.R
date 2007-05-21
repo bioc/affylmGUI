@@ -426,7 +426,7 @@ ExportHTMLreport <- function(){
 			if(length(geneNames)==0||length(geneSymbols)==0){
 				Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 				Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))#Get the RawAffyData for this if condition
-				Try(cdfName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])#get the cdfname form the affyData
+				Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])#get the cdfname form the affyData
 				if(!(cdfName %in% .packages(all.available=TRUE))){
 					Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))###inserted by keith
 				}

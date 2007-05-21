@@ -292,7 +292,8 @@ IntensityHistogramAll <- function(){
 			)
 			Try(
 				if (whichProbes=="mm"){
-					Try(hist(log2(mm(RawAffyData[,slide])),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
+					###Try(hist(log2(mm(RawAffyData[,slide])),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
+					Try(hist(log2(mm(RawAffyData)),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
 				}
 			)
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
@@ -530,7 +531,7 @@ RNADigestionPlotAll <- function(){
 			Try(opar<-par(bg="white"))
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 			Try(deg <- AffyRNAdeg(RawAffyData,log.it=log.it.choice))
-			Try(plotAffyRNAdeg(deg,col=1:8))
+			Try(plotAffyRNAdeg(deg,col=1:8)) #plotAffyRNAdeg is a function from the affy package, affylmGUI DEPENDS on
 			Try(legend(x="topright",inset=0.025,legend=1:NumSlides,col=1:NumSlides,lty=1))
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 			Try(tmp<-par(opar))
@@ -612,7 +613,7 @@ NUSEPlotAll <- function(){
 		Require("affyPLM")
 		Try(Pset <- fitPLM(RawAffyData))
 		Try(assign("Pset",Pset,affylmGUIenvironment))
-		Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
+		Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
 		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
 	}else{
 		Try(Pset <- get("Pset", envir=affylmGUIenvironment))
@@ -681,7 +682,7 @@ RLEPlotAll <- function(){
 		Require("affyPLM")
 		Try(Pset <- fitPLM(RawAffyData))
 		Try(assign("Pset",Pset,affylmGUIenvironment))
-		Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
+		Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
 		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
 	}else{
 		Try(Pset <- get("Pset", envir=affylmGUIenvironment))
@@ -1580,6 +1581,7 @@ HeatDiagramDialog <- function(parameterName){
 #
 #
 HeatDiagramPlot <- function(){
+  Try(limmaDataSetNameText <-  get("limmaDataSetNameText",envir=affylmGUIenvironment))
 	Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
 	Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
 	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
@@ -1651,7 +1653,7 @@ HeatDiagramPlot <- function(){
 		if(length(geneSymbols)==0){
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch") )
 			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-			Try(dataName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]] )
+			Try(dataName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]] )
 			Try(availablePackages <- available.packages(contriburl=contrib.url(Biobase::biocReposList())))
 			Try(matchIndex <- match(dataName,availablePackages[,"Package"]))
 			if (!is.na(matchIndex)){ #ie. if there is a match to this package name
@@ -1766,8 +1768,8 @@ affyPlotMA <- function(){
 			pch <- 16
 			cex <- 0.2
 		}else{
-			Try(R <- log2(RawAffyData@exprs[,slide1]))  # Using cDNA notation (R for one channel/array, G for the other)
-			Try(G <- log2(RawAffyData@exprs[,slide2]))  # Using cDNA notation (R for one channel/array, G for the other)
+			Try(R <- log2(exprs(RawAffyData)[,slide1]))  # Using cDNA notation (R for one channel/array, G for the other)
+			Try(G <- log2(exprs(RawAffyData)[,slide2]))  # Using cDNA notation (R for one channel/array, G for the other)
 			pch <- "."
 			cex <- 1
 		}
@@ -1977,7 +1979,7 @@ affyPlotMAcontrast <- function(){
 		if (length(geneSymbols)==0){
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch") )
 			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-			Try(dataName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]] )
+			Try(dataName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]] )
 			Try(availablePackages <- available.packages(contriburl=contrib.url(Biobase::biocReposList())))
 			Try(matchIndex <- match(dataName,availablePackages[,"Package"]))
 			if (!is.na(matchIndex)){ #ie. if there is a match to this package name
@@ -2307,7 +2309,7 @@ LogOddsPlot <- function(){
 				if (length(geneSymbols)==0){
 					Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 					Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-					Try(cdfName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
+					Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])
 					if(!(cdfName %in% .packages(all.available=TRUE))){
 						Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))###inserted by keith
 					}
@@ -2417,11 +2419,12 @@ ImageQualityWeightPlot <- function(){
 		Require("affyPLM")
 		Try(Pset <- fitPLM(RawAffyData))
 		Try(assign("Pset",Pset,affylmGUIenvironment))
-		Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
+		Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
 		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
 	}else{
 		#Try(tkmessageBox(title="2405:DEBUG:",message=paste("PLM model already fitted"),icon="warning",default="ok"))###DEBUG
 	}
+
 	Try(Pset <- get("Pset", envir=affylmGUIenvironment))
 	Try(weightsPLM <- get("weightsPLM", envir=affylmGUIenvironment))
 	#
@@ -2429,6 +2432,8 @@ ImageQualityWeightPlot <- function(){
 	Try(if (slide==0) return())
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 	#
+
+
 	Try(
 		plotFunction <- function(){
 			Try(opar<-par(bg="white"))
@@ -2542,7 +2547,7 @@ ImageQualityResidualPlot <- function(){
 		Require("affyPLM")
 		Try(Pset <- fitPLM(RawAffyData))
 		Try(assign("Pset",Pset,affylmGUIenvironment))
-		Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
+		Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
 		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
 	}else{
 		#Try(tkmessageBox(title="2530:DEBUG:",message=paste("No Wait - PLM model previously calculated"),icon="warning",default="ok"))###DEBUG

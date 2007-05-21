@@ -1826,8 +1826,8 @@ ComputeLinearModelFit <- function()
 
 	Try(if(NormMethod=="PLM")
 	{
-		Try(if(length(NormalizedAffyData@se.exprs)>0)
-			Try(weights <- 1/pmax(NormalizedAffyData@se.exprs, 1e-05)^2))
+		Try(if(length(se.exprs(NormalizedAffyData))>0)
+			Try(weights <- 1/pmax(se.exprs(NormalizedAffyData), 1e-05)^2))
 		Try(fit <- lm.series(exprs(NormalizedAffyData),design,weights=weights))
 	}
 	else
@@ -2128,7 +2128,7 @@ showTopTable <- function(...,export=FALSE)
 		if(length(geneNames)==0|| length(geneSymbols)==0){
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-			Try(cdfName <- strsplit(cleancdfname(RawAffyData@cdfName),"cdf")[[1]])
+			Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])
 			if(!(cdfName %in% .packages(all.available=TRUE))){
 				Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))###inserted by keith
 			}
@@ -2413,6 +2413,8 @@ GetSlideNum <- function(all=FALSE)
 		tklabel(ttGetSlideNum,text="    ")
 	)
 	ReturnVal <- 0
+
+
 	onOK <- function(){
 		slidenum <- as.numeric(tclvalue(tkcurselection(tl)))
 		#Note that if the all slides option is true, slidenum range is 0,1,2,3...NumSlides
@@ -2430,6 +2432,8 @@ GetSlideNum <- function(all=FALSE)
 		Try(tkfocus(.affylmGUIglobals$ttMain))
 		ReturnVal <<- slidenum
 	}#end of onOK <- function()
+
+
 	onCancel <- function() {
 		Try(tkgrab.release(ttGetSlideNum));
 		Try(tkdestroy(ttGetSlideNum));
@@ -2945,8 +2949,7 @@ evalRcode <- function()
 	Try(tkadd(topMenu,  "cascade", label="Help",                        menu=helpMenu))
 }
 
-OpenCDFandTargetsfiles <- function()
-{
+OpenCDFandTargetsfiles <- function(){
 	Require("affy")
 	Try(ttCDFandTargets<-tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttCDFandTargets))
@@ -3059,7 +3062,7 @@ OpenCDFandTargetsfiles <- function()
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 	Try(assign("RawAffyData",RawAffyData,affylmGUIenvironment))
 	Try(assign("RawAffyData.Available",TRUE,affylmGUIenvironment))
-	Try(SlideNamesVec <- colnames(RawAffyData@exprs))
+	Try(SlideNamesVec <- colnames(exprs(RawAffyData)))
 	Try(if("Name" %in% colnames(Targets))
 		SlideNamesVec <- Targets$Name)
 	Try(assign("SlideNamesVec",SlideNamesVec,affylmGUIenvironment))
@@ -3069,7 +3072,7 @@ OpenCDFandTargetsfiles <- function()
 	Try(ReturnVal <- GetlimmaDataSetName())
 	if(ReturnVal==0) return(0)
 	return(1)
-}
+} #end of OpenCDFandTargetsfiles <- function()
 
 
 
