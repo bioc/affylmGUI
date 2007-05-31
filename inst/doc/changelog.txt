@@ -1,5 +1,37 @@
-
 ------------------------- affylmGUI ChangeLog -------------------------
+
+31-May-2007 affylmGUI 1.10.2
+	Fix PLM Normalization problems relating to use of exprSet and PLMset
+	Change data storage of exprSet NormalizedAffyData to two separate
+	matrices "NormalizedAffyData.exprs" and "NormalizedAffyData.se.exprs".
+	This requires the reading of earlier versions of saved lma files to
+	be processed so that NormalizedAffyData.exprs and NormalizedAffyData.se.exprs
+	are extracted from the exprSet NormalizedAffyData and the individual
+	matrices constructed.
+
+	Replace tkopen, tkread and tkclose in Evaluate Code in main.R
+
+16-May-2007 affylmGUI 1.10.1
+	Fix HeatDiagram File menu so that it can save in PNG/JPEG/PS/PDF formats by adding value
+	for limmaDataSetNameText to HeatDiagramPlot function in plot.R
+
+	Fixed bug in IntensityHistogramAll function
+	#Replace this line with line below#Try(hist(log2(mm(RawAffyData[,slide])),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
+	Try(hist(log2(mm(RawAffyData)),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
+
+	Modified way to access data in AffyBatch objects(RawAffyData), Use accessors for exprs, se.exprs, cdfname etc
+	in main.R
+		#Replace this line with line below#Try(SlideNamesVec <- colnames(RawAffyData@exprs))
+			 Try(SlideNamesVec <- colnames(exprs(RawAffyData)))
+	in plot.R
+	#Replace this line with line below#Try(R <- log2(RawAffyData@exprs[,slide1]))  # Using cDNA notation (R for one channel/array, G for the other)
+		 Try(R <- log2(exprs(RawAffyData)[,slide1]))  # Using cDNA notation (R for one channel/array, G for the other)
+	#Replace this line with line below#Try(G <- log2(RawAffyData@exprs[,slide2]))  # Using cDNA notation (R for one channel/array, G for the other)
+		 Try(G <- log2(exprs(RawAffyData)[,slide2]))  # Using cDNA notation (R for one channel/array, G for the other)
+
+April 2007
+	affylmGUI 1.10.0 released with Bioconductor 2.0/R2.5.0
+
 29 September 2006 affylmGUI 1.7.1
 	Add documentation entries to affylmGUI.RD for all arguments of functions
 	Modify installation of annotation package code(Plot.R) in HeatDiagramPlot function if(length(geneSymbols)==0)
@@ -63,6 +95,8 @@ October 2005 14 2005: affylmGUI 1.4.0.
 	version 1.7 (for release after R 2.2.0)
 	Maintainer changed from James Wettenhall to Keith Satterley
 
+September 2005: affylmGUI 1.3.0
+	Keith Satterley takes over maintenance of program.
 
 PRE-HISTORY
 

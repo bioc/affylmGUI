@@ -16,29 +16,54 @@ NormalizeNow <- function(){
 	Try(tkfocus(.affylmGUIglobals$ttMain))
 	Try(
 		if (NormalizationMethod=="RMA"){
-			Try(NormalizedAffyData <- rma(RawAffyData))
+			Try(NormalizedAffyDataExpressionSet <- rma(RawAffyData))
+			#rma returns an ExpressionSet as shown below:
+			#  new("ExpressionSet",
+			#      phenoData = phenoData(object),
+			#      annotation = annotation(object),
+			#      experimentData = experimentData(object),
+			#      exprs = exprs)
+			# NormalizedAffyData is an ExpressionSet as from R2.5.0
+			#Just store the exprs values and set se.exprs values to  NULL
+			Try(NormalizedAffyData.exprs    <- exprs(NormalizedAffyDataExpressionSet))
+			Try(NormalizedAffyData.se.exprs <- NULL) #rma does not set se.exprs values
+			Try(assign("NormalizedAffyData.exprs",NormalizedAffyData.exprs,affylmGUIenvironment))
+			Try(assign("NormalizedAffyData.se.exprs",NormalizedAffyData.se.exprs,affylmGUIenvironment))
 			Try(assign("NormMethod","RMA",affylmGUIenvironment))
+
 		}else if (NormalizationMethod=="GCRMA"){
 			Require("gcrma")
-			Try(NormalizedAffyData <- gcrma(RawAffyData))
+			Try(NormalizedAffyDataExpressionSet <- gcrma(RawAffyData))
+			# gcrma returns an ExpressionSet, using the rma function as shown:
+			# return(rma(object,subset=subset,background=FALSE,normalize=normalize,verbose=verbose))
+			# NormalizedAffyData is an ExpressionSet as from R2.5.0
+			#Just store the exprs values and set se.exprs values to  NULL
+			Try(NormalizedAffyData.exprs    <- exprs(NormalizedAffyDataExpressionSet))
+			Try(NormalizedAffyData.se.exprs <- NULL) #gcrma does not set se.exprs values
+			Try(assign("NormalizedAffyData.exprs",NormalizedAffyData.exprs,affylmGUIenvironment))
+			Try(assign("NormalizedAffyData.se.exprs",NormalizedAffyData.se.exprs,affylmGUIenvironment))
 			Try(assign("NormMethod","GCRMA",affylmGUIenvironment))
 		}else{
 			Require("affyPLM")
-			Try(Pset <- fitPLM(RawAffyData))
-			Try(NormalizedAffyData <- new("exprSet"))
-			Try(NormalizedAffyData@exprs <- coefs(Pset))
-			Try(NormalizedAffyData@se.exprs <- se(Pset))
-			Try(NormalizedAffyData@phenoData <- phenoData(Pset))
-			Try(NormalizedAffyData@description <- description(Pset))
-			Try(NormalizedAffyData@annotation <- annotation(Pset))
-			Try(NormalizedAffyData@notes <- notes(Pset))
+			Try(NormalizedAffyDataPset <- fitPLM(RawAffyData))
+			#affyPLM returns an object of class PLMset.
+			Try(NormalizedAffyData.exprs    <- coefs(NormalizedAffyDataPset))
+			Try(NormalizedAffyData.se.exprs <- se(NormalizedAffyDataPset)) #affyPLM does  set se.exprs values
+			Try(assign("NormalizedAffyData.exprs",NormalizedAffyData.exprs,affylmGUIenvironment))
+			Try(assign("NormalizedAffyData.se.exprs",NormalizedAffyData.se.exprs,affylmGUIenvironment))
+			Try(assign("weightsPLM",weights(NormalizedAffyDataPset),affylmGUIenvironment))
 			Try(assign("NormMethod","PLM",affylmGUIenvironment))
-			Try(assign("weightsPLM",Pset@weights,affylmGUIenvironment))
+			###Try(NormalizedAffyData              <- new("ExpressionSet"))
+			###Try(phenoData(NormalizedAffyData)   <- phenoData(Pset))
+			###Try(description(NormalizedAffyData) <- description(Pset))
+			###Try(annotation(NormalizedAffyData)  <- annotation(Pset))
+			###Try(notes(NormalizedAffyData)       <- notes(Pset))
 		}
 	)
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 	Try(assign("NormalizedAffyData.Available",TRUE,affylmGUIenvironment))
-	Try(assign("NormalizedAffyData",NormalizedAffyData,affylmGUIenvironment))
+	Try(assign("NormalizedAffyData.exprs",NormalizedAffyData.exprs,affylmGUIenvironment))
+	Try(assign("NormalizedAffyData.se.exprs",NormalizedAffyData.se.exprs,affylmGUIenvironment))
 	Try(tkdelete(.affylmGUIglobals$mainTree,"NormalizedAffyData.Status"))
 	Try(
 		if(NormalizationMethod=="RMA"){
@@ -125,15 +150,25 @@ ExportNormalizedExpressionValues <- function(){
 			tkmessageBox(title="Export Normalized Expression Values",message="An error or cancellation occured while trying to normalize the data.")
 			return()
 		}
-	)
-	Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
-	Try(FileName <- tclvalue(tkgetSaveFile(initialfile=paste(limmaDataSetNameText,"_exprs.xls",sep=""),filetypes="{{Tab-Delimited Text Files} {.txt .xls}} {{All files} *}")))
+	)#end of Try
+	Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
+	Try(
+		FileName <- tclvalue(
+			tkgetSaveFile(
+				initialfile=paste(
+					limmaDataSetNameText,
+					"_exprs.xls",
+					sep=""),
+				filetypes="{{Tab-Delimited Text Files} {.txt .xls}} {{All files} *}"
+			)#end of tkgetSaveFile
+		)#end of FileName <- tclvalue
+	)#end of Try
 	Try(if (!nchar(FileName)) return())
 	Try(len <- nchar(FileName))
-	if (len<=4){
+	if (len <= 4){
 		Try(FileName <- paste(FileName,".xls",sep=""))
 	}else if ((substring(FileName,len-3,len)!=".txt") &&(substring(FileName,len-3,len)!=".xls")){
 		Try(FileName <- paste(FileName,".xls",sep=""))
 	}
-	Try(write.table(NormalizedAffyData@exprs,file=FileName,sep="\t",quote=FALSE,col.names=NA))
+	Try(write.table(NormalizedAffyData.exprs),file=FileName,sep="\t",quote=FALSE,col.names=NA)
 }#end of ExportNormalizedExpressionValues <- function()
