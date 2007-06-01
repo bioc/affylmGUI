@@ -350,12 +350,12 @@ ExportHTMLreport <- function(){
   if (ExportNormalizedIntensityBoxPlot)
   {
     Try(HTML.title("<a name=\"NormalizedIntensityBoxPlot\">Normalized Intensity Box Plot</a>",HR=2))
-    Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
+    Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
     Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment))
 		Try(plotFunction <- function()
 		{
 			Try(opar<-par(bg="white",cex=0.7))
-			Try(boxplot(data.frame(exprs(NormalizedAffyData)),col="blue",las=2,names=SlideNamesVec))
+			Try(boxplot(data.frame(NormalizedAffyData.exprs),col="blue",las=2,names=SlideNamesVec))
 			Try(title(plotTitle))
 			Try(tmp<-par(opar))
 		})
@@ -389,7 +389,7 @@ ExportHTMLreport <- function(){
   if (ExportMAPlotsContrasts)
   {
     Try(HTML.title("<a name=\"MAPlotsContrasts\">M A Plots for Contrasts</a>",HR=2))
-		Try(A <- rowMeans(exprs(NormalizedAffyData)))
+		Try(A <- rowMeans(NormalizedAffyData.exprs))
 		Try(pch <- 16)
 		Try(cex <- 0.2)
 
@@ -461,9 +461,9 @@ ExportHTMLreport <- function(){
 	{
 		Try(HTML.title(paste("<a name=\"Top50Toptables\">Top 50 Differentially Expressed Genes for each Contrast in Contrasts Parameterization ",
 			ContrastParameterizationNamesVec[contrastParameterizationIndex],"</a>",sep=""),HR=2))
-		Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
+		Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
 		Try(if (!("Amean" %in% names(fit)))
-			fit$Amean <- rowMeans(exprs(NormalizedAffyData)))
+			fit$Amean <- rowMeans(NormalizedAffyData.exprs))
 		Try(fit$genes <- genelist)
 
 		for (coef in (1:NumContrasts))
@@ -491,9 +491,9 @@ ExportHTMLreport <- function(){
 	{
 		Try(HTML.title(paste("<a name=\"CompleteToptables\">Complete Tables of Genes Ranked in order of Evidence for Differential Expression for each contrast in Contrasts Parameterization ",ContrastParameterizationNamesVec[contrastParameterizationIndex],"</a>",sep=""),HR=2))
 
-		Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
+		Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
 		Try(if (!("Amean" %in% names(fit)))
-			fit$Amean <- rowMeans(exprs(NormalizedAffyData)))
+			fit$Amean <- rowMeans(NormalizedAffyData.exprs))
 		Try(fit$genes <- genelist)
 
 		for (coef in (1:NumContrasts))

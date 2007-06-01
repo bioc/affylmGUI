@@ -1,19 +1,35 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+1-Jun-2007
+	version 1.11.2 uploaded to Bioc-devel - same as Release version 1.10.2
+
+31-May-2007 affylmGUI 1.10.2
+	Fix PLM Normalization problems relating to use of exprSet and PLMset
+	Change data storage of exprSet NormalizedAffyData to two separate
+	matrices "NormalizedAffyData.exprs" and "NormalizedAffyData.se.exprs".
+	This requires the reading of earlier versions of saved lma files to
+	be processed so that NormalizedAffyData.exprs and NormalizedAffyData.se.exprs
+	are extracted from the exprSet NormalizedAffyData and the individual
+	matrices constructed.
+
+	Replace tkopen, tkread and tkclose in Evaluate Code in main.R
 
 16-May-2007 affylmGUI 1.10.1
 	Fix HeatDiagram File menu so that it can save in PNG/JPEG/PS/PDF formats by adding value
 	for limmaDataSetNameText to HeatDiagramPlot function in plot.R
 
 	Fixed bug in IntensityHistogramAll function
-	###Try(hist(log2(mm(RawAffyData[,slide])),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
+	#Replace this line with line below#Try(hist(log2(mm(RawAffyData[,slide])),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
 	Try(hist(log2(mm(RawAffyData)),breaks=100,col="blue",xlab=xLabel,ylab=yLabel,main=plotTitle))
 
-	Modified way to access data in AffyBatch objects(RawAffyData), exprs, se.exprs, cdfname etc
+	Modified way to access data in AffyBatch objects(RawAffyData), Use accessors for exprs, se.exprs, cdfname etc
 	in main.R
-		###Try(SlideNamesVec <- colnames(RawAffyData@exprs))
+		#Replace this line with line below#Try(SlideNamesVec <- colnames(RawAffyData@exprs))
 			 Try(SlideNamesVec <- colnames(exprs(RawAffyData)))
-	Several similar references using @ were fixed in Plot.R and Normalize.R as well.
-
+	in plot.R
+	#Replace this line with line below#Try(R <- log2(RawAffyData@exprs[,slide1]))  # Using cDNA notation (R for one channel/array, G for the other)
+		 Try(R <- log2(exprs(RawAffyData)[,slide1]))  # Using cDNA notation (R for one channel/array, G for the other)
+	#Replace this line with line below#Try(G <- log2(RawAffyData@exprs[,slide2]))  # Using cDNA notation (R for one channel/array, G for the other)
+		 Try(G <- log2(exprs(RawAffyData)[,slide2]))  # Using cDNA notation (R for one channel/array, G for the other)
 
 April 2007
 	affylmGUI 1.10.0 released with Bioconductor 2.0/R2.5.0

@@ -800,7 +800,7 @@ NormalizedIntensityBoxPlot <- function()
     return()
 
   })
-  Try(NormalizedAffyData <- get("NormalizedAffyData", envir=affylmGUIenvironment))
+  Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs", envir=affylmGUIenvironment))
   Try(LocalHScale <- .affylmGUIglobals$Myhscale)
   Try(LocalVScale <- .affylmGUIglobals$Myvscale)
   Try(if (ArraysLoaded==FALSE)
@@ -812,7 +812,7 @@ NormalizedIntensityBoxPlot <- function()
   {
     Try(opar<-par(bg="white",cex=0.7))
     Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-    Try(boxplot(data.frame(exprs(NormalizedAffyData)),col="blue",las=2,names=SlideNamesVec))
+    Try(boxplot(data.frame(NormalizedAffyData.exprs),col="blue",las=2,names=SlideNamesVec))
     Try(title(plotTitle))
     Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
     Try(tmp<-par(opar))
@@ -1761,10 +1761,10 @@ affyPlotMA <- function(){
 					return()
 				}
 			)
-			Try(NormalizedAffyData <- get("NormalizedAffyData", envir=affylmGUIenvironment))
+			Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs", envir=affylmGUIenvironment))
 
-			Try(R <- exprs(NormalizedAffyData)[,slide1])  # Using cDNA notation (R for one channel/array, G for the other)
-			Try(G <- exprs(NormalizedAffyData)[,slide2])  # Using cDNA notation (R for one channel/array, G for the other)
+			Try(R <- NormalizedAffyData.exprs[,slide1])  # Using cDNA notation (R for one channel/array, G for the other)
+			Try(G <- NormalizedAffyData.exprs[,slide2])  # Using cDNA notation (R for one channel/array, G for the other)
 			pch <- 16
 			cex <- 0.2
 		}else{
@@ -1884,7 +1884,7 @@ GetSlideNums <- function(){
 affyPlotMAcontrast <- function(){
 	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
 	Try(SlideNamesVec  <- get("SlideNamesVec", envir=affylmGUIenvironment))
-	Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
+	Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
 	Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
 	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
 	Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
@@ -1940,7 +1940,7 @@ affyPlotMAcontrast <- function(){
 		}
 	)
 	Try(M <- fit$coefficients[,contrast])
-	Try(A <- rowMeans(exprs(NormalizedAffyData)))
+	Try(A <- rowMeans(NormalizedAffyData.exprs))
 	Try(pch <- 16)
 	Try(cex <- 0.2)
 	#
