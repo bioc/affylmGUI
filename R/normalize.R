@@ -170,5 +170,5 @@ ExportNormalizedExpressionValues <- function(){
 	}else if ((substring(FileName,len-3,len)!=".txt") &&(substring(FileName,len-3,len)!=".xls")){
 		Try(FileName <- paste(FileName,".xls",sep=""))
 	}
-	Try(write.table(NormalizedAffyData.exprs),file=FileName,sep="\t",quote=FALSE,col.names=NA)
+	Try(write.table(NormalizedAffyData.exprs,file=FileName,sep="\t",quote=FALSE,col.names=NA))
 }#end of ExportNormalizedExpressionValues <- function()

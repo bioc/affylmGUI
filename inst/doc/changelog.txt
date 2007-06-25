@@ -1,4 +1,26 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+20-Jun-2007 affylmGUI 1.10.4
+	References to Digestion changed to Degradation. Changed Menu Item name and function names
+	See Bioconductor emails from Gordon Smyth/Robert Gentleman around December 6th. 2006.
+
+	Fixed a bug in Normalize.R introduced in 1.10.1 - bracket misplaced as shown below:
+	Replaced this line
+		Try(write.table(NormalizedAffyData.exprs),file=FileName,sep="\t",quote=FALSE,col.names=NA)
+	with
+		Try(write.table(NormalizedAffyData.exprs,file=FileName,sep="\t",quote=FALSE,col.names=NA))
+
+	Error on console when HTML report was to be created. It read:
+		"Error in get(x, envir, mode, inherits) : variable "HTMLenv" was not found"
+	Modify htmlreport.R
+	replace:
+		try(assign(".HTML.graph", TRUE, env = get("HTMLenv", envir = .GlobalEnv)))
+	with:
+		if (exists("HTMLenv",where=".GlobalEnv",mode="environment")){
+			try(assign(".HTML.graph", TRUE, env = get("HTMLenv", envir = .GlobalEnv)))
+		}#end of if (exists("HTMLenv",where=".GlobalEnv",mode="environment"))
+
+8-Jun-2007 affylmGUI 1.10.3
+	Mispelling in main.R. Replace NormalizedAffyDatase.@exprs with NormalizedAffyData@se.exprs
 
 31-May-2007 affylmGUI 1.10.2
 	Fix PLM Normalization problems relating to use of exprSet and PLMset

@@ -3785,7 +3785,7 @@ OpenALimmaFile <- function(FileName)
 				}
 				#if NormalizedAffyData@se.exprs data exists and NormalizedAffyData.se.exprs doesn't exist, then create NormalizedAffyData.se.exprs
 				if( (length(NormalizedAffyData@se.exprs) > 1 && length(NormalizedAffyData.se.exprs)<1) ){
-					NormalizedAffyData.se.exprs <- NormalizedAffyDatase.@exprs
+					NormalizedAffyData.se.exprs <- NormalizedAffyData@se.exprs
 				}
 			}#end of if(class(NormalizedAffyData) == "exprSet")
 		}#end of if(length(NormalizedAffyData) != 0)

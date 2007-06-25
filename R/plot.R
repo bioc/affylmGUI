@@ -512,7 +512,7 @@ DensityPlotAll <- function(){
 	CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
 }#end of DensityPlotAll <- function()
 
-RNADigestionPlotAll <- function(){
+RNADegradationPlotAll <- function(){
 	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
 	Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
 	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
@@ -521,7 +521,7 @@ RNADigestionPlotAll <- function(){
 	Try(NumSlides <- get("NumSlides",envir=affylmGUIenvironment))
 	Try(
 		if (ArraysLoaded==FALSE){
-			Try(tkmessageBox(title="RNA Digestion Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
+			Try(tkmessageBox(title="RNA Degradation Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
 			return()
 		}#end of if (ArraysLoaded==FALSE)
 	)
@@ -543,12 +543,12 @@ RNADigestionPlotAll <- function(){
 	Try(log.it.choice <- GetLogPLMDataChoice()); #This should be TRUE, except set to FALSE if data has zeroes, like the Estrogen test data set.
 	Try(
 		if(log.it.choice == TRUE){
-			Try(plotTitle<-paste("RNA Digestion Plot for All Slides(logged data)"))
+			Try(plotTitle<-paste("RNA Degradation Plot for All Slides(logged data)"))
 		}
 	)
 	Try(
 		if(log.it.choice == FALSE){
-			Try(plotTitle<-paste("RNA Digestion Plot for All Slides(UNlogged data)"))
+			Try(plotTitle<-paste("RNA Degradation Plot for All Slides(UNlogged data)"))
 		}
 	)
 	Try(
@@ -585,7 +585,7 @@ RNADigestionPlotAll <- function(){
 	)#end of Try
 	#
 	CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
-}#end of RNADigestionPlotAll <- function()
+}#end of RNADegradationPlotAll <- function()
 
 NUSEPlotAll <- function(){
 	#Normalized Unscaled Standard Errors (NUSE) plot.
