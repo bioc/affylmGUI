@@ -56,7 +56,12 @@
         cat(paste("<br><i>", Caption, "</i>"), file = File, append = TRUE, sep = "")
     }
     cat("</P>", file = File, append = TRUE, sep = "\n")
-    try(assign(".HTML.graph", TRUE, env = get("HTMLenv", envir = .GlobalEnv)))
+
+		if (exists("HTMLenv",where=".GlobalEnv",mode="environment")){
+			try(assign(".HTML.graph", TRUE, env = get("HTMLenv", envir = .GlobalEnv)))
+		}#end of if (exists("HTMLenv",where=".GlobalEnv",mode="environment"))
+
+    ###try(assign(".HTML.graph", TRUE, env = get("HTMLenv", envir = .GlobalEnv)))
     invisible(return())
 }
 

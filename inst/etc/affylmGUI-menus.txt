@@ -44,7 +44,7 @@
     item    plotMenu        command         "Intensity Density Plot"                        DensityPlotAll
     item    plotMenu        command         "Raw Intensity Box Plot"                        RawIntensityBoxPlot
     item    plotMenu        command         "Normalized Intensity Box Plot"                 NormalizedIntensityBoxPlot
-    item    plotMenu        command         "RNA Digestion Plot"                            RNADigestionPlotAll
+    item    plotMenu        command         "RNA Degradation Plot"                          RNADegradationPlotAll
     item    plotMenu        command         "NUSE-Normalized Unscaled Std.Errors Plot"      NUSEPlotAll
     item    plotMenu        command         "RLE-Relative Log Expression Plot"              RLEPlotAll
     item    plotMenu        command         "Weights pseudo chip Image(s) Plot"             ImageQualityWeightPlot

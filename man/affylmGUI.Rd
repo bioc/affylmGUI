@@ -83,7 +83,7 @@
 \alias{Require}
 \alias{Resize}
 \alias{RLEPlotAll}
-\alias{RNADigestionPlotAll}
+\alias{RNADegradationPlotAll}
 \alias{SaveAsLimmaFile}
 \alias{SaveGraphAsJpeg}
 \alias{SaveGraphAsPDF}
@@ -196,7 +196,7 @@ RawIntensityBoxPlot()
 Require(pkg)
 Resize(img,plotFunction)
 RLEPlotAll()
-RNADigestionPlotAll()
+RNADegradationPlotAll()
 SaveAsLimmaFile()
 SaveGraphAsJpeg(initialfile, plotFunction)
 SaveGraphAsPDF(initialfile, plotFunction)
