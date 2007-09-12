@@ -51,54 +51,56 @@ Require <- function(pkg)
 		}
 		return (result)
 }
-
-TclRequire <- function(tclPkg)
-{
-	if((data.class(result<-try(tclRequire(tclPkg),TRUE))=="try-error") || (is.logical(result) && result==FALSE))
-	{
+#
+TclRequire <- function(tclPkg){
+	if((data.class(result<-try(tclRequire(tclPkg),TRUE))=="try-error") || (is.logical(result) && result==FALSE)){
 		affylmGUIglobals <- .affylmGUIglobals
 		affylmGUIglobals$TclRequireFailed <- TRUE
 		assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv)
 		Try(winTitle<-"Tcl/Tk Extension(s) Not Found")
-		Try(message<-paste("Cannot find Tcl/Tk package \"", tclPkg,
-		"\".	affylmGUI cannot continue.\n\n",
-		"affylmGUI requires the Tcl/Tk extensions, BWidget and Tktable.\n",
-		"You must have Tcl/Tk installed on your computer, not just the minimal\n",
-		"Tcl/Tk installation which comes with R (for Windows).	If you do have\n",
-		"Tcl/Tk installed, including the extensions (e.g. using the ActiveTcl\n",
-		"distribution in Windows), make sure that R can find the path to the\n",
-		"Tcl library, e.g. C:\\Tcl\\lib (on Windows) or /usr/lib (on Linux/Unix)\n",
-		"or /sw/lib on Mac OSX.\n\n",
-		"If you don't know how to set environment variables in Windows, one way\n",
-		"to make sure that R can find the Tcl/Tk extensions Tktable2.8 and bwidget1.6\n",
-		"is to copy them from your ActiveTcl installation e.g. in C:\\Tcl\\lib into\n",
-		"the Tcl subdirectory of your R installation.\n",
-		"If you do understand how to set environment variables...\n",
-		"make sure that you have the TCL_LIBRARY environment variable set to the\n",
-		"appropriate path, e.g.C:\\Tcl\\lib\\tcl8.4 and the MY_TCLTK environment\n",
-		"variable set to a non-empty string, e.g. \"Yes\".\n\n",
-		"If using Windows, be sure to read the R for windows FAQ at\nhttp://www.stats.ox.ac.uk/pub/R/rw-FAQ.html\n\n",
-		"If your Tcl/Tk extensions still can't be found, try\n",
-		"addTclPath(\"<path to Tcl library>\").\nThis could be put in $HOME/.Rprofile\n\n",
-		"If you need further instructions, please contact your system administrator\n",
-		"and consider emailing r-help@stat.math.ethz.ch, or browse through the R-help\n",
-		"archives for a similar question.\n\n",
-		"The URLs for Tktable and BWidget are:\n",
-		"http://tktable.sourceforge.net\n",
-		"http://tcllib.sourceforge.net",
-		sep=""))
-
+		Try(
+			message<-paste(
+				"Cannot find Tcl/Tk package \"", tclPkg,
+				"\".	affylmGUI cannot continue.\n\n",
+				"affylmGUI requires the Tcl/Tk extensions, BWidget and Tktable.\n",
+				"You must have Tcl/Tk installed on your computer, not just the minimal\n",
+				"Tcl/Tk installation which comes with R (for Windows).	If you do have\n",
+				"Tcl/Tk installed, including the extensions (e.g. using the ActiveTcl\n",
+				"distribution in Windows), make sure that R can find the path to the\n",
+				"Tcl library, e.g. C:\\Tcl\\lib (on Windows) or /usr/lib (on Linux/Unix)\n",
+				"or /sw/lib on Mac OSX.\n\n",
+				"If you don't know how to set environment variables in Windows, one way\n",
+				"to make sure that R can find the Tcl/Tk extensions Tktable2.8 and bwidget1.6\n",
+				"is to copy them from your ActiveTcl installation e.g. in C:\\Tcl\\lib into\n",
+				"the Tcl subdirectory of your R installation.\n",
+				"If you do understand how to set environment variables...\n",
+				"make sure that you have the TCL_LIBRARY environment variable set to the\n",
+				"appropriate path, e.g.C:\\Tcl\\lib\\tcl8.4 and the MY_TCLTK environment\n",
+				"variable set to a non-empty string, e.g. \"Yes\".\n\n",
+				"If using Windows, be sure to read the R for windows FAQ at\nhttp://www.stats.ox.ac.uk/pub/R/rw-FAQ.html\n\n",
+				"If your Tcl/Tk extensions still can't be found, try\n",
+				"addTclPath(\"<path to Tcl library>\").\nThis could be put in $HOME/.Rprofile\n\n",
+				"If you need further instructions, please contact your system administrator\n",
+				"and consider emailing r-help@stat.math.ethz.ch, or browse through the R-help\n",
+				"archives for a similar question.\n\n",
+				"The URLs for Tktable and BWidget are:\n",
+				"http://tktable.sourceforge.net\n",
+				"http://tcllib.sourceforge.net",
+				sep=""
+			) #end of message<-paste
+		) #end of Try
+		#
 		# Don't make ttMain a parent of this, because we might want to use TclRequire before
 		# defining ttMain.
 		Try(ttTclTkExtension <- tktoplevel())
-		onDestroy <- function()
-		{
-			if(exists(".affylmGUIglobals",envir=.GlobalEnv)&&"ttMain" %in% names(.affylmGUIglobals))
+		onDestroy <- function(){
+			if(exists(".affylmGUIglobals",envir=.GlobalEnv)&&"ttMain" %in% names(.affylmGUIglobals)){
 				try(tkdestroy(.affylmGUIglobals$ttMain),silent=TRUE)
-			else
+			}else{
 				stop("Tcl/Tk extensions (Tktable and BWidget) not found!")
+			}
 			stop("Aborted from affylmGUI.")
-		}
+		} #end of onDestroy <- function()
 		Try(tkbind(ttTclTkExtension, "<Destroy>", onDestroy))
 		Try(tkwm.title(ttTclTkExtension,winTitle))
 		Try(tkwm.deiconify(ttTclTkExtension))
@@ -110,85 +112,128 @@ TclRequire <- function(tclPkg)
 		Try(tkinsert(txt,"end",message))
 		Try(tkconfigure(txt, state="disabled"))
 		Try(tkfocus(txt))
-		Try(onOK <- function()
-		{
-			try(tkdestroy(ttTclTkExtension),silent=TRUE)
-			if(exists(".affylmGUIglobals",envir=.GlobalEnv)&&"ttMain" %in% names(.affylmGUIglobals))
-				try(tkdestroy(.affylmGUIglobals$ttMain),silent=TRUE)
-			else
+		Try(
+			onOK <- function(){
+				try(tkdestroy(ttTclTkExtension),silent=TRUE)
+				if(exists(".affylmGUIglobals",envir=.GlobalEnv)&&"ttMain" %in% names(.affylmGUIglobals)){
+					try(tkdestroy(.affylmGUIglobals$ttMain),silent=TRUE)
+				}else{
+					stop("Tcl/Tk extensions (Tktable and BWidget) not found!")
+				}
+				Try(LimmaFileName <- get("LimmaFileName",envir=affylmGUIenvironment))
+				Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
+				if(limmaDataSetNameText!="Untitled"){
+					Try(if(LimmaFileName=="Untitled" && limmaDataSetNameText!="Untitled") LimmaFileName <- limmaDataSetNameText) # Local assignment only
+					Try(
+						mbVal <- tkmessageBox(
+							title  = "Aborting from affylmGUI",
+							message= paste("Save changes to ",fixSeps(LimmaFileName),"?",sep=""),
+							icon   = "question",type="yesno",default="yes"
+						) #end of mbVal <- tkmessageBox
+					) #end of Try
+					try(if(tclvalue(mbVal)=="yes"){try(SaveLimmaFile(),silent=TRUE)},silent=TRUE)
+				} #end of if(limmaDataSetNameText!="Untitled")
 				stop("Tcl/Tk extensions (Tktable and BWidget) not found!")
-			Try(LimmaFileName <- get("LimmaFileName",envir=affylmGUIenvironment))
-			Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
-			if(limmaDataSetNameText!="Untitled")
-			{
-				Try(if(LimmaFileName=="Untitled" && limmaDataSetNameText!="Untitled") LimmaFileName <- limmaDataSetNameText) # Local assignment only
-				Try(mbVal <- tkmessageBox(title="Aborting from affylmGUI",
-							message=paste("Save changes to ",fixSeps(LimmaFileName),"?",sep=""),
-							icon="question",type="yesno",default="yes"))
-				try(if(tclvalue(mbVal)=="yes")
-						try(SaveLimmaFile(),silent=TRUE),silent=TRUE)
-			 }
-			 stop("Tcl/Tk extensions (Tktable and BWidget) not found!")
-		})
+			} #end of onOK <- function()
+		) #end of Try
 		Try(OK.but <- tkbutton(ttTclTkExtension,text="  OK  ",command=onOK))
+		#
 		Try(tkgrid.configure(txt,columnspan=2))
-		Try(tkgrid(tklabel(ttTclTkExtension,text="    ")))
-		Try(tkgrid(tklabel(ttTclTkExtension,text="affylmGUI will now exit."),columnspan=2))
-		Try(tkgrid(tklabel(ttTclTkExtension,text="    ")))
-		Try(tkgrid(OK.but))
+		Try(tkgrid          (tklabel(ttTclTkExtension,text="    "                    )             ))
+		Try(tkgrid          (tklabel(ttTclTkExtension,text="affylmGUI will now exit."),columnspan=2))
+		Try(tkgrid          (tklabel(ttTclTkExtension,text="    "                    )             ))
+		Try(tkgrid          (OK.but           ))
 		Try(tkgrid.configure(OK.but,sticky="e"))
-		Try(tkgrid(tklabel(ttTclTkExtension,text="    ")))
-		Try(tkfocus(OK.but))
-		Try(tkwait.window(ttTclTkExtension))
-	}
-}
-
-fixSeps <- function(string)
-{
+		Try(tkgrid          (tklabel(ttTclTkExtension,text="    "                    )             ))
+		Try(tkfocus         (OK.but           ))
+		Try(tkwait.window   (ttTclTkExtension ))
+	} #end of if((data.class(result<-try(tclRequire(tclPkg),TRUE))=="try-error") || (is.logical(result) && result==FALSE))
+} #end of TclRequire <- function(tclPkg)
+#
+fixSeps <- function(string){
 	Try(if(.Platform$OS.type=="windows")
 		string <- gsub("/","\\\\",string))
 	return (string)
-}
-
-affylmGUIhelp <- function()
-{
+} #end of fixSeps <- function(string)
+#
+affylmGUIhelp <- function(){
 	Try(affylmGUIhelpIndex <- file.path(system.file("doc",package="affylmGUI"),"index.html"))
 	Try(browseURL(affylmGUIhelpIndex))
 	##Try(tkmessageBox(title="affylmGUI Help",message=paste("Opening affylmGUI help...\nIf nothing happens, please open :\n",affylmGUIhelpIndex,"\nyourself.",sep="")))
 	Try(cat(paste("Opening affylmGUI help...\nIf nothing happens, please open :\n",affylmGUIhelpIndex,"\nyourself.",sep="")))
-}
-
-limmaHelp <- function()
-{
+} #end of affylmGUIhelp <- function()
+#
+limmaHelp <- function(){
 	Try(limmaHelpIndex <- file.path(system.file("doc",package="limma"),"index.html"))
 	Try(browseURL(limmaHelpIndex))
 	##Try(tkmessageBox(title="limma Help",message=paste("Opening limma help...\nIf nothing happens, please open :\n",limmaHelpIndex,"\nyourself.",sep="")))
 	Try(cat(paste("Opening limma help...\nIf nothing happens, please open :\n",limmaHelpIndex,"\nyourself.",sep="")))
-}
-
-affyHelp <- function()
-{
+} #end of limmaHelp <- function()
+#
+affyHelp <- function(){
 	Try(affyHelpIndex <- paste(system.file("doc",package="affy"),"affy.pdf",sep="/"))
 	Try(browseURL(affyHelpIndex))
 	##Try(tkmessageBox(title="affy Help",message=paste("Opening affy help...\nIf nothing happens, please open :\n",affyHelpIndex,"\nyourself.",sep="")))
 	Try(cat(paste("Opening affy help...\nIf nothing happens, please open :\n",affyHelpIndex,"\nyourself.",sep="")))
-}
+} #end of affyHelp <- function()
+#
+showCitations <- function(){
+	Try(print(citation("affylmGUI"))) #Put this on the R Console first.
+	#citationOutput is the ouput from the citation("affylmGUI") command given at the R prompt.
+	citationOutput <-
+	"
+	affylmGUI is an implementation of a body of methodological research by the authors and coworkers. Please cite the
+	appropriate methodological papers whenever you use results from the limma software in a publication. Such citations
+	are the main means by which the authors receive professional credit for their work.
 
-showCitations <- function()
-{
-	Try(tkmessageBox(title="Citations",message="See the R console for the Citation listing."))
-	Try(print(citation("affylmGUI")))
-}
+	Citing limma and affylmGUI in publications will usually involve citing one or more of the methodology papers that the
+	limma software is based on as well as citing the limma(Ref.2) and affylmGUI(Ref.5) software packages themselves.
 
-showChangeLog <- function(n=20)
-{
+	If you use limma/affylmGUI for differential expression analysis, please cite reference 1 which describes the linear
+	modeling approach implemented by lmFit and the empirical Bayes statistics implemented by eBayes, topTable etc.
+
+	To cite the limma software itself please refer to reference 2 which describes the software package in the context of
+	the Bioconductor project and surveys the range of experimental designs for which the package can be used, including
+	spotspecific dye-effects. The pre-processing capabilities of the package are also described but more briefly, with
+	examples of background correction, spot quality weights and filtering with control spots. This article is also the
+	best current reference for the normexp background correction method.
+
+	To cite the GC robust multiarray average (GCRMA) background correction method please refer to citation 3.
+
+	To cite the robust multiarray average (RMA) background correction method please refer to citation 4.
+
+		1. Smyth, G. K. (2004). Linear models and empirical Bayes methods for assessing differential expression in
+		microarray experiments. Statistical Applications in Genetics and Molecular Biology Vol. 3, No. 1, Article 3.
+
+		2. Smyth, G. K. (2005). Limma: linear models for microarray data. In: 'Bioinformatics and Computational Biology
+		Solutions using R and Bioconductor'. R. Gentleman, V. Carey, S. Dudoit, R. Irizarry, W. Huber (eds), Springer, New
+		York, pages 397-420.
+
+		3. Zhijin Wu1, Rafael A. Irizarry, Robert Gentleman, Francisco Martinez-Murillo, Forrest Spencer. (2004). A Model
+		Based Background Adjustment for Oligonucleotide Expression Arrays In the Journal of the American Statistical
+		Association. Volume 99, Pages 909-917.
+
+		4. Rafael A. Irizarry, Bridget Hobbs, Francois Collin, Yasmin D. Beazer-Barclay, Kristen J. Antonellis, Uwe Scherf,
+		Terence P. Speed. (2003). Exploration, normalization, and summaries of high density oligonucleotide array probe
+		level data In the Journal Biostatistics. Volume 4(2), Pages 249-264.
+
+		5. James M. Wettenhall, Ken M. Simpson, Keith Satterley and Gordon K. Smyth. affylmGUI: a graphical user interface
+		for linear modeling of single channel microarray data. Bioinformatics, 22:897-899, 2006.
+	"
+	#
+	citationNote <- "\nThis information is also displayed on the R console, where you may select and copy it."
+	#
+	citationMessage <- paste(citationOutput,citationNote,sep="")
+	Try(tkmessageBox(title="Citations",message=citationMessage))
+} #end of showCitations <- function()
+
+showChangeLog <- function(n=20){
 	Try(tkmessageBox(title="ChangeLog",message="See the R console for the first 20 lines of the ChangeLog file.\nTo see more lines, use the ALGchangeLog(n=nnn) function, where nnn is the number of lines to view."))
 	Try(ALGchangeLog(20))
-}
+} #end of showChangeLog <- function(n=20)
 
-
-Try(onDestroy <- function()
-	{
+Try(
+	onDestroy <- function(){
 		Try(.JustAskedWhetherToSave <- get(".JustAskedWhetherToSave",envir=.GlobalEnv))
 		Try(if(.JustAskedWhetherToSave==FALSE)
 		{
@@ -2190,42 +2235,41 @@ showTopTable <- function(...,export=FALSE){
 	# Note that it is difficult to use the limma toptable/topTable functions if you don't have ebayes statistics, so
 	# in the case of no replicate arrays (no residual degrees of freedom) we will just do our own sorting.
 	#
-	Try(if(ebayesAvailable==FALSE)
-	{
-		Try(M <- as.matrix(fit$coef)[,contrast])
-		Try(A <- fit$Amean)
-		Try(ord <- switch(sortBy, M = order(abs(M), decreasing = TRUE), A = order(A, decreasing = TRUE)))
-		Try(top <- ord[1:numberOfGenes])
-		Try(table1 <- data.frame(genelist[top, ,drop=FALSE], M = M[top], A=A[top]))
-		Try(rownames(table1) <- as.character(1:length(M))[top])
-	})
-
-# The 2's in front of toptables mean that they use the drop=FALSE option (even if the user hasn't upgraded limma since the 1.3 BioC release.)
-#	Try(table1 <- toptable2(coef=contrast,number=numberOfGenes,fit=fit,eb=eb,genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy))
+	Try(
+		if(ebayesAvailable==FALSE){
+			Try(M <- as.matrix(fit$coef)[,contrast])
+			Try(A <- fit$Amean)
+			Try(ord <- switch(sortBy, M = order(abs(M), decreasing = TRUE), A = order(A, decreasing = TRUE)))
+			Try(top <- ord[1:numberOfGenes])
+			Try(table1 <- data.frame(genelist[top, ,drop=FALSE], M = M[top], A=A[top]))
+			Try(rownames(table1) <- as.character(1:length(M))[top])
+		}
+	)
+	#
+	# The 2's in front of toptables mean that they use the drop=FALSE option (even if the user hasn't upgraded limma since the 1.3 BioC release.)
+	#	Try(table1 <- toptable2(coef=contrast,number=numberOfGenes,fit=fit,eb=eb,genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy))
 	Try(if(ebayesAvailable==TRUE)
 		Try(table1 <- topTable2(coef=contrast,number=numberOfGenes,fit=fit,genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy)))
-#	Try(colnames(table1)[ncol(table1)-1] <- sprintf("%-10s",colnames(table1)[ncol(table1)-1]))
-
+	#Try(colnames(table1)[ncol(table1)-1] <- sprintf("%-10s",colnames(table1)[ncol(table1)-1]))
+	#
 	Try(nrows <- nrow(table1))
 	Try(ncols <- ncol(table1))
-
-
-	SaveTopTable <- function()
-	{
+	#
+	SaveTopTable <- function(){
 		Try(FileName <- tclvalue(tkgetSaveFile(initialfile=paste("toptable", contrast,".xls",sep=""),filetypes="{{Tab-Delimited Text Files} {.txt .xls}} {{All files} *}")))
 		Try(if(!nchar(FileName))
 				return())
 		Try(write.table(table1,file=FileName,quote=FALSE,col.names=NA,sep="\t"))
-	}
-
-	Try(if(export)
-	{
-		Try(SaveTopTable())
-		Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-		return()
-	})
-
-
+	} #end of SaveTopTable <- function()
+	#
+	Try(
+		if(export){
+			Try(SaveTopTable())
+			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+			return()
+		}
+	)
+	#
 	Try(
 		if(nrows <=100){
 			Try(ttToptableTable <- tktoplevel(.affylmGUIglobals$ttMain))

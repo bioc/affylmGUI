@@ -352,70 +352,96 @@ ExportHTMLreport <- function(){
         Width=plotWidth,Height=plotHeight,PointSize=plotPointSize,BG=plotBG,res=plotRes))
   }
 
-  if (ExportNormalizedIntensityBoxPlot)
-  {
-    Try(HTML.title("<a name=\"NormalizedIntensityBoxPlot\">Normalized Intensity Box Plot</a>",HR=2))
-    Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
-    Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment))
-		Try(plotFunction <- function()
-		{
-			Try(opar<-par(bg="white",cex=0.7))
-			Try(boxplot(data.frame(NormalizedAffyData.exprs),col="blue",las=2,names=SlideNamesVec))
-			Try(title(plotTitle))
-			Try(tmp<-par(opar))
-		})
+	if (ExportNormalizedIntensityBoxPlot){
+		Try(HTML.title("<a name=\"NormalizedIntensityBoxPlot\">Normalized Intensity Box Plot</a>",HR=2))
+		Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
+		Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment))
+		Try(
+			plotFunction <- function(){
+				Try(opar<-par(bg="white",cex=0.7))
+				Try(boxplot(data.frame(NormalizedAffyData.exprs),col="blue",las=2,names=SlideNamesVec))
+				Try(title(plotTitle))
+				Try(tmp<-par(opar))
+			} # end of plotFunction <- function()
+		)
 		Try(plotTitle<-"Normalized intensity distribution for each slide")
-    Try(HTMLplotUsingFunction(Caption = plotTitle, File = fileNameWithPath, GraphRelativeDirectory = HTMLfileRelativePath ,
-        GraphAbsoluteDirectory = HTMLfilePath, GraphFileName = "NormalizedIntensityBoxPlot",
-        GraphSaveAs = "png", GraphBorder = 1,  Align = "left", plotFunction=plotFunction,
-        Width=plotWidth,Height=plotHeight,PointSize=plotPointSize,BG=plotBG,res=plotRes))
-  }
-
-
-  if (ExportDesignMatrix)
-  {
-    Try(design <- get("design",envir=affylmGUIenvironment))
-    Try(displayVector <- rep("g",ncol(design)+1))
-    Try(displayVector[0] <- "s")
-    Try(DesignXtable <- xtable(design,display=displayVector))
-    Try(HTML.title("<a name=\"DesignMatrix\">Design Matrix</a>",HR=2))
-    Try(print(DesignXtable,type="html",file=fileNameWithPath,append=TRUE))
-  }
-
-  if (ExportContrastsMatrix)
-  {
-    Try(displayVector <- rep("g",ncol(contrastsMatrix)+1))
-    Try(displayVector[0] <- "s")
-    Try(ContrastsXtable <- xtable(contrastsMatrix,display=displayVector))
-    Try(HTML.title("<a name=\"ContrastsMatrix\">Contrasts Matrix</a>",HR=2))
-    Try(print(ContrastsXtable,type="html",file=fileNameWithPath,append=TRUE))
-  }
-
-  if (ExportMAPlotsContrasts)
-  {
-    Try(HTML.title("<a name=\"MAPlotsContrasts\">M A Plots for Contrasts</a>",HR=2))
+		Try(
+			HTMLplotUsingFunction(
+				Caption = plotTitle,
+				File = fileNameWithPath,
+				GraphRelativeDirectory = HTMLfileRelativePath,
+				GraphAbsoluteDirectory = HTMLfilePath,
+				GraphFileName = "NormalizedIntensityBoxPlot",
+				GraphSaveAs = "png",
+				GraphBorder = 1,
+				Align = "left",
+				plotFunction=plotFunction,
+				Width=plotWidth,
+				Height=plotHeight,
+				PointSize=plotPointSize,
+				BG=plotBG,
+				res=plotRes
+			) #end of HTMLplotUsingFunction
+		) #end of Try
+	} #end of if (ExportNormalizedIntensityBoxPlot)
+	#
+	if (ExportDesignMatrix){
+		Try(design <- get("design",envir=affylmGUIenvironment))
+		Try(displayVector <- rep("g",ncol(design)+1))
+		Try(displayVector[0] <- "s")
+		Try(DesignXtable <- xtable(design,display=displayVector))
+		Try(HTML.title("<a name=\"DesignMatrix\">Design Matrix</a>",HR=2))
+		Try(print(DesignXtable,type="html",file=fileNameWithPath,append=TRUE))
+	} #end of if (ExportDesignMatrix)
+	#
+	if (ExportContrastsMatrix){
+		Try(displayVector <- rep("g",ncol(contrastsMatrix)+1))
+		Try(displayVector[0] <- "s")
+		Try(ContrastsXtable <- xtable(contrastsMatrix,display=displayVector))
+		Try(HTML.title("<a name=\"ContrastsMatrix\">Contrasts Matrix</a>",HR=2))
+		Try(print(ContrastsXtable,type="html",file=fileNameWithPath,append=TRUE))
+	} #end of if (ExportContrastsMatrix)
+	#
+	if (ExportMAPlotsContrasts){
+		Try(HTML.title("<a name=\"MAPlotsContrasts\">M A Plots for Contrasts</a>",HR=2))
 		Try(A <- rowMeans(NormalizedAffyData.exprs))
 		Try(pch <- 16)
 		Try(cex <- 0.2)
-
-    Try(for (contrast in (1:NumContrasts))
-    {
-      Try(plotTitle<-paste("M A Plot (",ContrastNamesVec[contrast],")",sep=""))
-      Try(HTML.title(plotTitle,HR=2))
-      Try(M <- fit$coefficients[,contrast])
-		  Try(plotFunction <- function()
-		  {
-		   Try(opar<-par(bg="white"))
-		   Try(plot(A,M,pch=pch,cex=cex,xlab="A",ylab="M",main=plotTitle))
-		   Try(tmp<-par(opar))
-		  })
-      Try(HTMLplotUsingFunction(Caption = plotTitle, File = fileNameWithPath, GraphRelativeDirectory = HTMLfileRelativePath ,
-        GraphAbsoluteDirectory = HTMLfilePath, GraphFileName = paste("contrastMAplot.",contrast,sep=""),
-        GraphSaveAs = "png", GraphBorder = 1,  Align = "left", plotFunction=plotFunction,
-        Width=plotWidth,Height=plotHeight,PointSize=plotPointSize,BG=plotBG,res=plotRes))
-		})
-  }
-
+		#
+		Try(
+			for (contrast in (1:NumContrasts)){
+				Try(plotTitle<-paste("M A Plot (",ContrastNamesVec[contrast],")",sep=""))
+				Try(HTML.title(plotTitle,HR=2))
+				Try(M <- fit$coefficients[,contrast])
+				Try(
+					plotFunction <- function(){
+						Try(opar<-par(bg="white"))
+						Try(plot(A,M,pch=pch,cex=cex,xlab="A",ylab="M",main=plotTitle))
+						Try(tmp<-par(opar))
+					} #end of plotFunction <- function()
+				)
+				Try(
+					HTMLplotUsingFunction(
+						Caption = plotTitle,
+						File = fileNameWithPath,
+						GraphRelativeDirectory = HTMLfileRelativePath,
+						GraphAbsoluteDirectory = HTMLfilePath,
+						GraphFileName = paste("contrastMAplot.",contrast,sep=""),
+						GraphSaveAs = "png",
+						GraphBorder = 1,
+						Align = "left",
+						plotFunction=plotFunction,
+						Width=plotWidth,
+						Height=plotHeight,
+						PointSize=plotPointSize,
+						BG=plotBG,
+						res=plotRes
+					) #end of HTMLplotUsingFunction
+				) #end of Try
+			} #end of for (contrast in (1:NumContrasts))
+		)
+	} #end of if (ExportMAPlotsContrasts)
+	#
 	if (ExportTop50Toptables || ExportCompleteToptables){
 		Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
 		Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])#Get the cdfname from the RawAffyData
@@ -462,8 +488,7 @@ ExportHTMLreport <- function(){
 		)
 	}#end of if (ExportTop50Toptables || ExportCompleteToptables)
 	#
-	if (ExportTop50Toptables)
-	{
+	if (ExportTop50Toptables){
 		Try(HTML.title(paste("<a name=\"Top50Toptables\">Top 50 Differentially Expressed Genes for each Contrast in Contrasts Parameterization ",
 			ContrastParameterizationNamesVec[contrastParameterizationIndex],"</a>",sep=""),HR=2))
 		Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
@@ -471,8 +496,7 @@ ExportHTMLreport <- function(){
 			fit$Amean <- rowMeans(NormalizedAffyData.exprs))
 		Try(fit$genes <- genelist)
 
-		for (coef in (1:NumContrasts))
-		{
+		for (coef in (1:NumContrasts)){
 			Try(options(digits=3))
 			Try(table1 <- topTable2(coef=coef,number=50,genelist=genelist,fit=fit))
 			Try(toptableDisplay <- rep("s",ncol(table1)+1))
@@ -483,26 +507,23 @@ ExportHTMLreport <- function(){
 				Try(if (colnames(table1)[i-1]=="A")       toptableDisplay[i] <- "f")
 				Try(if (colnames(table1)[i-1]=="t")       toptableDisplay[i] <- "f")
 				Try(if (colnames(table1)[i-1]=="P.Value") toptableDisplay[i] <- "e")
-				Try(if (colnames(table1)[i-1]=="B") toptableDisplay[i] <- "f")
+				Try(if (colnames(table1)[i-1]=="B")       toptableDisplay[i] <- "f")
 			})
 			Try(toptableXtable <- xtable(table1,display=toptableDisplay))
 			Try(HTML.title(paste("Top 50 Differentially Expressed Genes for",ContrastNamesVec[coef]),HR=3))
 			Try(print(toptableXtable,type="html",file=fileNameWithPath,append=TRUE))
-		}
-
-	}
-
-	if (ExportCompleteToptables)
-	{
+		} #end of for (coef in (1:NumContrasts))
+	} #end of if (ExportTop50Toptables)
+	#
+	if (ExportCompleteToptables){
 		Try(HTML.title(paste("<a name=\"CompleteToptables\">Complete Tables of Genes Ranked in order of Evidence for Differential Expression for each contrast in Contrasts Parameterization ",ContrastParameterizationNamesVec[contrastParameterizationIndex],"</a>",sep=""),HR=2))
-
+		#
 		Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
 		Try(if (!("Amean" %in% names(fit)))
 			fit$Amean <- rowMeans(NormalizedAffyData.exprs))
 		Try(fit$genes <- genelist)
-
-		for (coef in (1:NumContrasts))
-		{
+		#
+		for (coef in (1:NumContrasts)){
 			Try(options(digits=3))
 			Try(table1 <- topTable2(coef=coef,number=nrow(genelist),genelist=genelist,fit=fit))
 			Try(ToptableAbsoluteFilename <- paste(HTMLfilePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".xls",sep=""))
@@ -510,8 +531,8 @@ ExportHTMLreport <- function(){
 			Try(write.table(table1,file=ToptableAbsoluteFilename,quote=FALSE,col.names=NA,sep="\t"))
 			Try(HTML.title(paste("Complete Table of Genes Ranked in order of Evidence for Differential Expression for ",ContrastNamesVec[coef]),HR=3))
 			Try(HTMLli(txt=paste("<a href=\"",ToptableRelativeFilename,"\"><b>",paste("CompleteToptable_Contrast",coef,".xls",sep=""),"</b></a>",sep="")))
-		}
-	}
+		} #end of for (coef in (1:NumContrasts))
+	} #end of if (ExportCompleteToptables)
 
 
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))

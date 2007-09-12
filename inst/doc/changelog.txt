@@ -1,4 +1,7 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+13-Sep-2007 affylmGUI 1.11.5
+	Display Citation in TckTk GUI message box as well as writing citation to R console
+
 20-Jun-2007 affylmGUI 1.10.4
 	References to Digestion changed to Degradation. Changed Menu Item name and function names
 	See Bioconductor emails from Gordon Smyth/Robert Gentleman around December 6th. 2006.
