@@ -3921,25 +3921,23 @@ OpenALimmaFile <- function(FileName)
 
 }
 
-SaveLimmaFile <- function()
-{
+SaveLimmaFile <- function(){
 	LimmaFileName <- get("LimmaFileName",envir=affylmGUIenvironment)
-	if(LimmaFileName=="Untitled")
-	{
+	if(LimmaFileName=="Untitled"){
 		SaveAsLimmaFile()
 		try(tkfocus(.affylmGUIglobals$ttMain),silent=TRUE)
 		return()
-	}
+	} #end of if(LimmaFileName=="Untitled")
 	# Don't give an error if main window has been destroyed.
 	try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"),silent=TRUE)
-#	tkmessageBox(message="About to save Limma File! (0)")
+	#	tkmessageBox(message="About to save Limma File! (0)")
 	assign("PsetData.Available",FALSE,affylmGUIenvironment)#Always assign this to FALSE. Will always recalculate it in the Plot menu functions
 	Try(save(list = ls(envir=affylmGUIenvironment), file=LimmaFileName, envir=affylmGUIenvironment))
-#	tkmessageBox(message="Limma File Saved! (1)")
+	#	tkmessageBox(message="Limma File Saved! (1)")
 	try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"),silent=TRUE)
 	try(tkfocus(.affylmGUIglobals$ttMain),silent=TRUE)
-#	tkmessageBox(message="Limma File Saved! (2)")
-}
+	#	tkmessageBox(message="Limma File Saved! (2)")
+} #end of SaveLimmaFile <- function()
 
 SaveAsLimmaFile <- function()
 {
