@@ -1762,7 +1762,7 @@ affyPlotMA <- function(){
 				}
 			)
 			Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs", envir=affylmGUIenvironment))
-
+			#
 			Try(R <- NormalizedAffyData.exprs[,slide1])  # Using cDNA notation (R for one channel/array, G for the other)
 			Try(G <- NormalizedAffyData.exprs[,slide2])  # Using cDNA notation (R for one channel/array, G for the other)
 			pch <- 16

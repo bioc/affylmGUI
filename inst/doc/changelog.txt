@@ -1,4 +1,8 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+21-Sep-2007 affylmGUI 1.11.6
+	HTML Report Report uses options for Top Table that are set when TopTable menu choice is used.
+	Reformatted code in main.R and htmlReport.R for consistency
+
 13-Sep-2007 affylmGUI 1.11.5
 	Display Citation in TckTk GUI message box as well as writing citation to R console
 
