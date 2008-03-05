@@ -4274,10 +4274,10 @@ OpenALimmaFile <- function(FileName){
 		}#end of if(exists("NormalizedAffyData.se.exprs",envir=affylmGUIenvironment))
 	)#end of Try
 	#
-	#Check if NormalizedAffyData exists in environment. If it does, check if it is class(exprSet). If it is,
-	#then if exprs and se.exprs are > 1 long, get exprs and se.exprs from the exprSet object
+	#Check if NormalizedAffyData exists in environment. If it does, check if it is class(ExpressionSet). If it is,
+	#then if exprs and se.exprs are > 1 long, get exprs and se.exprs from the ExpressionSet object
 	#and store them back in the environment as NormalizedAffyData.exprs and NormalizedAffyData.se.exprs.
-	#then NULL the exprSet object and store it in the environment
+	#then NULL the ExpressionSet object and store it in the environment
 	Try(
 		if(exists("NormalizedAffyData",envir=affylmGUIenvironment)){
 			Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
@@ -4288,16 +4288,16 @@ OpenALimmaFile <- function(FileName){
 	Try(
 		#Now if length(NormalizedAffyData) is >0, then get the exprs and, if available, se.exprs matrices
 		if(length(NormalizedAffyData) > 0){ #if NormalizedAffyData was NULL, then its length would be zero
-			if(class(NormalizedAffyData) == "exprSet"){ #Previous to R2.5.0, affylmGUI 1.10.2, NormalizedAffyData was an exprSet object
-				#if NormalizedAffyData@exprs data exists and NormalizedAffyData.exprs doesn't exist, then create NormalizedAffyData.exprs
-				if( (length(NormalizedAffyData@exprs) > 1 && length(NormalizedAffyData.exprs)<1) ){
-					NormalizedAffyData.exprs <- NormalizedAffyData@exprs
+			if(is(NormalizedAffyData, "ExpressionSet")){
+				#if exprs(NormalizedAffyData) data exists and NormalizedAffyData.exprs doesn't exist, then create NormalizedAffyData.exprs
+				if( (length(exprs(NormalizedAffyData)) > 1 && length(NormalizedAffyData.exprs)<1) ){
+					NormalizedAffyData.exprs <- exprs(NormalizedAffyData)
 				}
 				#if NormalizedAffyData@se.exprs data exists and NormalizedAffyData.se.exprs doesn't exist, then create NormalizedAffyData.se.exprs
-				if( (length(NormalizedAffyData@se.exprs) > 1 && length(NormalizedAffyData.se.exprs)<1) ){
-					NormalizedAffyData.se.exprs <- NormalizedAffyData@se.exprs
+				if( (length(assayDataElement(NormalizedAffyData,"se.exprs")) > 1 && length(NormalizedAffyData.se.exprs)<1) ){
+					NormalizedAffyData.se.exprs <- assayDataElement(NormalizedAffyData,"se.exprs")
 				}
-			}#end of if(class(NormalizedAffyData) == "exprSet")
+			}#end of if(is(NormalizedAffyData, "ExpressionSet"))
 		}#end of if(length(NormalizedAffyData) != 0)
 	)#end of Try
 	#Now assign correct values to environment
