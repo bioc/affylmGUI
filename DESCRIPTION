@@ -6,6 +6,7 @@ Author:	James Wettenhall and Ken Simpson
 	Division of Genetics and Bioinformatics, WEHI.
 Maintainer: Keith Satterley <keith@wehi.edu.au>
 Depends: limma, tcltk, affy, Biobase, affyio
+LazyLoad: yes
 Suggests: tkrplot, affyPLM, R2HTML, xtable
 Description: A Graphical User Interface for affy analysis using the limma Microarray package
 biocViews: Microarray, OneChannel, DataImport, QualityControl, Preprocessing, Statistics, DifferentialExpression, MultipleComparisons, GUI
