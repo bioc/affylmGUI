@@ -1,5 +1,6 @@
-###.onLoad <- function(libname, pkgname){
-.First.lib <- function(libname, pkgname){
+###.First.lib <- function(libname, pkgname)<--opening brace here
+###.onLoad <- function(libname, pkgname)<--opening brace here
+.onAttach <- function(libname, pkgname){
 	if (length(grep("^limmaGUI$", .packages()))>0){
 	 stop("Please run limmaGUI and affylmGUI in separate R sessions.")
 	}
@@ -84,4 +85,4 @@
 			}
 		} #end of if (interactive() && .Platform$OS.type=="windows")
 	} #end of if (interactive())
-} #end of .First.lib <- function(libname, pkgname)
+} #end of .onLoad <- function(libname, pkgname)

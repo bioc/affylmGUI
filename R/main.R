@@ -78,29 +78,21 @@ TclRequire <- function(tclPkg){
 				"Cannot find Tcl/Tk package \"", tclPkg,
 				"\".	affylmGUI cannot continue.\n\n",
 				"affylmGUI requires the Tcl/Tk extensions, BWidget and Tktable.\n",
-				"You must have Tcl/Tk installed on your computer, not just the minimal\n",
-				"Tcl/Tk installation which comes with R (for Windows).	If you do have\n",
-				"Tcl/Tk installed, including the extensions (e.g. using the ActiveTcl\n",
-				"distribution in Windows), make sure that R can find the path to the\n",
+				"You must have Tcl/Tk installed on your computer, The\n",
+				"Tcl/Tk installation which comes with R includes BWidget and Tktable.	If you do have\n",
+				"Tcl/Tk installed elsewhere, including the extensions, make sure that R can find the path to the\n",
 				"Tcl library, e.g. C:\\Tcl\\lib (on Windows) or /usr/lib (on Linux/Unix)\n",
 				"or /sw/lib on Mac OSX.\n\n",
-				"If you don't know how to set environment variables in Windows, one way\n",
-				"to make sure that R can find the Tcl/Tk extensions Tktable2.8 and bwidget1.6\n",
-				"is to copy them from your ActiveTcl installation e.g. in C:\\Tcl\\lib into\n",
-				"the Tcl subdirectory of your R installation.\n",
-				"If you do understand how to set environment variables...\n",
-				"make sure that you have the TCL_LIBRARY environment variable set to the\n",
-				"appropriate path, e.g.C:\\Tcl\\lib\\tcl8.4 and the MY_TCLTK environment\n",
-				"variable set to a non-empty string, e.g. \"Yes\".\n\n",
-				"If using Windows, be sure to read the R for windows FAQ at\nhttp://www.stats.ox.ac.uk/pub/R/rw-FAQ.html\n\n",
+				"Set the environment variable TCL_LIBRARY to the appropriate path. for eg.\n",
+				"C:\\Tcl\\lib\\tcl8.4\n",
+				"and set the MY_TCLTK environment variable to a non-empty string, e.g. \"Yes\".\n\n",
+				"If using Windows, be read the R for windows FAQ at\n",
+				"http://cran.r-project.org/bin/windows/base/rw-FAQ.html\n",
 				"If your Tcl/Tk extensions still can't be found, try\n",
 				"addTclPath(\"<path to Tcl library>\").\nThis could be put in $HOME/.Rprofile\n\n",
 				"If you need further instructions, please contact your system administrator\n",
 				"and consider emailing r-help@stat.math.ethz.ch, or browse through the R-help\n",
 				"archives for a similar question.\n\n",
-				"The URLs for Tktable and BWidget are:\n",
-				"http://tktable.sourceforge.net\n",
-				"http://tcllib.sourceforge.net",
 				sep=""
 			) #end of message<-paste
 		) #end of Try
@@ -1638,7 +1630,7 @@ ViewExistingContrastParameterization <- function(){
 #
 #
 ViewRNATargets <- function(){
-	Try(NumSlides <- get("NumSlides",envir=affylmGUIenvironment))
+	###Try(NumSlides <- get("NumSlides",envir=affylmGUIenvironment))
 	Try(Targets <- get("Targets",envir=affylmGUIenvironment))
 	Try(ArraysLoaded	<- get("ArraysLoaded", envir=affylmGUIenvironment))
 	#
@@ -1780,7 +1772,8 @@ ViewRNATargets <- function(){
 	#
 	Try(tkfocus(ttViewRNATargets))
 	Try(tkbind(ttViewRNATargets, "<Destroy>", function() {Try(tkfocus(.affylmGUIglobals$ttMain))}))
-}# end of function ViewContrastsMatrixAsPairs
+} # end of ViewRNATargets <- function()
+#
 #
 ########################################################################################################
 #
@@ -4274,10 +4267,10 @@ OpenALimmaFile <- function(FileName){
 		}#end of if(exists("NormalizedAffyData.se.exprs",envir=affylmGUIenvironment))
 	)#end of Try
 	#
-	#Check if NormalizedAffyData exists in environment. If it does, check if it is class(ExpressionSet). If it is,
-	#then if exprs and se.exprs are > 1 long, get exprs and se.exprs from the ExpressionSet object
-	#and store them back in the environment as NormalizedAffyData.exprs and NormalizedAffyData.se.exprs.
-	#then NULL the ExpressionSet object and store it in the environment
+	#Check if NormalizedAffyData exists in environment. If it does, check if it is class(exprSet). If it is,
+	#then if exprs and se.exprs are > 1 long, get exprs and se.exprs from the exprSet object
+	#and store the matrices back in the environment as NormalizedAffyData.exprs and NormalizedAffyData.se.exprs.
+	#then NULL the exprSet object and store it in the environment
 	Try(
 		if(exists("NormalizedAffyData",envir=affylmGUIenvironment)){
 			Try(NormalizedAffyData <- get("NormalizedAffyData",envir=affylmGUIenvironment))
@@ -4288,19 +4281,32 @@ OpenALimmaFile <- function(FileName){
 	Try(
 		#Now if length(NormalizedAffyData) is >0, then get the exprs and, if available, se.exprs matrices
 		if(length(NormalizedAffyData) > 0){ #if NormalizedAffyData was NULL, then its length would be zero
-			if(is(NormalizedAffyData, "ExpressionSet")){
-				#if exprs(NormalizedAffyData) data exists and NormalizedAffyData.exprs doesn't exist, then create NormalizedAffyData.exprs
-				if( (length(exprs(NormalizedAffyData)) > 1 && length(NormalizedAffyData.exprs)<1) ){
-					NormalizedAffyData.exprs <- exprs(NormalizedAffyData)
+			##Dont change the exprSet string in the statement below - it is a string - not a class!
+			if(class(NormalizedAffyData) == "exprSet"){ #Previous to R2.5.0, affylmGUI 1.10.2, NormalizedAffyData was an exprSet object
+				#if NormalizedAffyData@exprs data exists and NormalizedAffyData.exprs doesn't exist, then create NormalizedAffyData.exprs
+				if( (length(NormalizedAffyData@exprs) > 1 && length(NormalizedAffyData.exprs)<1) ){
+					NormalizedAffyData.exprs <- NormalizedAffyData@exprs #@exprs extracts the matrix of expression data from the old object - @exprs is an attribute of the object
 				}
 				#if NormalizedAffyData@se.exprs data exists and NormalizedAffyData.se.exprs doesn't exist, then create NormalizedAffyData.se.exprs
-				if( (length(assayDataElement(NormalizedAffyData,"se.exprs")) > 1 && length(NormalizedAffyData.se.exprs)<1) ){
-					NormalizedAffyData.se.exprs <- assayDataElement(NormalizedAffyData,"se.exprs")
+				if( (length(NormalizedAffyData@se.exprs) > 1 && length(NormalizedAffyData.se.exprs)<1) ){
+					NormalizedAffyData.se.exprs <- NormalizedAffyData@se.exprs
 				}
-			}#end of if(is(NormalizedAffyData, "ExpressionSet"))
+			}#end of if(class(NormalizedAffyData) == "exprSet")
+			##
+			##if(is(NormalizedAffyData, "ExpressionSet")){
+			##	#if exprs(NormalizedAffyData) data exists and NormalizedAffyData.exprs doesn't exist, then create NormalizedAffyData.exprs
+			##	if( (length(exprs(NormalizedAffyData)) > 1 && length(NormalizedAffyData.exprs)<1) ){
+			##		NormalizedAffyData.exprs <- exprs(NormalizedAffyData)
+			##	}
+			##	#if NormalizedAffyData@se.exprs data exists and NormalizedAffyData.se.exprs doesn't exist, then create NormalizedAffyData.se.exprs
+			##	if( (length(assayDataElement(NormalizedAffyData,"se.exprs")) > 1 && length(NormalizedAffyData.se.exprs)<1) ){
+			##		NormalizedAffyData.se.exprs <- assayDataElement(NormalizedAffyData,"se.exprs")
+			##	}
+			###end of if(is(NormalizedAffyData, "ExpressionSet"))
 		}#end of if(length(NormalizedAffyData) != 0)
 	)#end of Try
 	#Now assign correct values to environment
+	NormalizedAffyData <- NULL
 	Try(assign("NormalizedAffyData",         NormalizedAffyData,         affylmGUIenvironment))
 	Try(assign("NormalizedAffyData.exprs",   NormalizedAffyData.exprs,   affylmGUIenvironment))
 	Try(assign("NormalizedAffyData.se.exprs",NormalizedAffyData.se.exprs,affylmGUIenvironment))
