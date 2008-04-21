@@ -1,4 +1,11 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+20-Apr-2008 affylmGUI 1.13.1
+	Remove some corrections by P. Aboyoun in main.R. The references to exprSet are needed
+	to check old data files for class name of exprSet and if present retrieve data from them
+	without needing the exprSet class definition.
+	also reformat the layout of some code to my liking.
+	This version ready for release with Bioconductor 2.2
+
 21-Sep-2007 affylmGUI 1.11.6
 	HTML Report Report uses options for Top Table that are set when TopTable menu choice is used.
 	Reformatted code in main.R and htmlReport.R for consistency
