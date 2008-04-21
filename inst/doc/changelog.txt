@@ -4,6 +4,8 @@
 	to check old data files for class name of exprSet and if present retrieve data from them
 	without needing the exprSet class definition.
 	also reformat the layout of some code to my liking.
+	Update the text in main.R about not working with Tcl/Tk.
+	Changed license to LGPL
 	This version ready for release with Bioconductor 2.2
 
 21-Sep-2007 affylmGUI 1.11.6

@@ -9,5 +9,5 @@ Depends: limma, tcltk, affy, Biobase, affyio
 Suggests: tkrplot, affyPLM, R2HTML, xtable
 Description: A Graphical User Interface for affy analysis using the limma Microarray package
 biocViews: Microarray, OneChannel, DataImport, QualityControl, Preprocessing, Statistics, DifferentialExpression, MultipleComparisons, GUI
-License: GPL version 2 or newer
+License: LGPL
 URL: http://bioinf.wehi.edu.au/affylmGUI/

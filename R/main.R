@@ -86,13 +86,13 @@ TclRequire <- function(tclPkg){
 				"Set the environment variable TCL_LIBRARY to the appropriate path. for eg.\n",
 				"C:\\Tcl\\lib\\tcl8.4\n",
 				"and set the MY_TCLTK environment variable to a non-empty string, e.g. \"Yes\".\n\n",
-				"If using Windows, be read the R for windows FAQ at\n",
+				"If using Windows, read the R for windows FAQ at\n",
 				"http://cran.r-project.org/bin/windows/base/rw-FAQ.html\n",
 				"If your Tcl/Tk extensions still can't be found, try\n",
 				"addTclPath(\"<path to Tcl library>\").\nThis could be put in $HOME/.Rprofile\n\n",
 				"If you need further instructions, please contact your system administrator\n",
 				"and consider emailing r-help@stat.math.ethz.ch, or browse through the R-help\n",
-				"archives for a similar question.\n\n",
+				"Bioconductor archives for a similar question.\n\n",
 				sep=""
 			) #end of message<-paste
 		) #end of Try
