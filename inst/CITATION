@@ -45,7 +45,7 @@ citEntry(
     "2. Smyth, G. K. (2005). Limma: linear models for microarray",
     "data. In: 'Bioinformatics and Computational Biology Solutions",
     "using R and Bioconductor'. R. Gentleman, V. Carey, S. Dudoit,",
-    "R. Irizarry, W. Huber (eds), Springer, New York, pages 397–420."
+    "R. Irizarry, W. Huber (eds), Springer, New York, pages 397-420."
   )
 )
 
@@ -69,7 +69,7 @@ citEntry(
     "3. Zhijin Wu1, Rafael A. Irizarry, Robert Gentleman, Francisco Martinez-Murillo, Forrest Spencer. (2004).",
     "A Model Based Background Adjustment for Oligonucleotide Expression Arrays",
     "In the Journal of the American Statistical Association.",
-    "Volume 99, Pages 909–917."
+    "Volume 99, Pages 909-917."
   )
 )
 
@@ -97,7 +97,7 @@ citEntry(
     "Uwe Scherf, Terence P. Speed. (2003).",
     "Exploration, normalization, and summaries of high density oligonucleotide array probe level data",
     "In the Journal Biostatistics.",
-    "Volume 4(2), Pages 249–264."
+    "Volume 4(2), Pages 249-264."
   )
 )
 
@@ -120,7 +120,7 @@ citEntry(
     "5. James M. Wettenhall, Ken M. Simpson, Keith Satterley and Gordon K. Smyth.",
     "affylmGUI: a graphical user interface for linear",
     "modeling of single channel microarray data.",
-    "Bioinformatics, 22:897–899, 2006."
+    "Bioinformatics, 22:897-899, 2006."
   )
 )
 
