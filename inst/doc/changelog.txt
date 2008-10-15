@@ -1,4 +1,16 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+15-Oct-2008 affylmGUI 1.15.1
+	[bug]change cdf to cdfName in OpenCDFFile function
+	[bug]change arguments call to function ViewContrastsMatrixInTable from
+	 (contrastsMatrix,contrastsList,contrastParameterizationIndex) to
+	 (contrastsList,contrastParameterizationIndex)
+	[bugs]In runOverall function,
+ 	include "Require("tkrplot") under runType!="runTestOnly" condition(first time).
+ 	replace "tmpEvalRcodeResults" with "tmpEvalRcodeResultsGraph" under runType!="runTestOnly" condition(second time).
+	[bug]In chooseCDF function, change "cdfDataFrame" to "cdfPackages" in the onOK function
+	Remove gif file type references in htmlReport.R and replace with png type files
+	Replace file R2HTMLlogo.gif with R2HTMLlogo.png file.
+
 20-Apr-2008 affylmGUI 1.13.1
 	Remove some corrections by P. Aboyoun in main.R. The references to exprSet are needed
 	to check old data files for class name of exprSet and if present retrieve data from them

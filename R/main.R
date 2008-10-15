@@ -728,7 +728,7 @@ deleteItemFromList <- function(list1,itemName=NULL,index=NULL){
 OpenCDFFile <- function(){
 	Try(cdfName <- ChooseCDF())
 	Try(if(cdfName=="") return())
-	Try(assign("CDFFile",cdf,affylmGUIenvironment))#KS. cdf is a data.frame
+	Try(assign("CDFFile",cdfName,affylmGUIenvironment))
 	Try(CDFFile <- get("CDFFile",envir=affylmGUIenvironment))
 	Try(tclvalue(.affylmGUIglobals$CDFfileBoxTitle) <- "Chip Definition (CDF) File")
 	Try(tclvalue(.affylmGUIglobals$CDFfileName) <-paste(CDFFile))
@@ -1620,7 +1620,7 @@ ViewExistingContrastParameterization <- function(){
 	Try(contrastsList <- ContrastParameterizationList[[ContrastParameterizationNameNode]]$contrastsMatrixInList)
 	Try(
 		if(contrastsList$contrastsCreatedFromDropDowns==FALSE){
-			Try(ViewContrastsMatrixInTable(contrastsMatrix="Contrasts",contrastsList,contrastParameterizationIndex))
+			Try(ViewContrastsMatrixInTable(contrastsList,contrastParameterizationIndex))
 		}else{
 			Try(ViewContrastsMatrixAsPairs(contrastsMatrix="Contrasts",contrastsList,contrastParameterizationIndex))
 		}
@@ -3141,6 +3141,7 @@ evalRcode <- function(){
 		if(runType!="runTextOnly"){
 			Try(
 				if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
+					Require("tkrplot")
 					Try(LocalHScale <- .affylmGUIglobals$Myhscale)
 					Try(LocalVScale <- .affylmGUIglobals$Myvscale)
 					Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
@@ -3184,8 +3185,9 @@ evalRcode <- function(){
 		} #end of if(runType!="runGraphicsOnly")
 		#
 		if(runType!="runTextOnly"){
-			Try(tmpEvalRcodeResults <- tempfile())
-			Try(RoutFileObjectGraph <- file(tmpEvalRcodeResultsGraph,open="wt"))
+			#Try(tmpEvalRcodeResults <- tempfile())
+			Try(tmpEvalRcodeResultsGraph   <- tempfile())
+			Try(RoutFileObjectGraph        <- file(tmpEvalRcodeResultsGraph,open="wt"))
 			Try(sink(RoutFileObjectGraph))
 			Try(sink(RoutFileObjectGraph,type="message"))
 			Try(e3 <- try(parse(text=codeGraph)))
@@ -3651,7 +3653,7 @@ NewLimmaFile <- function(){
 	Try(NumContrastParameterizations         <- get("NumContrastParameterizations",                envir=affylmGUIenvironment))
 	Try(ContrastParameterizationList         <- get("ContrastParameterizationList",                envir=affylmGUIenvironment))
 	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",        envir=affylmGUIenvironment))
-	Try(LimmaFileName                        <- get("LimmaFileName",envir=affylmGUIenvironment))
+	Try(LimmaFileName                        <- get("LimmaFileName",                               envir=affylmGUIenvironment))
 	if(limmaDataSetNameText!="Untitled"){
 		Try(if(LimmaFileName=="Untitled" && limmaDataSetNameText!="Untitled"){LimmaFileName <- limmaDataSetNameText} )	# Local assignment only
 		Try(
@@ -4592,7 +4594,8 @@ ChooseCDF <- function()
 	{
 			Try(cdfIndex <- as.numeric(tclvalue(tkcurselection(tl)))+1)
 			Try(tkgrab.release(ttChooseCDF));Try(tkdestroy(ttChooseCDF));Try(tkfocus(.affylmGUIglobals$ttMain))
-			Try(ReturnVal <<- cdfDataFrame[cdfIndex,"Package"])
+		###Try(ReturnVal <<- cdfDataFrame[cdfIndex,"Package"])
+		Try(ReturnVal <<- cdfPackages[cdfIndex,"Package"])
 	}
 	onCancel <- function() {Try(tkgrab.release(ttChooseCDF));Try(tkdestroy(ttChooseCDF));Try(tkfocus(.affylmGUIglobals$ttMain));ReturnVal <<- ""}
 	OK.but <-tkbutton(ttChooseCDF,text="   OK	 ",command=onOK,font=.affylmGUIglobals$affylmGUIfont2)

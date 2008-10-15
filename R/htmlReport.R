@@ -70,14 +70,8 @@
 			plotFunction()
 			dev.off()
 		} #end of else/if (is.null(plotFunction))
-	}else if (GraphSaveAs=="gif"){
-		if (is.null(plotFunction)){
-			dev.print(gif, file = AbsGraphFileName, width=Width,height=Height,pointsize=PointSize,bg=BG)
-		}else{
-			stop("When passing a plot function to HTMLplot, device must be jpg or png.")
-		} #end of else/if (is.null(plotFunction))
 	}else{
-		stop("GraphSaveAs must be either jpg, png or gif")
+		stop("GraphSaveAs must be either jpg, or png")
 	} #end of else/if (GraphSaveAs=="png")
 	cat(
 		paste(
@@ -565,8 +559,8 @@ ExportHTMLreport <- function(){
 	Try(R2HTMLpath <- system.file(package="R2HTML","output")) #for eg: [1] "C:/R/R-2.6.0alpha/library/R2HTML/output"
 	Try(cssFileSource <- paste(R2HTMLpath,"/","R2HTML.css",sep="")) #for eg: [1] "C:/R/R-2.6.0alpha/library/R2HTML/output/R2HTML.css"
 	Try(cssFileDestination <- paste(path,"/","R2HTML.css",sep="")) #for eg: "W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files/R2HTML.css"
-	Try(R2HTMLlogoSource <- paste(R2HTMLpath,"/","R2HTMLlogo.gif",sep="")) #for eg: [1] "C:/R/R-2.6.0alpha/library/R2HTML/output/R2HTMLlogo.gif"
-	Try(R2HTMLlogoDestination <- paste(path,"/","R2HTMLlogo.gif",sep="")) #for eg: [1] "W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files/R2HTMLlogo.gif"
+	Try(R2HTMLlogoSource <- paste(R2HTMLpath,"/","R2HTMLlogo.png",sep="")) #for eg: [1] "C:/R/R-2.6.0alpha/library/R2HTML/output/R2HTMLlogo.png"
+	Try(R2HTMLlogoDestination <- paste(path,"/","R2HTMLlogo.png",sep="")) #for eg: [1] "W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files/R2HTMLlogo.png"
 	Try(file.copy(cssFileSource,cssFileDestination,overwrite=TRUE)) #for eg: TRUE
 	Try(file.copy(R2HTMLlogoSource,R2HTMLlogoDestination,overwrite=TRUE)) #for eg: TRUE
 	#
