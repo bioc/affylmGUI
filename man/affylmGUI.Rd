@@ -230,71 +230,71 @@ ViewRNATargets()
 	\item{BigfontsForaffylmGUIpresentation}{affylmGUI:arg1:If set to TRUE, larger fonts are used.  However, some font
 	sizes are not controlled by affylmGUI and so must be adjusted in the operating system, e.g.
 	in the Control Panel in Windows under Display, Appearance.}
-	\item{\dots}                         {HTMLplotUsingFunction:arg14:and:showTopTable:arg1:and:toptable2:arg9:and:vennDiagramaffylmGUI:arg6}
-	\item{Align}                         {HTMLplotUsingFunction:arg8}
-	\item{all}                           {GetSlideNum:arg1}
-	\item{BG}                            {HTMLplotUsingFunction:arg12}
-	\item{Caption}                       {HTMLplotUsingFunction:arg1}
-	\item{code}                          {generalPlotFunction: arg1: a code}
-	\item{ContrastNames}                 {GetContrastNamesForHeatDiagram:arg2}
-	\item{contrastParameterizationIndex} {GetComponentsToExportInHTMLreport:arg1:and:contrastParameterizationIndex:arg1:and:GetContrast:arg1:and:HTMLplotUsingFunction:arg3:and:ViewContrastsMatrixInTable:arg2}
-	\item{export}                        {showTopTable:arg2}
-	\item{expr}                          {Try:arg1:and:TryReadImgProcFile:arg1}
-	\item{FileName}                      {OpenALimmaFile:arg1:and:OpenLimmaFile:arg1}
-	\item{File}                          {HTMLplotUsingFunction:arg2}
-	\item{GraphAbsoluteDirectory}        {HTMLplotUsingFunction:arg4}
-	\item{GraphBorder}                   {HTMLplotUsingFunction:arg7}
-	\item{GraphFileName}                 {HTMLplotUsingFunction:arg5}
-	\item{graphFileType}                 {GetJpegOrPngParams:arg1:and:GetJpegOrPngX11Params:arg1}
-	\item{GraphRelativeDirectory}        {HTMLplotUsingFunction:arg3}
-	\item{GraphSaveAs}                   {HTMLplotUsingFunction:arg6}
-	\item{haystack}                      {nstrstr:arg1:and:strstr:arg1}
-	\item{Height}                        {HTMLplotUsingFunction:arg11}
-	\item{img}                           {Resize:arg1:and:SetupPlotMenus:arg4:and:CopyGraph:arg1:and:SetupPlotKeyBindings:arg2}
-	\item{includeBoth}                   {GetWhichProbes:arg1}
-	\item{index}                         {deleteItemFromList:arg3:an index}
-	\item{initialfile}                   {SetupPlotMenus:arg2:and:SaveGraphAsJpeg:arg1:and:SaveGraphAsPDF:arg1:and:SaveGraphAsPNG:arg1:and:SaveGraphAsPostscript:arg1}
-	\item{itemName}                      {deleteItemFromList:arg2:an item name}
-	\item{list1}                         {deleteItemFromList:arg1:a list}
-	\item{needle}                        {nstrstr:arg2:and:strstr:arg2}
-	\item{NumContrasts}                  {GetContrasts:arg1}
-	\item{numContrasts}                  {GetContrastNamesForHeatDiagram:arg1}
-	\item{numSets}                       {GetSetNames:arg1}
-	\item{p.value}                       {GetPValueCutoff:arg1:A p-value cutoff.}
-	\item{parameterName}                 {HeatDiagramDialog:arg1}
-	\item{pkgName}                       {getPackageVersion:arg1}
-	\item{pkg}                           {Require:arg1}
-	\item{plotFunction}                  {Resize:arg2:and:HTMLplotUsingFunction:arg9:and:SetupPlotMenus:arg3:and:SaveGraphAsJpeg:arg2:and:SaveGraphAsPDF:arg2:and:SaveGraphAsPNG:arg2:and:SaveGraphAsPostscript:arg2}
-	\item{plottitle}                     {GetPlotLabels:arg1:and:GetPlotTitle:arg1}
-	\item{res}                           {HTMLplotUsingFunction:arg13}
-	\item{set1}                          {GetSetNames:arg2}
-	\item{set2}                          {GetSetNames:arg3}
-	\item{set3}                          {GetSetNames:arg4}
-	\item{string}                        {fixSeps:arg1:A character string:and:GetRNATypesFrom.ContrastsFromDropDowns.String:arg1:and:SimplifyContrastsExpression:arg1}
-	\item{tclPkg}                        {TclRequire:arg1}
-	\item{tt}                            {SetupPlotMenus:arg1:and:SetupPlotKeyBindings:arg1}
-	\item{view}                          {ALGlimmaUsersGuide:arg1:A boolean determinig if the users'd guide will be viewed}
-	\item{Width}                         {HTMLplotUsingFunction:arg10}
-	\item{WindowTitle}                   {generalPlotFunction: arg2: a title}
-	\item{xlabel}                        {GetPlotLabels:arg2}
-	\item{ylabel}                        {GetPlotLabels:arg3}
-	\item{fit}                           {topTable2:arg1:and:toptable2:arg1}
-	\item{coef}                          {topTable2:arg2:and:toptable2:arg2}
-	\item{number}                        {topTable2:arg3:and:toptable2:arg3}
-	\item{genelist}                      {topTable2:arg4:and:toptable2:arg4}
-	\item{A}                             {toptable2:arg5}
-	\item{eb}                            {toptable2:arg6}
-	\item{adjust.method}                 {topTable2:arg5:and:toptable2:arg7}
-	\item{sort.by}                       {topTable2:arg6:and:toptable2:arg8}
-	\item{object}                        {vennDiagramaffylmGUI:arg1}
-	\item{include}                       {vennDiagramaffylmGUI:arg2}
-	\item{names}                         {vennDiagramaffylmGUI:arg3}
-	\item{cex}                           {vennDiagramaffylmGUI:arg4}
-	\item{mar}                           {vennDiagramaffylmGUI:arg5}
-	\item{contrastsMatrix}               {ViewContrastsMatrixAsPairs:arg1}
-	\item{contrastsMatrixList}           {ViewContrastsMatrixAsPairs:arg2:and:ViewContrastsMatrixInTable:arg1}
-	\item{n}                             {showChangeLog:arg1}
-	\item{PointSize}                     {HTMLplotUsingFunction:arg12}
+	\item{\dots}{HTMLplotUsingFunction:arg14:and:showTopTable:arg1:and:toptable2:arg9:and:vennDiagramaffylmGUI:arg6}
+	\item{Align}{HTMLplotUsingFunction:arg8}
+	\item{all}{GetSlideNum:arg1}
+	\item{BG}{HTMLplotUsingFunction:arg12}
+	\item{Caption}{HTMLplotUsingFunction:arg1}
+	\item{code}{generalPlotFunction: arg1: a code}
+	\item{ContrastNames}{GetContrastNamesForHeatDiagram:arg2}
+	\item{contrastParameterizationIndex}{GetComponentsToExportInHTMLreport:arg1:and:contrastParameterizationIndex:arg1:and:GetContrast:arg1:and:HTMLplotUsingFunction:arg3:and:ViewContrastsMatrixInTable:arg2}
+	\item{export}{showTopTable:arg2}
+	\item{expr}{Try:arg1:and:TryReadImgProcFile:arg1}
+	\item{FileName}{OpenALimmaFile:arg1:and:OpenLimmaFile:arg1}
+	\item{File}{HTMLplotUsingFunction:arg2}
+	\item{GraphAbsoluteDirectory}{HTMLplotUsingFunction:arg4}
+	\item{GraphBorder}{HTMLplotUsingFunction:arg7}
+	\item{GraphFileName}{HTMLplotUsingFunction:arg5}
+	\item{graphFileType}{GetJpegOrPngParams:arg1:and:GetJpegOrPngX11Params:arg1}
+	\item{GraphRelativeDirectory}{HTMLplotUsingFunction:arg3}
+	\item{GraphSaveAs}{HTMLplotUsingFunction:arg6}
+	\item{haystack}{nstrstr:arg1:and:strstr:arg1}
+	\item{Height}{HTMLplotUsingFunction:arg11}
+	\item{img}{Resize:arg1:and:SetupPlotMenus:arg4:and:CopyGraph:arg1:and:SetupPlotKeyBindings:arg2}
+	\item{includeBoth}{GetWhichProbes:arg1}
+	\item{index}{deleteItemFromList:arg3:an index}
+	\item{initialfile}{SetupPlotMenus:arg2:and:SaveGraphAsJpeg:arg1:and:SaveGraphAsPDF:arg1:and:SaveGraphAsPNG:arg1:and:SaveGraphAsPostscript:arg1}
+	\item{itemName}{deleteItemFromList:arg2:an item name}
+	\item{list1}{deleteItemFromList:arg1:a list}
+	\item{needle}{nstrstr:arg2:and:strstr:arg2}
+	\item{NumContrasts}{GetContrasts:arg1}
+	\item{numContrasts}{GetContrastNamesForHeatDiagram:arg1}
+	\item{numSets}{GetSetNames:arg1}
+	\item{p.value}{GetPValueCutoff:arg1:A p-value cutoff.}
+	\item{parameterName}{HeatDiagramDialog:arg1}
+	\item{pkgName}{getPackageVersion:arg1}
+	\item{pkg}{Require:arg1}
+	\item{plotFunction}{Resize:arg2:and:HTMLplotUsingFunction:arg9:and:SetupPlotMenus:arg3:and:SaveGraphAsJpeg:arg2:and:SaveGraphAsPDF:arg2:and:SaveGraphAsPNG:arg2:and:SaveGraphAsPostscript:arg2}
+	\item{plottitle}{GetPlotLabels:arg1:and:GetPlotTitle:arg1}
+	\item{res}{HTMLplotUsingFunction:arg13}
+	\item{set1}{GetSetNames:arg2}
+	\item{set2}{GetSetNames:arg3}
+	\item{set3}{GetSetNames:arg4}
+	\item{string}{fixSeps:arg1:A character string:and:GetRNATypesFrom.ContrastsFromDropDowns.String:arg1:and:SimplifyContrastsExpression:arg1}
+	\item{tclPkg}{TclRequire:arg1}
+	\item{tt}{SetupPlotMenus:arg1:and:SetupPlotKeyBindings:arg1}
+	\item{view}{ALGlimmaUsersGuide:arg1:A boolean determinig if the users'd guide will be viewed}
+	\item{Width}{HTMLplotUsingFunction:arg10}
+	\item{WindowTitle}{generalPlotFunction: arg2: a title}
+	\item{xlabel}{GetPlotLabels:arg2}
+	\item{ylabel}{GetPlotLabels:arg3}
+	\item{fit}{topTable2:arg1:and:toptable2:arg1}
+	\item{coef}{topTable2:arg2:and:toptable2:arg2}
+	\item{number}{topTable2:arg3:and:toptable2:arg3}
+	\item{genelist}{topTable2:arg4:and:toptable2:arg4}
+	\item{A}{toptable2:arg5}
+	\item{eb}{toptable2:arg6}
+	\item{adjust.method}{topTable2:arg5:and:toptable2:arg7}
+	\item{sort.by}{topTable2:arg6:and:toptable2:arg8}
+	\item{object}{vennDiagramaffylmGUI:arg1}
+	\item{include}{vennDiagramaffylmGUI:arg2}
+	\item{names}{vennDiagramaffylmGUI:arg3}
+	\item{cex}{vennDiagramaffylmGUI:arg4}
+	\item{mar}{vennDiagramaffylmGUI:arg5}
+	\item{contrastsMatrix}{ViewContrastsMatrixAsPairs:arg1}
+	\item{contrastsMatrixList}{ViewContrastsMatrixAsPairs:arg2:and:ViewContrastsMatrixInTable:arg1}
+	\item{n}{showChangeLog:arg1}
+	\item{PointSize}{HTMLplotUsingFunction:arg12}
 }
 
 \details{
