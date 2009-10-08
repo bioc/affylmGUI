@@ -20,6 +20,7 @@ citEntry(
   journal     = "Statistical Applications in Genetics and Molecular Biology",
   volume      = 3,
   pages       = "No.1 Article 3",
+  year	      = 2004,
   textVersion =
   paste(
     "1. Smyth, G. K. (2004). Linear models and empirical Bayes methods for assessing",
@@ -40,6 +41,7 @@ citEntry(
   address     = "New York",
   year        = 2005,
   pages       = "397-420",
+  chapter     = 23,
   textVersion =
   paste(
     "2. Smyth, G. K. (2005). Limma: linear models for microarray",
