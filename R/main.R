@@ -2359,7 +2359,7 @@ showTopTable <- function(...,export=FALSE){
 			Try(assign("adjustMethod",  adjustMethod,  affylmGUIenvironment))
 		} #end of onOK <- function()
 	) #end of Try
-	Try(onHelp     <- function() Try(help("topTable",htmlhelp=TRUE)))
+	Try(onHelp     <- function() Try(help("topTable",help_type="html")))
 	Try(frame4     <- tkframe(ttToptableDialog,borderwidth=2))
 	Try(onCancel   <- function() {Try(tkgrab.release(ttToptableDialog));Try(tkdestroy(ttToptableDialog));Try(tkfocus(.affylmGUIglobals$ttMain));Abort <<- 1})
 	Try(OK.but     <-tkbutton(frame4,text="   OK   ",command=onOK,    font=.affylmGUIglobals$affylmGUIfont2))
