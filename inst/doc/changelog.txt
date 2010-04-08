@@ -1,4 +1,8 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+8-Apr-2010 affylmGUI 1.21.0
+	fixed documentation bug relating to Filename argument in the openLimmaFile function
+	This version ready for release with Bioconductor 2.6 due on April 23 2010
+
 15-Oct-2008 affylmGUI 1.15.1
 	[bug]change cdf to cdfName in OpenCDFFile function
 	[bug]change arguments call to function ViewContrastsMatrixInTable from

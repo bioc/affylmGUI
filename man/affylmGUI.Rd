@@ -6,7 +6,6 @@
 \alias{affyHelp}
 \alias{affylmGUIhelp}
 \alias{affylmGUI}
-\alias{affylmGUI}
 \alias{affyPlotMAcontrast}
 \alias{affyPlotMA}
 \alias{ALGlimmaUsersGuide}
@@ -188,7 +187,7 @@ onExit()
 OpenALimmaFile(FileName)
 OpenCDFandTargetsfiles()
 OpenCDFFile()
-OpenLimmaFile(FileName)
+OpenLimmaFile()
 OpenTargetsFile()
 PlotOptions()
 QQTplot()
@@ -240,8 +239,8 @@ ViewRNATargets()
 	\item{contrastParameterizationIndex}{GetComponentsToExportInHTMLreport:arg1:and:contrastParameterizationIndex:arg1:and:GetContrast:arg1:and:HTMLplotUsingFunction:arg3:and:ViewContrastsMatrixInTable:arg2}
 	\item{export}{showTopTable:arg2}
 	\item{expr}{Try:arg1:and:TryReadImgProcFile:arg1}
-	\item{FileName}{OpenALimmaFile:arg1:and:OpenLimmaFile:arg1}
 	\item{File}{HTMLplotUsingFunction:arg2}
+	\item{FileName}{OpenALimmaFile:arg1}
 	\item{GraphAbsoluteDirectory}{HTMLplotUsingFunction:arg4}
 	\item{GraphBorder}{HTMLplotUsingFunction:arg7}
 	\item{GraphFileName}{HTMLplotUsingFunction:arg5}

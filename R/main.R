@@ -4196,14 +4196,16 @@ OpenALimmaFile <- function(FileName){
 	Try(OldNumParameters <- NumParameters)
 	#
 	Try(if(NumContrastParameterizations>0)
-		Try(for (contrastParameterizationIndex in (1:NumContrastParameterizations))
-		{
-			Try(.affylmGUIglobals$ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
-			Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
-			Try(tkdelete(.affylmGUIglobals$ContrastParameterizationTREE,ContrastParameterizationNameNode))
-			Try(assign("ContrastParameterizationList",deleteItemFromList(ContrastParameterizationList,ContrastParameterizationNameNode),affylmGUIenvironment))
-		}))
-
+		Try(
+			for (contrastParameterizationIndex in (1:NumContrastParameterizations)){
+				Try(.affylmGUIglobals$ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
+				Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
+				Try(tkdelete(.affylmGUIglobals$ContrastParameterizationTREE,ContrastParameterizationNameNode))
+				Try(assign("ContrastParameterizationList",deleteItemFromList(ContrastParameterizationList,ContrastParameterizationNameNode),affylmGUIenvironment))
+			} #end of for (contrastParameterizationIndex in (1:NumContrastParameterizations))
+		)
+	)
+	#
 	# Load the RData File whose name is "LimmaFileName"
 	Try(load(LimmaFileName,envir=affylmGUIenvironment))
 	#
@@ -4217,13 +4219,16 @@ OpenALimmaFile <- function(FileName){
 	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
 	Try(NumParameters <- get("NumParameters" , envir=affylmGUIenvironment))
 	Try(ContrastParameterizationList <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
-
+	#
 	Try(LimmaFileName <- get("LimmaFileName",envir=affylmGUIenvironment))
 	Try(if(LimmaFileName=="Untitled" && limmaDataSetNameText!="Untitled") LimmaFileName <- limmaDataSetNameText) # Local assignment only
-	Try(if(.Platform$OS.type=="windows")
-		Try(tkwm.title(.affylmGUIglobals$ttMain,paste("affylmGUI -",gsub("/","\\\\",LimmaFileName))))
-	else
-		Try(tkwm.title(.affylmGUIglobals$ttMain,paste("affylmGUI -",LimmaFileName))))
+	Try(
+		if(.Platform$OS.type=="windows"){
+			Try(tkwm.title(.affylmGUIglobals$ttMain,paste("affylmGUI -",gsub("/","\\\\",LimmaFileName))))
+		}else{
+			Try(tkwm.title(.affylmGUIglobals$ttMain,paste("affylmGUI -",LimmaFileName)))
+		}
+	)
 	Try(assign("limmaDataSetNameText",limmaDataSetNameText,affylmGUIenvironment))
 	Try(tclvalue(.affylmGUIglobals$limmaDataSetNameTcl) <- limmaDataSetNameText)
 	#
@@ -4244,11 +4249,11 @@ OpenALimmaFile <- function(FileName){
 			Try(
 				for (i in (1:NumContrastParameterizations)){
 					Try(tkdelete(.affylmGUIglobals$mainTree,paste("ContrastParameterizations.Status.",i,sep="")))
-				}
+				} #end of for
 			)#end of Try
 		}else{
 			Try(tkdelete(.affylmGUIglobals$mainTree,"ContrastParameterizations.Status.1"))
-		}
+		} #end of else/if(NumContrastParameterizations>0)
 	)
 	#
 	Try(RawAffyData.Available						<- get("RawAffyData.Available" , envir=affylmGUIenvironment))
@@ -4304,6 +4309,7 @@ OpenALimmaFile <- function(FileName){
 			##	if( (length(assayDataElement(NormalizedAffyData,"se.exprs")) > 1 && length(NormalizedAffyData.se.exprs)<1) ){
 			##		NormalizedAffyData.se.exprs <- assayDataElement(NormalizedAffyData,"se.exprs")
 			##	}
+			##}
 			###end of if(is(NormalizedAffyData, "ExpressionSet"))
 		}#end of if(length(NormalizedAffyData) != 0)
 	)#end of Try
