@@ -1,4 +1,7 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+17-Jul-2012 affylmGUI 1.31.1
+	Replaced calls to Biobase:::biocReposList() with calls to BiocInstaller biocinstallRepos()
+	
 8-Apr-2010 affylmGUI 1.21.0
 	fixed documentation bug relating to Filename argument in the openLimmaFile function
 	This version ready for release with Bioconductor 2.6 due on April 23 2010
