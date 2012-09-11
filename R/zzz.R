@@ -26,26 +26,28 @@
 	#	stop("Cannot find package limma")
 	#} #end of if (require(limma)==FALSE)
 	#
-	#if (interactive()){
-	#	if ((.Platform$OS.type=="windows")&&(.Platform$GUI == "Rgui")){
-	#		winMenuAdd("affylmGUI");winMenuAddItem("affylmGUI","affylmGUI","affylmGUI()")
-	#		cat(paste("\nTo begin, type affylmGUI() or use the pull-down menu.\n"))
-	#	}else{
-	#		cat(paste("\nTo begin, type affylmGUI()\n"))
-	#	} #end of if ((.Platform$OS.type=="windows")&&(.Platform$GUI == "Rgui"))
-	#	#
+	if (interactive()){
+		if ((.Platform$OS.type=="windows")&&(.Platform$GUI == "Rgui")){
+			winMenuAdd("affylmGUI");winMenuAddItem("affylmGUI","affylmGUI","affylmGUI()")
+			packageStartupMessage("\nTo begin, type affylmGUI() or use the pull-down menu.\n", appendLF = FALSE)
+			#cat(paste("\nTo begin, type affylmGUI() or use the pull-down menu.\n"))
+		}else{
+			packageStartupMessage("\nTo begin, type affylmGUI()\n", appendLF = FALSE)
+			#cat(paste("\nTo begin, type affylmGUI()\n"))
+		} #end of if ((.Platform$OS.type=="windows")&&(.Platform$GUI == "Rgui"))
+		#
 	#	# I only get .First.lib to ask the user whether they want to start the GUI with
 	#	# a message box for the Windows OS.  I encountered some problems under linux
 	#	# for the case where the Tcl/Tk extensions can't be found (so affylmGUI tries
 	#	# to exit), and speculated that there could be problems arising from running
 	#	# the whole affylmGUI() program before finishing .First.lib.
-	#	if (interactive() && .Platform$OS.type=="windows"){
-	#		BeginAffyLimmaGUI <- tclvalue(tkmessageBox(title="affylmGUI",message="Begin affylmGUI?",type="yesno",icon="question"))
-	#		if (BeginAffyLimmaGUI=="yes"){
-	#			affylmGUI()
-	#		}else{
-	#			bringToTop(-1)
-	#		}
-	#	} #end of if (interactive() && .Platform$OS.type=="windows")
-	#} #end of if (interactive())
+		if (interactive() && .Platform$OS.type=="windows"){
+			BeginAffyLimmaGUI <- tclvalue(tkmessageBox(title="affylmGUI",message="Begin affylmGUI?",type="yesno",icon="question"))
+			if (BeginAffyLimmaGUI=="yes"){
+				affylmGUI()
+			}else{
+				bringToTop(-1)
+			}
+		} #end of if (interactive() && .Platform$OS.type=="windows")
+	} #end of if (interactive())
 } #end of .onLoad <- function(libname, pkgname)

@@ -1,4 +1,7 @@
 
+import(limma)
+
+
 #  All functions exported other than those starting with "."
 exportPattern("^[^\\.]")
 
