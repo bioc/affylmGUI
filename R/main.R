@@ -40,6 +40,21 @@ if(require(affy)==FALSE){
 #
 #
 #
+if(require(tcltk)==FALSE){
+	if(interactive()){
+		tkmessageBox(
+			title="An error has occured!",
+			message=paste("Cannot find package tcltk"),
+			icon="error",
+			type="ok"
+		)
+	} #end of if(interactive())
+	stop("Cannot find package tcltk")
+} #end of if(require(tcltk)==FALSE)
+#
+#
+#
+#
 Try <- function(expr){
 	if(data.class(result<-try(expr,TRUE))=="try-error"){
 		tkmessageBox(
@@ -71,11 +86,11 @@ TryReadImgProcFile <- function(expr){
 #
 #
 Require <- function(pkg){
-	if(data.class(result<-try(find.package(pkg),TRUE))=="try-error"){
+	if(data.class(result<-try(.find.package(pkg),TRUE))=="try-error"){
 		tkmessageBox(title="An error has occured!",message=paste("Cannot find package",pkg),icon="error",type="ok")
 	}else{
 		result <- Try(require(pkg,character.only=TRUE))
-	} #end of else/if(data.class(result<-try(find.package(pkg),TRUE))=="try-error")
+	} #end of else/if(data.class(result<-try(.find.package(pkg),TRUE))=="try-error")
 	return (result)
 } #end of Require <- function(pkg)
 #
@@ -88,19 +103,73 @@ TclRequire <- function(tclPkg){
 		assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv)
 		Try(winTitle<-"Tcl/Tk Extension(s) Not Found")
 		Try(
-			message<-paste(
-				"Cannot find Tcl/Tk package \"", tclPkg,
+			MSWindows_message<-paste(
+				"MSWindows:Cannot find Tcl/Tk package \"", tclPkg,
 				"\".	affylmGUI cannot continue.\n\n",
-				"affylmGUI requires the Tcl/Tk extensions, BWidget and Tktable.\n",
-				"You must have Tcl/Tk installed on your computer, The\n",
-				"Tcl/Tk installation which comes with R includes BWidget and Tktable.	If you do have\n",
+				"affylmGUI requires the Tcl/Tk packages, BWidget and Tktable.\n",
+				"You must have the toolkit Tcl/Tk installed on your computer\n",
+				"and you need the two Tcl/Tk packages called BWidget and Tktable\n",
+				"installed as well.\n",
+				"R for Windows comes with the Tcl/Tk installation and it includes \n",
+				"BWidget and Tktable.\n",
+				"As this package cannot be found you will need to reinstall R.\n",
+				sep=""
+			) #end of message<-paste
+		) #end of Try
+		Try(
+			MacOSX_message<-paste(
+				"Mac OSX:Cannot find Tcl/Tk package \"", tclPkg,
+				"\".	affylmGUI cannot continue.\n\n",
+				"affylmGUI requires the Tcl/Tk packages, BWidget and Tktable.\n",
+				"You must have the toolkit Tcl/Tk installed on your computer.\n",
+				"To install the tcl/tk toolkit do the following:\n",
+				"Go to CRAN (you can use any mirror):\n",
+				"http://cran.r-project.org/bin/macosx/tools/\n",
+				"Download tcltk-8.5.5-x11.dmg, install it.\n",
+				"Note versions shown correct on Jan 18 2013\n",
+				"It installs in /usr/local\n",
+				"Requires Mac OS X 10.4 (Tiger) or higher for 32-bit R\n",
+				"and Mac OS X 10.5 (Leopard) or higher for 64-bit R.",
+				"\n",
+				"You need the two Tcl/Tk packages called BWidget and Tktable \n",
+				"installed as well.\n",
+				"Download BWidget from:\n",
+				"http://sourceforge.net/projects/tcllib/files/BWidget/1.9.5/ or later.\n",
+				"version into your Downloads folder.\n",
+				"Unpack the tar.gz file into /usr/local/lib using \n",
+				"cd /usr/local/lib\n",
+				"sudo tar zxvf ~your_username/Downloads/bwidget-1.9.5.tar.gz\n",
+				"BWidget is written in pure tcl and does not need compiling.\n",
+				"Tktable is written in the C and Tcl languages and the source \n",
+				"file needs compiling. The source file is available from:\n",
+				"http://sourceforge.net/projects/tktable/files/tktable/2.10/\n",
+				"You need the Apple Dev tools installed. Do:\n",
+				"tar zxf Tktable2.9.tar.gz\n",
+				"./configure\n",
+				"make\n",
+				"sudo make install\n",
+				"Now it will work in R.\n",
+				sep=""
+
+			) #end of MacOSX_message<-paste
+		) #end of Try
+		#
+		Try(
+			unix_message<-paste(
+				"Unix:Cannot find Tcl/Tk package \"", tclPkg,
+				"\".	affylmGUI cannot continue.\n\n",
+				"UNIX:affylmGUI requires the Tcl/Tk packages, BWidget and Tktable.\n",
+				"You must have the toolkit Tcl/Tk installed on your computer\n",
+				"and you need the two Tcl/Tk packages called BWidget and Tktable installed as well.\n",
+				"R for Windows comes with the Tcl/Tk installation and it includes BWidget and Tktable.\n",
+				"For Unix and Mac OS X you need the toolkit Tcl/Tk installed and the Tcl/Tk packages BWidget and Tktable.\n",
 				"Tcl/Tk installed elsewhere, including the extensions, make sure that R can find the path to the\n",
 				"Tcl library, e.g. C:\\Tcl\\lib (on Windows) or /usr/lib (on Linux/Unix)\n",
 				"or /sw/lib on Mac OSX.\n\n",
 				"Set the environment variable TCL_LIBRARY to the appropriate path. for eg.\n",
 				"C:\\Tcl\\lib\\tcl8.4\n",
 				"and set the MY_TCLTK environment variable to a non-empty string, e.g. \"Yes\".\n\n",
-				"If using Windows, read the R for windows FAQ at\n",
+				"UNIX:If using Windows, read the R for windows FAQ at\n",
 				"http://cran.r-project.org/bin/windows/base/rw-FAQ.html\n",
 				"If your Tcl/Tk extensions still can't be found, try\n",
 				"addTclPath(\"<path to Tcl library>\").\nThis could be put in $HOME/.Rprofile\n\n",
@@ -111,6 +180,10 @@ TclRequire <- function(tclPkg){
 			) #end of message<-paste
 		) #end of Try
 		#
+		Try(if(.Platform$GUI=="Rgui")message <- MSWindows_message)
+		Try(if(.Platform$GUI=="AQUA")message <- MacOSX_message)
+		Try(if(.Platform$GUI=="X11")message <- unix_message)
+		print (message)
 		# Don't make ttMain a parent of this, because we might want to use TclRequire before
 		# defining ttMain.
 		Try(ttTclTkExtension <- tktoplevel())
@@ -120,7 +193,7 @@ TclRequire <- function(tclPkg){
 			}else{
 				stop("Tcl/Tk extensions (Tktable and BWidget) not found!")
 			}
-			stop("Aborted from affylmGUI.")
+			###stop("Aborted from affylmGUI.")
 		} #end of onDestroy <- function()
 		Try(tkbind(ttTclTkExtension, "<Destroy>", onDestroy))
 		Try(tkwm.title(ttTclTkExtension,winTitle))
@@ -154,7 +227,7 @@ TclRequire <- function(tclPkg){
 					) #end of Try
 					try(if(tclvalue(mbVal)=="yes"){try(SaveLimmaFile(),silent=TRUE)},silent=TRUE)
 				} #end of if(limmaDataSetNameText!="Untitled")
-				stop("Tcl/Tk extensions (Tktable and BWidget) not found!")
+				###stop("Tcl/Tk extensions (Tktable and BWidget) not found!")
 			} #end of onOK <- function()
 		) #end of Try
 		Try(OK.but <- tkbutton(ttTclTkExtension,text="  OK  ",command=onOK))
@@ -167,6 +240,7 @@ TclRequire <- function(tclPkg){
 		Try(tkgrid.configure(OK.but,sticky="e"))
 		Try(tkgrid          (tklabel(ttTclTkExtension,text="    "                    )             ))
 		Try(tkfocus         (OK.but           ))
+		Sys.sleep(0.1)
 		Try(tkwait.window   (ttTclTkExtension ))
 	} #end of if((data.class(result<-try(tclRequire(tclPkg),TRUE))=="try-error") || (is.logical(result) && result==FALSE))
 } #end of TclRequire <- function(tclPkg)
@@ -316,30 +390,30 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 	Try(affylmGUIglobals$Myvscale <- 1)
 	Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
 
-	Try(if(exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows")
-		{
-			Try(if(Sys.info()["sysname"]=="Darwin")
-				{
-					Try(addTclPath("/sw/lib/tcl8.4"))
-					Try(addTclPath("/sw/lib"))
-					Try(addTclPath("./lib"))
-					Try(addTclPath("/sw/lib/tk8.4"))
-					Try(addTclPath(paste(Sys.getenv("HOME"),.Platform$file.sep,"TkExtensions",sep="")))
-				}
-			)#end of Try(if(Sys.info()["sysname"]=="Darwin"))
-			Try(addTclPath("/usr/local/lib"))
-			Try(addTclPath("/usr/local/Tcl/lib"))
-			Try(addTclPath("/usr/local/lib/Tcl"))
-			Try(addTclPath("/usr/lib"))
-			Try(addTclPath("/usr/lib/Tcl"))
-			Try(addTclPath("/usr/local/ActiveTcl/lib"))
-			Try(affylmGUIglobals <- get(".affylmGUIglobals",envir=.GlobalEnv))
-			Try(affylmGUIglobals$Myhscale <- 1)
-			Try(affylmGUIglobals$Myvscale <- 1)
-			Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
-		}#end of if(exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows")
-	)#end of Try(if(Sys.info...))
-
+	#Try(if(exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows")
+	#	{
+	#		Try(if(Sys.info()["sysname"]=="Darwin")
+	#			{
+	#				Try(addTclPath("/sw/lib/tcl8.4"))
+	#				Try(addTclPath("/sw/lib"))
+	#				Try(addTclPath("./lib"))
+	#				Try(addTclPath("/sw/lib/tk8.4"))
+	#				Try(addTclPath(paste(Sys.getenv("HOME"),.Platform$file.sep,"TkExtensions",sep="")))
+	#			}
+	#		)#end of Try(if(Sys.info()["sysname"]=="Darwin"))
+	#		Try(addTclPath("/usr/local/lib"))
+	#		Try(addTclPath("/usr/local/Tcl/lib"))
+	#		Try(addTclPath("/usr/local/lib/Tcl"))
+	#		Try(addTclPath("/usr/lib"))
+	#		Try(addTclPath("/usr/lib/Tcl"))
+	#		Try(addTclPath("/usr/local/ActiveTcl/lib"))
+	#		Try(affylmGUIglobals <- get(".affylmGUIglobals",envir=.GlobalEnv))
+	#		Try(affylmGUIglobals$Myhscale <- 1)
+	#		Try(affylmGUIglobals$Myvscale <- 1)
+	#		Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
+	#	}#end of if(exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows")
+	##end of Try(if(Sys.info...))
+	#
 	Try(if(Sys.info()["sysname"] == "Windows")
 		{
 		 Try(affylmGUIglobals <- get(".affylmGUIglobals",envir=.GlobalEnv))
@@ -348,22 +422,22 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 		 Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
 		}#end of if
 	)#end of Try
-
+	#
 	Try(if(Sys.info()["sysname"] == "Darwin" && !exists("X11", env=.GlobalEnv))
 		{
-			Try(addTclPath("/Library/Tcl"))
-			Try(addTclPath("/Network/Library/Tcl"))
-			Try(addTclPath("/System/Library/Tcl"))
-			Try(addTclPath("/Library/Frameworks/Tcl"))
-			Try(HOME <- Sys.getenv("HOME"))
-			Try(if(nchar(HOME)>0)
-				{
-					Try(addTclPath(paste(HOME,"/Library/Tcl",sep="")))
-					Try(addTclPath(paste(HOME,"/Network/Library/Tcl",sep="")))
-					Try(addTclPath(paste(HOME,"/System/Library/Tcl",sep="")))
-					Try(addTclPath(paste(HOME,"/Library/Frameworks/Tcl",sep="")))
-				}
-			)
+	#		Try(addTclPath("/Library/Tcl"))
+	#		Try(addTclPath("/Network/Library/Tcl"))
+	#		Try(addTclPath("/System/Library/Tcl"))
+	#		Try(addTclPath("/Library/Frameworks/Tcl"))
+	#		Try(HOME <- Sys.getenv("HOME"))
+	#		Try(if(nchar(HOME)>0)
+	#			{
+	#				Try(addTclPath(paste(HOME,"/Library/Tcl",sep="")))
+	#				Try(addTclPath(paste(HOME,"/Network/Library/Tcl",sep="")))
+	#				Try(addTclPath(paste(HOME,"/System/Library/Tcl",sep="")))
+	#				Try(addTclPath(paste(HOME,"/Library/Frameworks/Tcl",sep="")))
+	#			}
+	#		)
 			Try(affylmGUIglobals <- get(".affylmGUIglobals",envir=.GlobalEnv))
 			Try(affylmGUIglobals$Myhscale <- 1)
 			Try(affylmGUIglobals$Myvscale <- 1)
@@ -442,6 +516,7 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 	TclRequire("Tktable")
 	if("TclRequireFailed" %in% names(.affylmGUIglobals))
 		stop("Error occurred in TclRequire(\"Tktable\")")
+	
 	#
 	# Try(assign("opar",par(bg="white"),.GlobalEnv))
 	Try(oldOptions <- options(warn=-1)) # Otherwise R complains that I'm trying to set main in plots, i.e. set a plot title)
@@ -841,6 +916,7 @@ GetContrasts <- function(NumContrasts=0){
 		Try(TclRequire("Tktable"))
 		Try(ttContrastsTable <- tktoplevel(.affylmGUIglobals$ttMain))
 		Try(tkwm.deiconify(ttContrastsTable))
+		Sys.sleep(0.1)
 		Try(tkgrab.set(ttContrastsTable))
 		Try(tkfocus(ttContrastsTable))
 		Try(tkwm.title(ttContrastsTable,"Contrasts Matrix"))
@@ -1029,6 +1105,7 @@ GetContrasts <- function(NumContrasts=0){
 		#
 		Try(tkfocus(ttContrastsTable))
 		Try(tkbind(ttContrastsTable, "<Destroy>", function() {Try(tkgrab.release(ttContrastsTable));Try(tkfocus(.affylmGUIglobals$ttMain));}))
+		Sys.sleep(0.1)
 		Try(tkwait.window(ttContrastsTable))
 		return (ReturnVal)
 	} #end of GetContrastsTable <- function(contrastsFromDropDowns)
@@ -1044,6 +1121,7 @@ GetContrasts <- function(NumContrasts=0){
 	#
 	Try(ttContrasts<-tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttContrasts))
+	Sys.sleep(0.1)
 	Try(tkgrab.set(ttContrasts))
 	Try(tkfocus(ttContrasts))
 	Try(tkwm.title(ttContrasts,"Contrasts"))
@@ -1255,6 +1333,7 @@ GetContrasts <- function(NumContrasts=0){
 	Try(tkfocus(ttContrasts))
 	#
 	Try(tkbind(ttContrasts, "<Destroy>", function() {Try(tkgrab.release(ttContrasts));Try(tkfocus(.affylmGUIglobals$ttMain));}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttContrasts))
 	return (ReturnVal)
 }#end of GetContrasts
@@ -1333,6 +1412,7 @@ ViewContrastsMatrixInTable <- function(contrastsMatrixList,contrastParameterizat
 	Try(TclRequire("Tktable"))
 	Try(ttViewContrastsMatrixTable <- tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttViewContrastsMatrixTable))
+	Sys.sleep(0.1)
 	Try(tkgrab.set(ttViewContrastsMatrixTable))
 	Try(tkfocus(ttViewContrastsMatrixTable))
 	Try(tkwm.title(ttViewContrastsMatrixTable,paste("Contrasts matrix for contrasts parameterization ", ContrastParameterizationNamesVec[contrastParameterizationIndex])))
@@ -1493,6 +1573,7 @@ ViewContrastsMatrixInTable <- function(contrastsMatrixList,contrastParameterizat
 	#
 	Try(tkfocus(ttViewContrastsMatrixTable))
 	Try(tkbind(ttViewContrastsMatrixTable, "<Destroy>", function () {Try(tkgrab.release(ttViewContrastsMatrixTable));Try(tkfocus(.affylmGUIglobals$ttMain))}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttViewContrastsMatrixTable))
 }#end of ViewContrastsMatrixInTable <- function(contrastsMatrixList,contrastParameterizationIndex=NULL)
 #
@@ -1513,6 +1594,7 @@ ViewContrastsMatrixAsPairs <- function(contrastsMatrix,contrastsMatrixList,contr
 	#
 	ttViewContrastsMatrixAsPairs<-tktoplevel(.affylmGUIglobals$ttMain)
 	tkwm.deiconify(ttViewContrastsMatrixAsPairs)
+	Sys.sleep(0.1)
 	tkgrab.set(ttViewContrastsMatrixAsPairs)
 	tkfocus(ttViewContrastsMatrixAsPairs)
 	Try(tkwm.title(ttViewContrastsMatrixAsPairs,paste("Contrasts in contrasts parameterization ", ContrastParameterizationNamesVec[contrastParameterizationIndex],".",sep="")))
@@ -1608,6 +1690,7 @@ ViewContrastsMatrixAsPairs <- function(contrastsMatrix,contrastsMatrixList,contr
 	Try(tkfocus(ttViewContrastsMatrixAsPairs))
 	#
 	Try(tkbind(ttViewContrastsMatrixAsPairs, "<Destroy>", function() {Try(tkgrab.release(ttViewContrastsMatrixAsPairs));Try(tkfocus(.affylmGUIglobals$ttMain))}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttViewContrastsMatrixAsPairs))
 } #end of ViewContrastsMatrixAsPairs <- function(contrastsMatrix,contrastsMatrixList,contrastParameterizationIndex=NULL)
 #
@@ -1663,6 +1746,7 @@ ViewRNATargets <- function(){
 	Try(TclRequire("Tktable"))
 	Try(ttViewRNATargets <- tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttViewRNATargets))
+	Sys.sleep(0.1)
 	##Try(tkgrab.set(ttViewRNATargets))
 	Try(tkfocus(ttViewRNATargets))
 	Try(tkwm.title(ttViewRNATargets,"RNA Targets"))
@@ -1790,7 +1874,7 @@ ViewRNATargets <- function(){
 } # end of ViewRNATargets <- function()
 #
 #
-########################################################################################################
+###
 #
 # Some C-style string searching functions, because I'm not very good at using regular expressions ;-)
 #
@@ -1836,7 +1920,7 @@ ComputeContrasts <- function(){
 	Try(ContrastParameterizationNamesVec      <- get("ContrastParameterizationNamesVec",    envir=affylmGUIenvironment))
 	Try(ContrastParameterizationList          <- get("ContrastParameterizationList",        envir=affylmGUIenvironment))
 	Try(ContrastParameterizationTREEIndexVec  <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
-	Try(ArraysLoaded	                        <- get("ArraysLoaded",                        envir=affylmGUIenvironment))
+	Try(ArraysLoaded	                  <- get("ArraysLoaded",                        envir=affylmGUIenvironment))
 	Try(LinearModelFit.Available              <- get("LinearModelFit.Available",            envir=affylmGUIenvironment))
 	#
 	if(ArraysLoaded==FALSE){
@@ -2127,7 +2211,9 @@ ComputeLinearModelFit <- function(){
 GetContrast <- function(contrastParameterizationIndex){
 	Try(ttGetContrast<-tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttGetContrast))
+	Sys.sleep(0.1)
 	Try(tkgrab.set(ttGetContrast)	)
+	Sys.sleep(0.1)
 	Try(tkfocus(ttGetContrast))
 	Try(tkwm.title(ttGetContrast,"Choose a contrast"))
 	Try(scr <- tkscrollbar(ttGetContrast, repeatinterval=5,command=function(...)tkyview(tl,...)))
@@ -2141,6 +2227,7 @@ GetContrast <- function(contrastParameterizationIndex){
 	Try(tkgrid.configure(lbl2,sticky="w"))
 	Try(tkgrid(tklabel(ttGetContrast,text="         "),row=2,column=1))
 	Try(tkgrid(tl,row=2,column=2,columnspan=2,rowspan=4,sticky="ew"))
+	Sys.sleep(0.1)
 	Try(tkgrid(scr,row=2,column=4,columnspan=1,rowspan=4,sticky="wns"))
 	Try(tkgrid(xscr,row=6,column=2,columnspan=2,sticky="wne"))
 	#
@@ -2150,8 +2237,6 @@ GetContrast <- function(contrastParameterizationIndex){
 	#
 	Try(NumContrasts <- length(ContrastNamesVec))
 	#
-	coefIndexList <- list()
-	#
 	if(NumContrasts>0){
 		Try(
 			for (i in (1:NumContrasts)){
@@ -2160,9 +2245,11 @@ GetContrast <- function(contrastParameterizationIndex){
 		)
 	} #end of if(NumContrasts>0)
 	#
+	Sys.sleep(0.1)
 	Try(tkselection.set(tl,0))
+	ReturnVal <- 0
 	#
-	Try(ReturnVal <- list(coefIndex=0)) # Other attributes can be added later if necessary.
+	Try(ReturnVal <- list(contrastIndex=0)) # Other attributes can be added later if necessary.
 	#
 	onOK <- function(){
 		Try(contrastNum <- as.numeric(tclvalue(tkcurselection(tl)))+1)
@@ -2183,7 +2270,11 @@ GetContrast <- function(contrastParameterizationIndex){
 	Try(Cancel.but <-tkbutton(ttGetContrast,text=" Cancel ",command=onCancel,font=.affylmGUIglobals$affylmGUIfont2))
 	#
 	Try(tkgrid(tklabel(ttGetContrast,text="    ")))
-	Try(tkgrid(tklabel(ttGetContrast,text="    "),tklabel(ttGetContrast,text="    "),OK.but,Cancel.but))
+	Try(tkgrid(tklabel(ttGetContrast,text="    "),
+	           tklabel(ttGetContrast,text="    "),
+	           OK.but,
+	           Cancel.but)
+	          )
 	Try(tkgrid.configure(OK.but,sticky="e"))
 	Try(tkgrid.configure(Cancel.but,sticky="w"))
 	#
@@ -2192,7 +2283,9 @@ GetContrast <- function(contrastParameterizationIndex){
 	Try(tkbind(Cancel.but, "<Return>",onCancel))
 	Try(tkgrid(tklabel(ttGetContrast,text="    ")))
 	Try(tkfocus(ttGetContrast))
-	Try(tkbind(ttGetContrast, "<Destroy>", function() {Try(tkgrab.release(ttGetContrast));Try(tkfocus(.affylmGUIglobals$ttMain));}))
+	Sys.sleep(0.1)
+	Try(tkbind(ttGetContrast,"<Destroy>", function() {Try(tkgrab.release(ttGetContrast));Try(tkfocus(.affylmGUIglobals$ttMain))}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttGetContrast))
 	#
 	return (ReturnVal)
@@ -2205,10 +2298,10 @@ ExportTopTable <- function() showTopTable(export=TRUE)
 #
 #
 showTopTable <- function(...,export=FALSE){
-	Try(NumContrastParameterizations         <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
-	Try(ContrastParameterizationList         <- get("ContrastParameterizationList",envir=affylmGUIenvironment))
+	Try(NumContrastParameterizations         <- get("NumContrastParameterizations",        envir=affylmGUIenvironment))
+	Try(ContrastParameterizationList         <- get("ContrastParameterizationList",        envir=affylmGUIenvironment))
 	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
-	Try(ArraysLoaded                         <- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(ArraysLoaded                         <- get("ArraysLoaded",                        envir=affylmGUIenvironment))
 	Try(
 		if(ArraysLoaded==FALSE){
 			Try(tkmessageBox(title="Top Table",message="No arrays have been loaded.	Please try New or Open from the File menu.",type="ok",icon="error"))
@@ -2218,20 +2311,23 @@ showTopTable <- function(...,export=FALSE){
 	) #end of Try
 	Try(
 		if(NumContrastParameterizations==0){
-		Try(tkmessageBox(title="Top Table",message="There are no contrast parameterizations available.	Select \"Compute Contrasts\" from the \"Linear Model\" menu.",type="ok",icon="error"))
-		Try(tkfocus(.affylmGUIglobals$ttMain))
-		return()
+			Try(tkmessageBox(title="Top Table",message="There are no contrast parameterizations available.	Select \"Compute Contrasts\" from the \"Linear Model\" menu.",type="ok",icon="error"))
+			Try(tkfocus(.affylmGUIglobals$ttMain))
+			return()
 		} #end of if(NumContrastParameterizations==0)
 	) #end of Try
+	
 	#Select which contrast parameterization the user wants
 	Try(contrastParameterizationIndex <- ChooseContrastParameterization())
-	#If cancel pressed, then exit from this routine
+	#If cancel (or close) pressed, then exit from this routine
 	Try(if(contrastParameterizationIndex==0) return()) # Cancel
-	#Store locally (as a dot variable), the index of chosen parametrization
+	#Set the index of chosen parametrizationTREEIndex
 	Try(.affylmGUIglobals$ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
-	#
 	Try(ContrastNamesVec	<- colnames(as.matrix(ContrastParameterizationList[[contrastParameterizationIndex]]$contrastsMatrixInList$contrasts)))
+	
+	#Select which contrast the user wants in the selected parameterization.
 	Try(GetContrastReturnVal <- GetContrast(contrastParameterizationIndex))
+	#If cancel (or close) pressed, then exit from this routine
 	Try(if(GetContrastReturnVal$contrastIndex==0) return()) # Cancel
 	Try(contrast <- GetContrastReturnVal$contrastIndex)
 	Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
@@ -2261,6 +2357,7 @@ showTopTable <- function(...,export=FALSE){
 	)
 	Try(ttToptableDialog<-tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttToptableDialog))
+	Sys.sleep(0.1)
 	Try(tkgrab.set(ttToptableDialog))
 	Try(tkfocus(ttToptableDialog))
 	Try(tkwm.title(ttToptableDialog,"Toptable Options"))
@@ -2391,6 +2488,7 @@ showTopTable <- function(...,export=FALSE){
 	#
 	Try(tkfocus(ttToptableDialog))
 	Try(tkbind(ttToptableDialog, "<Destroy>", function() {Try(tkgrab.release(ttToptableDialog));Try(tkfocus(.affylmGUIglobals$ttMain));}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttToptableDialog))
 	#
 	Try(
@@ -2721,6 +2819,7 @@ GetSlideNum <- function(all=FALSE){
 	#
 	ttGetSlideNum<-tktoplevel(.affylmGUIglobals$ttMain)
 	tkwm.deiconify(ttGetSlideNum)
+	Sys.sleep(0.1)
 	tkgrab.set(ttGetSlideNum)
 	tkfocus(ttGetSlideNum)
 	tkwm.title(ttGetSlideNum,"Please Specify Slide")
@@ -2826,6 +2925,7 @@ GetSlideNum <- function(all=FALSE){
 	Try(tkbind(Cancel.but, "<Return>",onCancel))
 	Try(tkfocus(tl))
 	Try(tkbind(ttGetSlideNum, "<Destroy>", function() {Try(tkgrab.release(ttGetSlideNum));Try(tkfocus(.affylmGUIglobals$ttMain));}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttGetSlideNum))
 	#
 	return (ReturnVal)
@@ -2836,6 +2936,7 @@ GetSlideNum <- function(all=FALSE){
 GetDEcutoff <- function(){
 	ttGetDEcutoff<-tktoplevel(.affylmGUIglobals$ttMain)
 	tkwm.deiconify(ttGetDEcutoff)
+	Sys.sleep(0.1)
 	tkgrab.set(ttGetDEcutoff)
 	Try(tkwm.title(ttGetDEcutoff,"Cutoff for Differentially Expressed Genes"))
 	Try(cutoffStatisticTcl <- tclVar("abs(t)"))
@@ -2888,6 +2989,7 @@ GetDEcutoff <- function(){
 	#
 	Try(tkfocus(ttGetDEcutoff))
 	Try(tkbind(ttGetDEcutoff, "<Destroy>", function(){tkgrab.release(ttGetDEcutoff);tkfocus(.affylmGUIglobals$ttMain);} ))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttGetDEcutoff))
 	#
 	return (ReturnVal)
@@ -2898,6 +3000,7 @@ GetDEcutoff <- function(){
 ChooseEbayesStatistic <- function(){
 	ttChooseEbayesStatistic<-tktoplevel(.affylmGUIglobals$ttMain)
 	tkwm.deiconify(ttChooseEbayesStatistic)
+	Sys.sleep(0.1)
 	tkgrab.set(ttChooseEbayesStatistic)
 	tkfocus(ttChooseEbayesStatistic)
 	tkwm.title(ttChooseEbayesStatistic,"Empirical Bayes Statistic")
@@ -2959,6 +3062,7 @@ ChooseEbayesStatistic <- function(){
 	) #end of tkgrid
 	Try(tkfocus(ttChooseEbayesStatistic))
 	Try(tkbind(ttChooseEbayesStatistic, "<Destroy>", function() {Try(tkgrab.release(ttChooseEbayesStatistic));Try(tkfocus(.affylmGUIglobals$ttMain));}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttChooseEbayesStatistic))
 	#
 	return (ReturnVal)
@@ -2969,6 +3073,7 @@ ChooseEbayesStatistic <- function(){
 GetWtAreaParams <- function(){
 	ttWeightingwtArea <- tktoplevel(.affylmGUIglobals$ttMain)
 	tkwm.deiconify(ttWeightingwtArea)
+	Sys.sleep(0.1)
 	tkgrab.set(ttWeightingwtArea)
 	tkfocus(ttWeightingwtArea)
 	tkwm.title(ttWeightingwtArea,"Good Spot Size")
@@ -3019,6 +3124,7 @@ GetWtAreaParams <- function(){
 	#
 	Try(tkfocus(ttWeightingwtArea))
 	Try(tkbind(ttWeightingwtArea, "<Destroy>", function() {Try(tkgrab.release(ttWeightingwtArea));Try(tkfocus(.affylmGUIglobals$ttMain));}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttWeightingwtArea))
 	#
 	return (ReturnVal)
@@ -3029,6 +3135,7 @@ GetWtAreaParams <- function(){
 GetWtFlagParams <- function(){
 	ttWeightingwtFlag <- tktoplevel(.affylmGUIglobals$ttMain)
 	tkwm.deiconify(ttWeightingwtFlag)
+	Sys.sleep(0.1)
 	tkgrab.set(ttWeightingwtFlag)
 	tkfocus(ttWeightingwtFlag)
 	tkwm.title(ttWeightingwtFlag,"Weighting for Spots with Flag Values Less Than Zero")
@@ -3073,6 +3180,7 @@ GetWtFlagParams <- function(){
 	#
 	Try(tkfocus(ttWeightingwtFlag))
 	Try(tkbind(ttWeightingwtFlag, "<Destroy>", function() {Try(tkgrab.release(ttWeightingwtFlag));Try(tkfocus(.affylmGUIglobals$ttMain));}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttWeightingwtFlag))
 	#
 	Try(FlagSpotWeighting <- FlagSpotWeightingVal)
@@ -3366,9 +3474,10 @@ evalRcode <- function(){
 #
 #
 OpenCDFandTargetsfiles <- function(){
-	Require("affy")
+	###Require("affy")
 	Try(ttCDFandTargets<-tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttCDFandTargets))
+	Sys.sleep(0.1)
 	Try(tkgrab.set(ttCDFandTargets))
 	Try(tkfocus(ttCDFandTargets))
 	Try(tkwm.title(ttCDFandTargets,"Targets file"))
@@ -3471,6 +3580,7 @@ OpenCDFandTargetsfiles <- function(){
 	#
 	Try(tkfocus(ttCDFandTargets))
 	Try(tkbind(ttCDFandTargets, "<Destroy>", function() {Try(tkgrab.release(ttCDFandTargets));Try(tkfocus(.affylmGUIglobals$ttMain));}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttCDFandTargets))
 	#
 	if(Abort==1){
@@ -3527,6 +3637,7 @@ GetlimmaDataSetName <- function(){
 	Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
 	Try(ttGetlimmaDataSetName<-tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttGetlimmaDataSetName))
+	Sys.sleep(0.1)
 	Try(tkgrab.set(ttGetlimmaDataSetName))
 	Try(tkfocus(ttGetlimmaDataSetName))
 	Try(tkwm.title(ttGetlimmaDataSetName,"Data Set Name"))
@@ -3561,6 +3672,7 @@ GetlimmaDataSetName <- function(){
 	Try(tkfocus(entry.limmaDataSetName))
 	Try(tkbind(entry.limmaDataSetName, "<Return>",onOK))
 	Try(tkbind(ttGetlimmaDataSetName, "<Destroy>", function(){Try(tkgrab.release(ttGetlimmaDataSetName));Try(tkfocus(.affylmGUIglobals$ttMain));return(0)}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttGetlimmaDataSetName))
 	Try(tkfocus(.affylmGUIglobals$ttMain))
 	return (1)
@@ -3571,6 +3683,7 @@ GetlimmaDataSetName <- function(){
 GetParameterizationName <- function(){
 	Try(ttGetParameterizationName<-tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttGetParameterizationName))
+	Sys.sleep(0.1)
 	Try(tkgrab.set(ttGetParameterizationName))
 	Try(tkwm.title(ttGetParameterizationName,"Parameterization Name"))
 	Try(tkgrid(tklabel(ttGetParameterizationName,text="    ")))
@@ -3607,6 +3720,7 @@ GetParameterizationName <- function(){
 	Try(tkfocus(entry.ParameterizationName))
 	Try(tkbind(entry.ParameterizationName, "<Return>",onOK))
 	Try(tkbind(ttGetParameterizationName, "<Destroy>", function(){Try(tkgrab.release(ttGetParameterizationName));Try(tkfocus(.affylmGUIglobals$ttMain));Try(return("GetParameterizationName.CANCEL"))}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttGetParameterizationName))
 	Try(tkfocus(.affylmGUIglobals$ttMain))
 	#
@@ -3618,6 +3732,7 @@ GetParameterizationName <- function(){
 GetContrastParameterizationName <- function(){
 	Try(ttGetContrastParameterizationName<-tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttGetContrastParameterizationName))
+	Sys.sleep(0.1)
 	Try(tkgrab.set(ttGetContrastParameterizationName))
 	Try(tkwm.title(ttGetContrastParameterizationName,"Contrasts Name"))
 	Try(tkgrid(tklabel(ttGetContrastParameterizationName,text="    ")))
@@ -3656,6 +3771,7 @@ GetContrastParameterizationName <- function(){
 	Try(tkfocus(entry.ContrastParameterizationName))
 	Try(tkbind(entry.ContrastParameterizationName, "<Return>",onOK))
 	Try(tkbind(ttGetContrastParameterizationName, "<Destroy>", function(){Try(tkgrab.release(ttGetContrastParameterizationName));Try(tkfocus(.affylmGUIglobals$ttMain));Try(return("GetContrastParameterizationName.CANCEL"))}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttGetContrastParameterizationName))
 	Try(tkfocus(.affylmGUIglobals$ttMain))
 	#
@@ -3758,6 +3874,7 @@ chooseDir <- function(){
 	Try(ttChooseDir <- tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.title(ttChooseDir,"Choose working directory"))
 	Try(tkwm.deiconify(ttChooseDir))
+	Sys.sleep(0.1)
 	Try(tkgrab.set(ttChooseDir))
 	Try(tkgrid(tklabel(ttChooseDir,text="    ")))
 	Try(label1 <- tklabel(ttChooseDir,text="Choose working directory (containing input files):",font=.affylmGUIglobals$affylmGUIfont2))
@@ -3821,6 +3938,7 @@ chooseDir <- function(){
 	Try(tkfocus(entry1))
 	Try(tkbind(ttChooseDir,"<Destroy>",function()tkgrab.release(ttChooseDir)))
 	Try(tkbind(entry1,"<Return>",onOK))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttChooseDir))
 	#
 	return(ReturnVal)
@@ -3884,7 +4002,9 @@ ChooseContrastParameterization <- function(){
 	#
 	ttChooseContrastParameterization<-tktoplevel(.affylmGUIglobals$ttMain)
 	tkwm.deiconify(ttChooseContrastParameterization)
+	Sys.sleep(0.1)
 	tkgrab.set(ttChooseContrastParameterization)
+	Sys.sleep(0.1)
 	tkfocus(ttChooseContrastParameterization)
 	tkwm.title(ttChooseContrastParameterization,"Choose a Contrasts Parameterization")
 	scr <- tkscrollbar(
@@ -3919,13 +4039,16 @@ ChooseContrastParameterization <- function(){
 			tkinsert(tl,"end",ContrastParameterizationNamesVec[i])
 		}
 	} #end of if(NumContrastParameterizations>0)
+	Sys.sleep(0.1)
 	tkselection.set(tl,0)
 	ReturnVal <- 0
 	#
 	#
 	onOK <- function(){
 		Try(contrastParameterizationIndex <- as.numeric(tclvalue(tkcurselection(tl)))+1)
-		Try(tkgrab.release(ttChooseContrastParameterization));Try(tkdestroy(ttChooseContrastParameterization));Try(tkfocus(.affylmGUIglobals$ttMain))
+		Try(tkgrab.release(ttChooseContrastParameterization))
+		Try(tkdestroy(ttChooseContrastParameterization))
+		Try(tkfocus(.affylmGUIglobals$ttMain))
 		ReturnVal <<- contrastParameterizationIndex
 	} #end of onOK <- function()
 	#
@@ -3938,17 +4061,22 @@ ChooseContrastParameterization <- function(){
 	} #end of onCancel <- function()
 	#
 	#
-	OK.but <-tkbutton(ttChooseContrastParameterization,text="   OK   ",command=onOK,font=.affylmGUIglobals$affylmGUIfont2)
+	OK.but     <-tkbutton(ttChooseContrastParameterization,text="   OK   ",command=onOK,    font=.affylmGUIglobals$affylmGUIfont2)
 	Cancel.but <-tkbutton(ttChooseContrastParameterization,text=" Cancel ",command=onCancel,font=.affylmGUIglobals$affylmGUIfont2)
 	#
 	tkgrid(tklabel(ttChooseContrastParameterization,text="    "))
-	tkgrid(tklabel(ttChooseContrastParameterization,text="    "),tklabel(ttChooseContrastParameterization,text="    "),OK.but,Cancel.but)
-	tkgrid.configure(OK.but,		sticky="e")
+	tkgrid(tklabel(ttChooseContrastParameterization,text="    "),
+	       tklabel(ttChooseContrastParameterization,text="    "),
+	       OK.but,
+	       Cancel.but
+	      )
+	tkgrid.configure(OK.but,    sticky="e")
 	tkgrid.configure(Cancel.but,sticky="w")
 	tkgrid(tklabel(ttChooseContrastParameterization,text="    "))
 	#
 	Try(tkfocus(ttChooseContrastParameterization))
 	Try(tkbind(ttChooseContrastParameterization, "<Destroy>", function() {Try(tkgrab.release(ttChooseContrastParameterization));Try(tkfocus(.affylmGUIglobals$ttMain))}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttChooseContrastParameterization))
 	#
 	return (ReturnVal)
@@ -4589,6 +4717,7 @@ ChooseCDF <- function()
 {
 	ttChooseCDF<-tktoplevel(.affylmGUIglobals$ttMain)
 	tkwm.deiconify(ttChooseCDF)
+	Sys.sleep(0.1)
 	tkgrab.set(ttChooseCDF)
 	tkfocus(ttChooseCDF)
 	tkwm.title(ttChooseCDF,"Choose a CDF")
@@ -4633,6 +4762,7 @@ ChooseCDF <- function()
 	tkgrid(tklabel(ttChooseCDF,text="    "))
 	Try(tkfocus(ttChooseCDF))
 	Try(tkbind(ttChooseCDF, "<Destroy>", function() {Try(tkgrab.release(ttChooseCDF));Try(tkfocus(.affylmGUIglobals$ttMain))}))
+	Sys.sleep(0.1)
 	Try(tkwait.window(ttChooseCDF))
 
 	return (ReturnVal)

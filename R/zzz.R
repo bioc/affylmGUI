@@ -1,5 +1,3 @@
-###.First.lib <- function(libname, pkgname)<--opening brace here
-###.onLoad <- function(libname, pkgname)<--opening brace here
 .onAttach <- function(libname, pkgname){
 	if (length(grep("^limmaGUI$", .packages()))>0){
 	 stop("Please run limmaGUI and affylmGUI in separate R sessions.")
@@ -7,24 +5,27 @@
 	if (length(grep("^limmaGUI$", .packages()))>0){
 	 stop("Please run limmaGUI and affylmGUI in separate R sessions.")
 	}
-	#capable <- capabilities()
-	#if(!capable["tcltk"]){
-	#	stop(paste("The tcl/tk library is not available in your system.",
-	#							"Download/install the tcltk library from",
-	#							"www.tcl.tk/software/tcltk/"))
-	#}else{ ###KS-why is this like this?
-	#	if(interactive()){
-	#		out <- paste("Package tcltk not able to be loaded!")
-	#		require("tcltk", character.only = TRUE) || stop(out)
-	#	} #end of if(interactive())
-	#} #end of else/if(!capable["tcltk"])
+	#Check whether R has been built with tcltk capabilities.
+	capable <- capabilities()
+	#the output of this command is like this:
+	#    jpeg      png     tiff    tcltk      X11     aqua http/ftp  sockets   libxml     fifo   cledit    iconv      NLS  profmem    cairo 
+	#    TRUE     TRUE     TRUE     TRUE    FALSE    FALSE     TRUE     TRUE     TRUE    FALSE     TRUE     TRUE     TRUE     TRUE     TRUE 
 	#
-	#if(require(limma)==FALSE){
-	#	if(interactive()){
-	#		tkmessageBox(title="An error has occured!",message=paste("Cannot find package limma"),icon="error",type="ok")
-	#	}
-	#	stop("Cannot find package limma")
-	#} #end of if (require(limma)==FALSE)
+	if(!capable["tcltk"]){
+		stop(paste("R needs to be built with tcltk capabilities.",
+			   "Install a version of R which has this capability.",
+			   "MS Windows binary versions of R include tcltk capabilities.",
+			   "MAC OS X binary versions of R include tcltk capabilities.",
+			   "When source code versions of R are compiled the default value ",
+			   "for the --with-tcltk switch is yes. Do not set it to no.", 
+			   "Check your version of R with the \"capabilities()\" command."
+			  )
+		    )
+	}else{ 
+		#R has tcltk capabilities
+	} #end of else/if(!capable["tcltk"])
+	#
+	#
 	#
 	if (interactive()){
 		if ((.Platform$OS.type=="windows")&&(.Platform$GUI == "Rgui")){
@@ -36,11 +37,6 @@
 			#cat(paste("\nTo begin, type affylmGUI()\n"))
 		} #end of if ((.Platform$OS.type=="windows")&&(.Platform$GUI == "Rgui"))
 		#
-	#	# I only get .First.lib to ask the user whether they want to start the GUI with
-	#	# a message box for the Windows OS.  I encountered some problems under linux
-	#	# for the case where the Tcl/Tk extensions can't be found (so affylmGUI tries
-	#	# to exit), and speculated that there could be problems arising from running
-	#	# the whole affylmGUI() program before finishing .First.lib.
 		if (interactive() && .Platform$OS.type=="windows"){
 			BeginAffyLimmaGUI <- tclvalue(tkmessageBox(title="affylmGUI",message="Begin affylmGUI?",type="yesno",icon="question"))
 			if (BeginAffyLimmaGUI=="yes"){
@@ -50,4 +46,4 @@
 			}
 		} #end of if (interactive() && .Platform$OS.type=="windows")
 	} #end of if (interactive())
-} #end of .onLoad <- function(libname, pkgname)
+} #end of.onAttach <- function(libname, pkgname)

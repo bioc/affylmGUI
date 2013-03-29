@@ -6,7 +6,7 @@ NormalizeNow <- function(){
 		return()
 		}
 	)
-	Require("affy")
+	###Require("affy")
 	Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
 	#
 	Try(NormalizationMethod <- GetNormalizationMethod())
@@ -79,6 +79,7 @@ NormalizeNow <- function(){
 GetNormalizationMethod <- function(){
 	Try(ttGetNormalizationMethod <- tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttGetNormalizationMethod))
+	Sys.sleep(0.1)
 	Try(tkgrab.set(ttGetNormalizationMethod))
 	Try(tkfocus(ttGetNormalizationMethod))
 	Try(tkwm.title(ttGetNormalizationMethod,"Normalization Method"))

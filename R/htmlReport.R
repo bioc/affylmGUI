@@ -1,4 +1,4 @@
-###########################################################################################################################
+#
 # R2HTML Plot Function (Modified to accept a plotFunction argument, rather than using the main R Graphics Device)
 #
 "HTMLplotUsingFunction" <- function (
@@ -101,9 +101,9 @@
 	###try(assign(".HTML.graph", TRUE, env = get("HTMLenv", envir = .GlobalEnv)))
 	invisible(return())
 } #end of "HTMLplotUsingFunction" <- function
-
-###########################################################################################################################
-
+#
+#
+#
 GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL){
 	#get numberOfGenes,adjustMethod and sortBy from environment if they are available, or set them to default values
 	Try(
@@ -136,6 +136,7 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 	#
 	Try(ttHTMLreportDialog<-tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttHTMLreportDialog))
+	Sys.sleep(0.1)
 	Try(tkgrab.set(ttHTMLreportDialog))
 	Try(tkfocus(ttHTMLreportDialog))
 	Try(tkwm.title(ttHTMLreportDialog,"HTML Report"))
@@ -282,7 +283,7 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 	return (ReturnVal)
 }#end of GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL)
 #
-###########################################################################################################################
+#
 #
 ExportHTMLreport <- function(){
 	# We will use the R2HTML package, but with my own HTMLplot function.
@@ -448,7 +449,7 @@ ExportHTMLreport <- function(){
 	#$ContrastParameterizationName.1$ContrastParameterizationNameText
 	#[1] "ContSet1"
 	#
-	#################3
+	#
 	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment)) #for eg: [1] 1
 	#
 	if(ArraysLoaded==FALSE){
@@ -586,12 +587,12 @@ ExportHTMLreport <- function(){
 	# </script>
 	# </head>
 	# <body onload="translate()" bgcolor= #FFFFFF background="" >
-	###########################
+	#
 	#
 	Try(HTML.title(paste(limmaDataSetNameText,"- Statistical Microarray Analysis using affylmGUI"),HR=1)) #for eg: NULL
 	# for eg: written to html file is:
 	# <h1 > alg_Est_gcrma_3C - Statistical Microarray Analysis using affylmGUI</h1>
-	###########################
+	#
 	Try(ExportTargets                    <- ComponentsToExport$Targets)
 	Try(ExportNormalizationMethod        <- ComponentsToExport$NormalizationMethod)
 	Try(ExportRawIntensityBoxPlot        <- ComponentsToExport$RawIntensityBoxPlot)
@@ -653,7 +654,7 @@ ExportHTMLreport <- function(){
 		#6  Abs48.2  low48-2.cel  EstAbsent48
 		#7 Pres48.1 high48-1.cel EstPresent48
 		#8 Pres48.2 high48-2.cel EstPresent48
-		#######################
+		#
 		Try(displayVector <- rep("s",ncol(Targets)+1)) #for eg: [1] "s" "s" "s" "s"
 		Try(
 			for (i in (0:ncol(Targets))){
@@ -685,7 +686,7 @@ ExportHTMLreport <- function(){
 		# \end{tabular}
 		# \end{center}
 		# \end{table}
-		#########################
+		#
 		Try(HTML.title("<a name=\"Targets\">RNA Targets</a>",HR=2)) #for eg: this writes " <h2 > <a name="Targets">RNA Targets</a></h2>" to html file
 		Try(print(TargetsXtable,type="html",file=fileNameWithPath,append=TRUE))
 		#For eg: This prints the following to the html file:
@@ -702,7 +703,7 @@ ExportHTMLreport <- function(){
 		#   <TR> <TD align="right"> 8 </TD> <TD> Pres48.2 </TD> <TD> high48-2.cel </TD> <TD> EstPresent48 </TD> </TR>
 		#    </TABLE>
 		# <!-- html table generated in R 2.6.0 by xtable 1.5-1 package -->
-		#########################
+		#
 	} #end of if (ExportTargets)
 	#
 	#
@@ -738,7 +739,7 @@ ExportHTMLreport <- function(){
 		#number of genes=12625
 		#annotation=hgu95av2
 		#notes=
-		####################
+		#
 		Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment)) #for eg: [1] "Abs10.1"  "Abs10.2"  "Pres10.1" "Pres10.2" "Abs48.1"  "Abs48.2"  "Pres48.1" "Pres48.2"
 		#
 		#This plotFunction creates a boxplot from the raw data
@@ -792,11 +793,11 @@ ExportHTMLreport <- function(){
 		# Mean   : 5.1289   Mean   : 5.0827   Mean   : 5.2261   Mean   : 5.2530   Mean   : 5.0292   Mean   : 4.9990   Mean   : 5.0386   Mean   : 5.0201
 		# 3rd Qu.: 7.2458   3rd Qu.: 7.1482   3rd Qu.: 7.2749   3rd Qu.: 7.2045   3rd Qu.: 7.0249   3rd Qu.: 6.8045   3rd Qu.: 7.1026   3rd Qu.: 6.8093
  		# Max.   :16.0300   Max.   :16.0264   Max.   :15.8995   Max.   :15.9624   Max.   :15.9858   Max.   :15.9348   Max.   :15.6545   Max.   :15.7622
- 		#########################
+ 		#
 		Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment))
 		#for eg: SlideNamesVec is:
 		#[1] "Abs10.1"  "Abs10.2"  "Pres10.1" "Pres10.2" "Abs48.1"  "Abs48.2"  "Pres48.1" "Pres48.2"
-		#########################
+		#
 		#
 		#This plotFunction will create a boxplot of Normalized data
 		Try(
@@ -828,7 +829,7 @@ ExportHTMLreport <- function(){
 		) #end of Try
 		#For eg: This writes to HTML file:
 		# <p align=left><img src='alg_Est_gcrma_3C_files/NormalizedIntensityBoxPlot.png' border=1><br><i> Normalized intensity distribution for each slide </i></P>
-		#########################
+		#
 		#It also creates the file "NormalizedIntensityBoxPlot.png" in the "alg_Est_gcrma_3C_files" subdirectory.
 		#
 	} #end of if (ExportNormalizedIntensityBoxPlot)
@@ -845,7 +846,7 @@ ExportHTMLreport <- function(){
 		#low48-2.cel            0           1            0            0
 		#high48-1.cel           0           0            0            1
 		#high48-2.cel           0           0            0            1
-		#########################
+		#
 		#
 		Try(displayVector <- rep("g",ncol(design)+1)) #This creates: [1] "g" "g" "g" "g" "g"
 		Try(displayVector[0] <- "s")
@@ -871,13 +872,13 @@ ExportHTMLreport <- function(){
 		#\end{tabular}
 		#\end{center}
 		#\end{table}
-		#########################
+		#
 		#
 		Try(HTML.title("<a name=\"DesignMatrix\">Design Matrix</a>",HR=2))
 		# For eg. this writes to HTML file:
 		#
 		# <h2 > <a name="DesignMatrix">Design Matrix</a></h2>
-		#########################
+		#
 		Try(print(DesignXtable,type="html",file=fileNameWithPath,append=TRUE))
 		#For eg. This writes to HTML file:
 		#<!-- html table generated in R 2.6.0 by xtable 1.5-1 package -->
@@ -893,7 +894,7 @@ ExportHTMLreport <- function(){
 		#  <TR> <TD align="right"> high48-1.cel </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> </TR>
 		#  <TR> <TD align="right"> high48-2.cel </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> </TR>
 		#   </TABLE>
-		#########################
+		#
 		#
 	} #end of if (ExportDesignMatrix)
 	#
@@ -915,7 +916,7 @@ ExportHTMLreport <- function(){
 		#  <TR> <TD align="right"> EstPresent10 </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right">   0 </TD> </TR>
 		#  <TR> <TD align="right"> EstPresent48 </TD> <TD align="right">   0 </TD> <TD align="right">  -1 </TD> <TD align="right">  -1 </TD> </TR>
 		#   </TABLE>
-		#########################
+		#
 		#
 	} #end of if (ExportContrastsMatrix)
 	#
@@ -926,13 +927,13 @@ ExportHTMLreport <- function(){
 		#For eg. This writes to HTML file:
 		#
 		# <h2 > <a name="MAPlotsContrasts">M A Plots for Contrasts</a></h2>
-		#########################
+		#
 		Try(A <- rowMeans(NormalizedAffyData.exprs))
 		#For eg. This gets rowMeans, as summarized below:
 		#> summary(A)
 		#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
 		#-0.3351  2.9500  4.1050  5.0970  7.0480 15.9100
-		#########################
+		#
 		Try(pch <- 16) #set character height plot
 		Try(cex <- 0.2) #set character expansion for plot
 		#
@@ -948,7 +949,7 @@ ExportHTMLreport <- function(){
 				#
 				# <h2 > M A Plot ((EstAbsent10)-(EstPresent48))</h2><p align=left><img src='alg_Est_gcrma_3C_files/contrastMAplot.3.png' border=1><br><i> M A Plot ((EstAbsent10)-(EstPresent48)) </i></P>
 				#
-				#####################
+				#
 				#
 				Try(M <- fit$coefficients[,contrast])
 				#For eg. For contrast no.1, M is:
@@ -957,7 +958,7 @@ ExportHTMLreport <- function(){
 				#-5.303e+00 -9.561e-02  7.819e-05  9.169e-02  2.857e-01  1.168e+01
 				#> length(M)
 				#[1] 12625
-				#####################
+				#
 				#
 				#Do an MA plot
 				Try(

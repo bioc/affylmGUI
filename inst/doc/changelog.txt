@@ -1,4 +1,22 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+17-Jan-2013 affylmGUI 1.32.2
+	Added Sys.sleep(0.1) calls before various tk commands. In particular before tkgrab.set, 
+	tkwait and some tkfocus and tkgrid commands. There were intermitent freezes and/or 
+	blacking out of selections in some dialogues (for eg. "Which contrasts" in main.R).
+	This seems to have solved the problems, but not completely sure. An R-bug report was
+	made (bug 1550-https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=15150). 
+	Duncan Murdoch reported 2012-12-24 12:05:41 EST. "I've applied a minimal patch to
+	tktoplevel() that should fix this.  It may still show up in other places; if so, 
+	please follow up here. The patch is in R-devel revision 61413.". This bug report 
+	related to a freeze of the dialogue window. I have additional problems with tcltk 
+	windows that incompletely display. I'm following up with the above bug soon. Adding
+	many Sys.sleep(0.1) commands has alleviated the problem, but just occassinally a
+	window is incompletely drawn when using R-2.15.2.
+	Added affy, tkrplot, affyPLM, R2HTML, xtable, gcrma, affyPLM, AnnotationDbi to Depends
+	field in DESCRIPTION file to make installation easier. Adding AnnotationDbi avoids
+	problem of affy package installing 1.5GB of suggested packages.
+	There are now no Suggested packages.
+
 17-Jul-2012 affylmGUI 1.31.1
 	Replaced calls to Biobase:::biocReposList() with calls to BiocInstaller biocinstallRepos()
 	
