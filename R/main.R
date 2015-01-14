@@ -3233,7 +3233,7 @@ evalRcode <- function(){
 	Try(tkfocus(txt))
 	#
 	SaveRSourceFile <- function(){
-		Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tclfile.tail(wfile)),initialdir=tclvalue(tcltk:::tclfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
+		Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tclfile.tail(wfile)),initialdir=tclvalue(tcltk::tclfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
 		if(nchar(fileName)==0) return()
 		Try(len <- nchar(fileName))
 		if(len<=2){
