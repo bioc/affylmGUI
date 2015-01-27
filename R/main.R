@@ -875,14 +875,15 @@ OpenTargetsFile <- function(){
 #
 #
 tclArrayVar <- function(){
-	Try(n <- evalq(TclVarCount <- TclVarCount + 1, .TkRoot$env))
+	###Try(n <- evalq(TclVarCount <- TclVarCount + 1, .TkRoot$env))
+	Try(n <- .TkRoot$env$TclVarCount <- .TkRoot$env$TclVarCount +1L)
 	Try(name <- paste("::RTcl", n,sep = ""))
 	Try(l <- list(env = new.env()))
 	Try(assign(name, NULL, envir = l$env))
 	Try(reg.finalizer(l$env, function(env) tcl("unset", ls(env))))
 	Try(class(l) <- "tclArrayVar")
 	Try(.Tcl(paste("set ",name,"(0,0) \"\"",sep="")))
-	l  ### Investigate this line KS
+	l
 } #end of tclArrayVar <- function()
 #
 #
@@ -3233,7 +3234,7 @@ evalRcode <- function(){
 	Try(tkfocus(txt))
 	#
 	SaveRSourceFile <- function(){
-		Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tclfile.tail(wfile)),initialdir=tclvalue(tcltk:::tclfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
+		Try(fileName <- tclvalue(tkgetSaveFile(initialfile=tclvalue(tclfile.tail(wfile)),initialdir=tclvalue(tcltk::tclfile.dir(wfile)),filetypes="{{R Source Files} {.R}} {{All files} *}")))
 		if(nchar(fileName)==0) return()
 		Try(len <- nchar(fileName))
 		if(len<=2){

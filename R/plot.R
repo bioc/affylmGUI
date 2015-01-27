@@ -82,7 +82,7 @@ ImageArrayPlot <- function(){
 		if (WhetherToUseRplot=="yes"){
 			plotFunction()
 		}else{
-			Require("tkrplot")
+			##Require("tkrplot")
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
 			Try(tkwm.title(ttGraph,plotTitle))
@@ -290,7 +290,7 @@ IntensityHistogram <- function(){
 	#
 	Try(
 		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-			Require("tkrplot")
+			##Require("tkrplot")
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
 			Try(tkwm.title(ttGraph,plotTitle))
@@ -376,7 +376,7 @@ IntensityHistogramAll <- function(){
 	#
 	Try(
 		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-			Require("tkrplot")
+			##Require("tkrplot")
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
 			Try(tkwm.title(ttGraph,plotTitle))
@@ -456,7 +456,7 @@ DensityPlot <- function(){
 	Try(yLabel    <- plotLabels$yLabel)
 	Try(
 		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-			Require("tkrplot")
+			##Require("tkrplot")
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
 			Try(tkwm.title(ttGraph,plotTitle))
@@ -541,7 +541,7 @@ DensityPlotAll <- function(){
 	Try(yLabel    <- plotLabels$yLabel)
 	Try(
 		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-			Require("tkrplot")
+			##Require("tkrplot")
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
 			Try(tkwm.title(ttGraph,plotTitle))
@@ -615,7 +615,7 @@ RNADegradationPlotAll <- function(){
 	#
 	Try(
 		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-			Require("tkrplot")
+			##Require("tkrplot")
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
 			Try(tkwm.title(ttGraph,plotTitle))
@@ -649,25 +649,26 @@ NUSEPlotAll <- function(){
 	#An array with elevated SEs relative to other arrays is typically of
 	#lower quality.	Try(NormMethod <- get("NormMethod", envir=affylmGUIenvironment))
 	#This function does not store teh Normalized Data.
+	###options(error = recover) ###DEBUG
 	Try(ArraysLoaded  <- get("ArraysLoaded", envir=affylmGUIenvironment))
 	Try(
 		if (ArraysLoaded==FALSE){
 			Try(tkmessageBox(title="NUSE Plot",message="Error: No arrays have been loaded.",icon="error",default="ok"))
 			return()
 		}else{
-			#Try(tkmessageBox(title="527:DEBUG:NUSE Plot",message="Arrays ARE loaded!.",icon="error",default="ok"))
+			###Try(tkmessageBox(title="527:DEBUG:NUSE Plot",message="Arrays ARE loaded!.",icon="error",default="ok")) ###DEBUG
 		}#end of if (ArraysLoaded==FALSE)
 	)
 	Try(LocalHScale <- .affylmGUIglobals$Myhscale)
 	Try(LocalVScale <- .affylmGUIglobals$Myvscale)
-	#Try(tkmessageBox(title="532:DEBUG:NUSE Plot",message=paste("LocalHScale = ",LocalHScale),icon="error",default="ok"))###DEBUG
 	Try(PsetData.Available <- get("PsetData.Available" , envir=affylmGUIenvironment))
 	if(!PsetData.Available){
 		Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-		Require("affyPLM")
-		Try(Pset <- fitPLM(RawAffyData))
+		##Require("affyPLM")
+		Try(Pset <- affyPLM::fitPLM(RawAffyData))
 		Try(assign("Pset",Pset,affylmGUIenvironment))
-		Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
+		###Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
+		###Try(tkmessageBox(title="676:DEBUG:NUSE Plot",message=paste("after assign(weightsPLM,affyPLM::weights(Pset),affylmGUIenvironment) statement"),icon="error",default="ok"))###DEBUG
 		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
 	}else{
 		Try(Pset <- get("Pset", envir=affylmGUIenvironment))
@@ -685,7 +686,7 @@ NUSEPlotAll <- function(){
 	#
 	Try(
 		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-			Require("tkrplot")
+			##Require("tkrplot")
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
 			Try(tkwm.title(ttGraph,plotTitle))
@@ -733,10 +734,10 @@ RLEPlotAll <- function(){
 	Try(PsetData.Available <- get("PsetData.Available" , envir=affylmGUIenvironment))
 	if(!PsetData.Available){
 		Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-		Require("affyPLM")
+		##Require("affyPLM")
 		Try(Pset <- fitPLM(RawAffyData))
 		Try(assign("Pset",Pset,affylmGUIenvironment))
-		Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
+		###Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
 		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
 	}else{
 		Try(Pset <- get("Pset", envir=affylmGUIenvironment))
@@ -754,7 +755,7 @@ RLEPlotAll <- function(){
 	#
 	Try(
 		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-			Require("tkrplot")
+			##Require("tkrplot")
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
 			Try(tkwm.title(ttGraph,plotTitle))
@@ -808,7 +809,7 @@ RawIntensityBoxPlot <- function()
 
   Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
   {
-    Require("tkrplot")
+    ##Require("tkrplot")
     CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
     Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
     Try(tkwm.withdraw(ttGraph))
@@ -878,7 +879,7 @@ NormalizedIntensityBoxPlot <- function()
 
   Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
   {
-    Require("tkrplot")
+    ##Require("tkrplot")
     CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
     Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
     Try(tkwm.withdraw(ttGraph))
@@ -935,7 +936,7 @@ generalPlotFunction <- function(code="",WindowTitle="")
 
   Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
   {
-    Require("tkrplot")
+    ##Require("tkrplot")
     CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
     Try(plotFunction <- get("plotFunction",envir=affylmGUIenvironment))
     Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=1,vscale=1))
@@ -1491,7 +1492,7 @@ VennDiagramPlot <- function(){
 		if (.affylmGUIglobals$graphicsDevice=="tkrplot"){
 			Try(ttVennDiagramPlot <- tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.title(ttVennDiagramPlot,plotTitle))
-			Try(Require("tkrplot"))
+			##Try(Require("tkrplot"))
 			Try(img <- tkrplot(ttVennDiagramPlot,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
 			Try(SetupPlotKeyBindings(tt=ttVennDiagramPlot,img=img))
 			Try(
@@ -1819,7 +1820,7 @@ HeatDiagramPlot <- function(){
 		if (.affylmGUIglobals$graphicsDevice=="tkrplot"){
 			Try(ttHeatDiagramPlot <- tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.title(ttHeatDiagramPlot,plotTitle))
-			Try(Require("tkrplot"))
+			##Try(Require("tkrplot"))
 			Try(img <-tkrplot(ttHeatDiagramPlot,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
 			Try(SetupPlotKeyBindings(tt=ttHeatDiagramPlot,img=img))
 			Try(SetupPlotMenus(tt=ttHeatDiagramPlot,initialfile=paste(limmaDataSetNameText,"HeatDiagram",sep=""),plotFunction=plotFunction,img=img))
@@ -1911,7 +1912,7 @@ affyPlotMA <- function(){
 	#
 	Try(
 		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-			Require("tkrplot")
+			##Require("tkrplot")
 			CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
@@ -2140,7 +2141,7 @@ affyPlotMAcontrast <- function(){
 	#
 	Try(
 		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-			Require("tkrplot")
+			##Require("tkrplot")
 			CopyToClip <- function() Try(tkrreplot(imgaffylmGUI))
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
@@ -2308,7 +2309,7 @@ QQTplot <- function()
 
   Try(if (.affylmGUIglobals$graphicsDevice=="tkrplot")
   {
-    Try(Require("tkrplot"))
+    ##Try(Require("tkrplot"))
     Try(ttQQTplot <- tktoplevel(.affylmGUIglobals$ttMain))
     Try(tkwm.title(ttQQTplot,plotTitle))
     Try(img <-tkrplot(ttQQTplot,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
@@ -2487,7 +2488,7 @@ LogOddsPlot <- function(){
 		if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
 			Try(ttLogOddsPlot <- tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.title(ttLogOddsPlot,plotTitle))
-			Try(Require("tkrplot"))
+			##Try(Require("tkrplot"))
 			Try(img <-tkrplot(ttLogOddsPlot,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
 			Try(SetupPlotKeyBindings(tt=ttLogOddsPlot,img=img))
 			Try(
@@ -2509,6 +2510,7 @@ LogOddsPlot <- function(){
 #
 #
 ImageQualityWeightPlot <- function(){
+	###Try(tkmessageBox(title="2405:DEBUG:",message=paste("ImageQualityWeightPlot"),icon="warning",default="ok"))###DEBUG
 	Try(Targets <- get("Targets", envir=affylmGUIenvironment))
 	Try(FileNamesVec <- c())
 	Try(
@@ -2530,28 +2532,28 @@ ImageQualityWeightPlot <- function(){
 	Try(PsetData.Available <- get("PsetData.Available" , envir=affylmGUIenvironment))
 	if(!PsetData.Available){
 		Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
-		Require("affyPLM")
+		##Require("affyPLM")
 		Try(Pset <- fitPLM(RawAffyData))
 		Try(assign("Pset",Pset,affylmGUIenvironment))
-		Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
+		###Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
 		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
 	}else{
-		#Try(tkmessageBox(title="2405:DEBUG:",message=paste("PLM model already fitted"),icon="warning",default="ok"))###DEBUG
+		Try(tkmessageBox(title="2540:DEBUG:",message=paste("PLM model already fitted"),icon="warning",default="ok"))###DEBUG
 	}
 
 	Try(Pset <- get("Pset", envir=affylmGUIenvironment))
-	Try(weightsPLM <- get("weightsPLM", envir=affylmGUIenvironment))
+	###Try(weightsPLM <- get("weightsPLM", envir=affylmGUIenvironment))
 	#
 	Try(slide <- GetSlideNum(all=TRUE))
 	Try(if (slide==0) return())
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 	#
 
-
 	Try(
 		plotFunction <- function(){
 			Try(opar<-par(bg="white"))
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+			###class(Pset) ###DEBUG
 			if (slide==1000000){
 				op <- par(mfrow = c((sqrt(NumSlides) + 1), (sqrt(NumSlides) + 1)),pty = "s",mar=c(0,0,2,0)+0.1)
 				image(Pset)#ie do all slides
@@ -2613,7 +2615,7 @@ ImageQualityWeightPlot <- function(){
 		if (WhetherToUseRplot=="yes"){
 			plotFunction()
 		}else{
-			Require("tkrplot")
+			##Require("tkrplot")
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
 			Try(tkwm.title(ttGraph,plotTitle))
@@ -2658,16 +2660,16 @@ ImageQualityResidualPlot <- function(){
 	Try(PsetData.Available <- get("PsetData.Available" , envir=affylmGUIenvironment))
 	if(!PsetData.Available){
 		Try(RawAffyData <- get("RawAffyData", envir=affylmGUIenvironment))
-		Require("affyPLM")
+		##Require("affyPLM")
 		Try(Pset <- fitPLM(RawAffyData))
 		Try(assign("Pset",Pset,affylmGUIenvironment))
-		Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
+		###Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
 		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
 	}else{
 		#Try(tkmessageBox(title="2530:DEBUG:",message=paste("No Wait - PLM model previously calculated"),icon="warning",default="ok"))###DEBUG
 	}
 	Try(Pset <- get("Pset", envir=affylmGUIenvironment))
-	Try(weightsPLM <- get("weightsPLM", envir=affylmGUIenvironment))
+	###Try(weightsPLM <- get("weightsPLM", envir=affylmGUIenvironment))
 	#
 	Try(slide <- GetSlideNum(all=TRUE))
 	Try(if (slide==0) return())
@@ -2739,7 +2741,7 @@ ImageQualityResidualPlot <- function(){
 		if (WhetherToUseRplot=="yes"){
 			plotFunction()
 		}else{
-			Require("tkrplot")
+			##Require("tkrplot")
 			Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
 			Try(tkwm.withdraw(ttGraph))
 			Try(tkwm.title(ttGraph,plotTitle))
