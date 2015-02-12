@@ -1,4 +1,9 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+12-Feb 2015
+	Replace ".find.package" function with "find.package" function as it was defunct.
+	Reformat code in toptable.R
+	Removed DEBUG message from ImageQualityWeightPlot function
+	
 28-Jan-2015 affylmGUI 1.40.1
 	Modified TclArrayVar function to access value of TclVarCount directly
 	Modified DESCRIPTION and NAMESPACE files to Import names as now required by R-3.1.2

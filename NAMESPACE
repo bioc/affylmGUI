@@ -1,5 +1,5 @@
 
-import(limma, tcltk, affy, BiocInstaller, affyio, affyPLM, tkrplot, R2HTML, xtable, gcrma, AnnotationDbi)
+import(limma, tcltk, tkrplot, affy, BiocInstaller, affyio, affyPLM, R2HTML, xtable, gcrma, AnnotationDbi)
 
 #  All functions exported other than those starting with "."
 exportPattern("^[^\\.]")

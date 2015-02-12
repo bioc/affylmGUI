@@ -2538,7 +2538,7 @@ ImageQualityWeightPlot <- function(){
 		###Try(assign("weightsPLM",weights(Pset),affylmGUIenvironment))
 		Try(assign("PsetData.Available",TRUE,affylmGUIenvironment))
 	}else{
-		Try(tkmessageBox(title="2540:DEBUG:",message=paste("PLM model already fitted"),icon="warning",default="ok"))###DEBUG
+		###Try(tkmessageBox(title="2540:DEBUG:",message=paste("PLM model already fitted"),icon="warning",default="ok"))###DEBUG
 	}
 
 	Try(Pset <- get("Pset", envir=affylmGUIenvironment))
