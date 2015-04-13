@@ -32,7 +32,7 @@ NormalizeNow <- function(){
 			Try(assign("NormMethod","RMA",affylmGUIenvironment))
 
 		}else if (NormalizationMethod=="GCRMA"){
-			Require("gcrma")
+			##Require("gcrma")
 			Try(NormalizedAffyDataExpressionSet <- gcrma(RawAffyData))
 			# gcrma returns an ExpressionSet, using the rma function as shown:
 			# return(rma(object,subset=subset,background=FALSE,normalize=normalize,verbose=verbose))
@@ -44,14 +44,14 @@ NormalizeNow <- function(){
 			Try(assign("NormalizedAffyData.se.exprs",NormalizedAffyData.se.exprs,affylmGUIenvironment))
 			Try(assign("NormMethod","GCRMA",affylmGUIenvironment))
 		}else{
-			Require("affyPLM")
+			##Require("affyPLM")
 			Try(NormalizedAffyDataPset <- fitPLM(RawAffyData))
 			#affyPLM returns an object of class PLMset.
 			Try(NormalizedAffyData.exprs    <- coefs(NormalizedAffyDataPset))
 			Try(NormalizedAffyData.se.exprs <- se(NormalizedAffyDataPset)) #affyPLM does  set se.exprs values
 			Try(assign("NormalizedAffyData.exprs",NormalizedAffyData.exprs,affylmGUIenvironment))
 			Try(assign("NormalizedAffyData.se.exprs",NormalizedAffyData.se.exprs,affylmGUIenvironment))
-			Try(assign("weightsPLM",weights(NormalizedAffyDataPset),affylmGUIenvironment))
+			###Try(assign("weightsPLM",weights(NormalizedAffyDataPset),affylmGUIenvironment))
 			Try(assign("NormMethod","PLM",affylmGUIenvironment))
 			###Try(NormalizedAffyData              <- new("ExpressionSet"))
 			###Try(phenoData(NormalizedAffyData)   <- phenoData(Pset))

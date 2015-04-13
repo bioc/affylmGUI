@@ -1,4 +1,16 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+12-Feb 2015 affylmGUI 1.40.2
+	Replace ".find.package" function with "find.package" function as it was defunct.
+	Reformat code in toptable.R
+	Removed DEBUG message from ImageQualityWeightPlot function
+	
+28-Jan-2015 affylmGUI 1.40.1
+	Modified TclArrayVar function to access value of TclVarCount directly
+	Modified DESCRIPTION and NAMESPACE files to Import names as now required by R-3.1.2
+	Retained affyPLM in Depends field. All others in Imports field in DESCRIPTION and 
+	in the imports function in the NAMESPACE file.
+	Removed calls to Require function as not needed with above mods and assumption of correct installation.
+	
 17-Jan-2013 affylmGUI 1.32.2
 	Added Sys.sleep(0.1) calls before various tk commands. In particular before tkgrab.set, 
 	tkwait and some tkfocus and tkgrid commands. There were intermitent freezes and/or 

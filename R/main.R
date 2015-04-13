@@ -86,11 +86,11 @@ TryReadImgProcFile <- function(expr){
 #
 #
 Require <- function(pkg){
-	if(data.class(result<-try(.find.package(pkg),TRUE))=="try-error"){
+	if(data.class(result<-try(find.package(pkg),TRUE))=="try-error"){
 		tkmessageBox(title="An error has occured!",message=paste("Cannot find package",pkg),icon="error",type="ok")
 	}else{
 		result <- Try(require(pkg,character.only=TRUE))
-	} #end of else/if(data.class(result<-try(.find.package(pkg),TRUE))=="try-error")
+	} #end of else/if(data.class(result<-try(find.package(pkg),TRUE))=="try-error")
 	return (result)
 } #end of Require <- function(pkg)
 #
@@ -383,7 +383,8 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 	Try(initGlobals())
 
 	Try(affylmGUIglobals <- get(".affylmGUIglobals",envir=.GlobalEnv))
-	Try(affylmGUIglobals$graphicsDevice <- "tkrplot")
+	#Try(affylmGUIglobals$graphicsDevice <- "tkrplot") ###Comented out on 28/1/15
+	Try(affylmGUIglobals$graphicsDevice <- "R") #Use this for all platforms
 	Try(if(Sys.info()["sysname"]=="Darwin")
 		Try(affylmGUIglobals$graphicsDevice <- "R"))
 	Try(affylmGUIglobals$Myhscale <- 1)
@@ -875,14 +876,15 @@ OpenTargetsFile <- function(){
 #
 #
 tclArrayVar <- function(){
-	Try(n <- evalq(TclVarCount <- TclVarCount + 1, .TkRoot$env))
+	###Try(n <- evalq(TclVarCount <- TclVarCount + 1, .TkRoot$env))
+	Try(n <- .TkRoot$env$TclVarCount <- .TkRoot$env$TclVarCount +1L)
 	Try(name <- paste("::RTcl", n,sep = ""))
 	Try(l <- list(env = new.env()))
 	Try(assign(name, NULL, envir = l$env))
 	Try(reg.finalizer(l$env, function(env) tcl("unset", ls(env))))
 	Try(class(l) <- "tclArrayVar")
 	Try(.Tcl(paste("set ",name,"(0,0) \"\"",sep="")))
-	l  ### Investigate this line KS
+	l
 } #end of tclArrayVar <- function()
 #
 #
@@ -3266,7 +3268,7 @@ evalRcode <- function(){
 		if(runType!="runTextOnly"){
 			Try(
 				if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-					Require("tkrplot")
+					##Require("tkrplot")
 					Try(LocalHScale <- .affylmGUIglobals$Myhscale)
 					Try(LocalVScale <- .affylmGUIglobals$Myvscale)
 					Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
@@ -3339,7 +3341,7 @@ evalRcode <- function(){
 			#
 			Try(
 				if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-					Require("tkrplot")
+					##Require("tkrplot")
 					Try(plotFunction <- get("plotFunction",envir=affylmGUIenvironment))
 					Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
 					SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
@@ -3358,7 +3360,7 @@ evalRcode <- function(){
 					CopyToClip <- function(){
 						Try(tkrreplot(imgaffylmGUI))
 					} #end of CopyToClip <- function()
-				}else{ #not using tkrplot, bur R window
+				}else{ #end of if(.affylmGUIglobals$graphicsDevice=="tkrplot"). #not using tkrplot, but R window
 					Try(plot.new())
 					Try(plotFunction())
 				} #end of else/if(.affylmGUIglobals$graphicsDevice=="tkrplot")

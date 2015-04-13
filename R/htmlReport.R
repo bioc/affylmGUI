@@ -288,8 +288,8 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 ExportHTMLreport <- function(){
 	# We will use the R2HTML package, but with my own HTMLplot function.
 	# Will we need xtable or does R2HTML have its own HTMLtable function?
-	Require("xtable")
-	Require("R2HTML")
+	##Require("xtable")
+	##Require("R2HTML")
 	#
 	#get numberOfGenes,adjustMethod and sortBy from environment if they are available, if not,  set them to default values
 	Try(
