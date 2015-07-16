@@ -1,12 +1,12 @@
 Package: affylmGUI
-Version: 1.43.0
-Date: 2015/04/10
+Version: 1.43.1
+Date: 2015-07-16
 Title: GUI for affy analysis using limma package
-Author: James Wettenhall and Ken Simpson Division of Genetics and Bioinformatics, WEHI.
-Maintainer: Keith Satterley <keith@wehi.edu.au>
+Author: James Wettenhall [aut], Ken Simpson [aut], Gordon Smyth [aut], Keith Satterley [ctb], Yifang Hu [ctb]
+Maintainer: Yifang Hu <hu@wehi.edu.au>, Keith Satterley <keith@wehi.edu.au>
 Imports: limma, tcltk, affy, BiocInstaller, affyio, tkrplot, affyPLM, R2HTML, xtable, gcrma, AnnotationDbi
 LazyLoad: yes
-Description: A Graphical User Interface for affy analysis using the limma Microarray package
-License: LGPL
+Description: A Graphical User Interface for analysis of Affymetrix microarray gene expression data using the affy and limma Microarray packages
+License: GPL (>=2)
 URL: http://bioinf.wehi.edu.au/affylmGUI/
-biocViews: Microarray, OneChannel, DataImport, QualityControl, Preprocessing, DifferentialExpression, MultipleComparison, GUI
+biocViews: GUI, GeneExpression, Transcription, DifferentialExpression, DataImport, Bayesian, Regression, TimeCourse, Microarray, mRNAMicroarray, OneChannel, ProprietaryPlatforms, BatchEffect, MultipleComparison, Normalization, Preprocessing, QualityControl
