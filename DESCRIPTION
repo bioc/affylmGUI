@@ -1,7 +1,7 @@
 Package: affylmGUI
-Version: 1.43.1
-Date: 2015-07-16
-Title: GUI for affy analysis using limma package
+Version: 1.43.2
+Date: 2015-07-17
+Title: GUI for limma package with Affymetrix microarrays
 Author: James Wettenhall [aut], Ken Simpson [aut], Gordon Smyth [aut], Keith Satterley [ctb], Yifang Hu [ctb]
 Maintainer: Yifang Hu <hu@wehi.edu.au>, Keith Satterley <keith@wehi.edu.au>
 Imports: limma, tcltk, affy, BiocInstaller, affyio, tkrplot, affyPLM, R2HTML, xtable, gcrma, AnnotationDbi
