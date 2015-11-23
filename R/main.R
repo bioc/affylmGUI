@@ -391,7 +391,7 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 	Try(affylmGUIglobals$Myvscale <- 1)
 	Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
 
-	#Try(if(exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows")
+	#Try(if(exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows")
 	#	{
 	#		Try(if(Sys.info()["sysname"]=="Darwin")
 	#			{
@@ -412,7 +412,7 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 	#		Try(affylmGUIglobals$Myhscale <- 1)
 	#		Try(affylmGUIglobals$Myvscale <- 1)
 	#		Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
-	#	}#end of if(exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows")
+	#	}#end of if(exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows")
 	##end of Try(if(Sys.info...))
 	#
 	Try(if(Sys.info()["sysname"] == "Windows")
@@ -424,7 +424,7 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 		}#end of if
 	)#end of Try
 	#
-	Try(if(Sys.info()["sysname"] == "Darwin" && !exists("X11", env=.GlobalEnv))
+	Try(if(Sys.info()["sysname"] == "Darwin" && !exists("X11", envir=.GlobalEnv))
 		{
 	#		Try(addTclPath("/Library/Tcl"))
 	#		Try(addTclPath("/Network/Library/Tcl"))
@@ -444,7 +444,7 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 			Try(affylmGUIglobals$Myvscale <- 1)
 			Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
 		}#end of if
-	)#end of Try(if(Sys.info()["sysname"] == "Darwin" && !exists("X11", env=.GlobalEnv))...)
+	)#end of Try(if(Sys.info()["sysname"] == "Darwin" && !exists("X11", envir=.GlobalEnv))...)
 
 	Try(affylmGUIglobals <- get(".affylmGUIglobals",envir=.GlobalEnv))
 	Try(if(.affylmGUIglobals$affylmGUIpresentation==TRUE)
@@ -2531,10 +2531,10 @@ showTopTable <- function(...,export=FALSE){
 			Try(
 				if( (cdfName %in% .packages(all.available=TRUE)) ){
 					Require(cdfName)
-					Try(code2eval <- paste("Try(geneNames <- as.character(unlist(lapply(mget(ls(cdfenv),env=",cdfName,"GENENAME),function(nm) return(paste(nm,collapse=\"; \"))))))",sep=""))
+					Try(code2eval <- paste("Try(geneNames <- as.character(unlist(lapply(mget(ls(cdfenv),envir=",cdfName,"GENENAME),function(nm) return(paste(nm,collapse=\"; \"))))))",sep=""))
 					Try(eval(parse(text=code2eval)))
 					Try(assign("geneNames",geneNames,affylmGUIenvironment))
-					Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(lapply(mget(ls(cdfenv),env=",cdfName,"SYMBOL),function(sym) return(paste(sym,collapse=\"; \"))))))",sep=""))
+					Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(lapply(mget(ls(cdfenv),envir=",cdfName,"SYMBOL),function(sym) return(paste(sym,collapse=\"; \"))))))",sep=""))
 					Try(eval(parse(text=code2eval)))
 					Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
 					Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))

@@ -47,11 +47,11 @@
 			dev.print(png, file = AbsGraphFileName, width=Width,height=Height,pointsize=PointSize,bg=BG)
 		}else{
 			Try( #if it is linux like
-				if(exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin"){
+				if(exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin"){
 					Try(bitmap(file = AbsGraphFileName,bg=BG,res=res))
 				}else{ #it is MS Windows or Mac
 					Try(png(filename = AbsGraphFileName, width=Width,height=Height,pointsize=PointSize,bg=BG))
-				} #end of else/if(exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
+				} #end of else/if(exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
 			)
 			plotFunction()
 			dev.off()
@@ -61,11 +61,11 @@
 			dev.print(jpeg, file = AbsGraphFileName, width=Width,height=Height,pointsize=PointSize,bg=BG)
 		}else{
 			Try( #if it is linux like
-				if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin"){
+				if (exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin"){
 					Try(bitmap(filename = AbsGraphFileName,bg=BG,res=res,type="jpeg"))
 				}else{ #it is MS Windows or Mac
 					Try(jpeg(filename = AbsGraphFileName, width=Width,height=Height,pointsize=PointSize,bg=BG))
-				} #end of if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
+				} #end of if (exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
 			)
 			plotFunction()
 			dev.off()
@@ -95,10 +95,10 @@
 	cat("</P>", file = File, append = TRUE, sep = "\n")
 	#
 	if (exists("HTMLenv",where=".GlobalEnv",mode="environment")){
-		try(assign(".HTML.graph", TRUE, env = get("HTMLenv", envir = .GlobalEnv)))
+		try(assign(".HTML.graph", TRUE, envir = get("HTMLenv", envir = .GlobalEnv)))
 	}#end of if (exists("HTMLenv",where=".GlobalEnv",mode="environment"))
 	#
-	###try(assign(".HTML.graph", TRUE, env = get("HTMLenv", envir = .GlobalEnv)))
+	###try(assign(".HTML.graph", TRUE, envir = get("HTMLenv", envir = .GlobalEnv)))
 	invisible(return())
 } #end of "HTMLplotUsingFunction" <- function
 #
@@ -608,7 +608,7 @@ ExportHTMLreport <- function(){
 	if(ExportRawIntensityBoxPlot || ExportNormalizedIntensityBoxPlot || ExportMAPlotsContrasts){
 		Try(
 			#if linux like
-			if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin"){
+			if (exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin"){
 				Try(pngParams     <- GetJpegOrPngX11Params(graphFileType="PNG")) #sets background colour(bg) and resolution(res)
 				Try(if (length(pngParams)==0) return())
 				Try(plotBG        <- pngParams$bg)
@@ -621,7 +621,7 @@ ExportHTMLreport <- function(){
 				Try(plotHeight    <- pngParams$height)
 				Try(plotPointSize <- pngParams$pointsize)
 				Try(plotBG        <- pngParams$bg)
-			} #end of else/if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
+			} #end of else/if (exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
 		) #end of Try
 	} #end of if (ExportRawIntensityBoxPlot || ExportNormalizedIntensityBoxPlot || ExportMAPlotsContrasts)
 	#
@@ -1016,11 +1016,11 @@ ExportHTMLreport <- function(){
 				Try(
 					if( (cdfName %in% .packages(all.available=TRUE)) ){
 						Require(cdfName)
-						Try(code2eval <- paste("Try(geneNames <- as.character(unlist(lapply(mget(ls(cdfenv),env=",cdfName,"GENENAME),function(nm) return(paste(nm,collapse=\"; \"))))))",sep=""))
+						Try(code2eval <- paste("Try(geneNames <- as.character(unlist(lapply(mget(ls(cdfenv),envir=",cdfName,"GENENAME),function(nm) return(paste(nm,collapse=\"; \"))))))",sep=""))
 						Try(eval(parse(text=code2eval)))
 						Try(assign("geneNames",geneNames,affylmGUIenvironment))
 						#get the geneSymbols from the cdfName
-						Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(lapply(mget(ls(cdfenv),env=",cdfName,"SYMBOL),function(sym) return(paste(sym,collapse=\"; \"))))))",sep=""))
+						Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(lapply(mget(ls(cdfenv),envir=",cdfName,"SYMBOL),function(sym) return(paste(sym,collapse=\"; \"))))))",sep=""))
 						Try(eval(parse(text=code2eval)))
 						Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
 						Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))

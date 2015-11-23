@@ -1,4 +1,3 @@
-
 ImageArrayPlot <- function(){
 	Try(Targets <- get("Targets", envir=affylmGUIenvironment))
 	Try(FileNamesVec <- c())
@@ -585,7 +584,7 @@ RNADegradationPlotAll <- function(){
 			Try(opar<-par(bg="white"))
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 			Try(deg <- AffyRNAdeg(RawAffyData,log.it=log.it.choice))
-			Try(plotAffyRNAdeg(deg,col=1:8)) #plotAffyRNAdeg is a function from the affy package, affylmGUI DEPENDS on
+			Try(plotAffyRNAdeg(deg,cols=1:8)) #plotAffyRNAdeg is a function from the affy package, affylmGUI DEPENDS on
 			Try(legend(x="topright",inset=0.025,legend=1:NumSlides,col=1:NumSlides,lty=1))
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 			Try(tmp<-par(opar))
@@ -1104,7 +1103,7 @@ SaveGraphAsJpeg <- function(initialfile,plotFunction)
   (len<5 || (tolower(substring(jpegFileName,len-4,len))!=".jpeg")))
         Try(jpegFileName <- paste(jpegFileName,".jpg",sep=""))
 
-  Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
+  Try(if (exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
   {
     Try(jpegParams <- GetJpegOrPngX11Params(graphFileType="JPEG"))
     Try(bitmap(file=jpegFileName,bg=jpegParams$bg,res=jpegParams$res,type="jpeg"))
@@ -1113,7 +1112,7 @@ SaveGraphAsJpeg <- function(initialfile,plotFunction)
   {
     Try(jpegParams <- GetJpegOrPngParams(graphFileType="JPEG"))
     if (length(jpegParams)==0) return()
-    Try(jpeg(file=jpegFileName,width=jpegParams$width,height=jpegParams$height,pointsize=jpegParams$pointsize,bg=jpegParams$bg))
+    Try(jpeg(filename=jpegFileName,width=jpegParams$width,height=jpegParams$height,pointsize=jpegParams$pointsize,bg=jpegParams$bg))
   })
   Try(plotFunction())
   Try(dev.off())
@@ -1130,7 +1129,7 @@ SaveGraphAsPNG <- function(initialfile,plotFunction)
   else if   ((tolower(substring(pngFileName,len-3,len))!=".png"))
         Try(pngFileName <- paste(pngFileName,".png",sep=""))
 
-  Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
+  Try(if (exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows" && Sys.info()["sysname"] != "Darwin")
   {
     Try(pngParams <- GetJpegOrPngX11Params(graphFileType="PNG"))
     Try(bitmap(file=pngFileName,bg=pngParams$bg,res=pngParams$res))
@@ -1139,7 +1138,7 @@ SaveGraphAsPNG <- function(initialfile,plotFunction)
   {
     Try(pngParams <- GetJpegOrPngParams(graphFileType="PNG"))
     if (length(pngParams)==0) return()
-    Try(png(file=pngFileName,width=pngParams$width,height=pngParams$height,pointsize=pngParams$pointsize,bg=pngParams$bg))
+    Try(png(filename=pngFileName,width=pngParams$width,height=pngParams$height,pointsize=pngParams$pointsize,bg=pngParams$bg))
   })
   Try(plotFunction())
   Try(dev.off())
@@ -1769,7 +1768,7 @@ HeatDiagramPlot <- function(){
 				##Try(install.packages(pkgs=dataName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))
 				Try(install.packages(pkgs=dataName, lib=.libPaths(), repos=biocinstallRepos(), dependencies=c("Depends", "Imports")))
 				Require(dataName)
-				Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(mget(ls(envir=",dataName,"SYMBOL),env=",dataName,"SYMBOL))))",sep=""))
+				Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(mget(ls(envir=",dataName,"SYMBOL),envir=",dataName,"SYMBOL))))",sep=""))
 				Try(eval(parse(text=code2eval)))
 				Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
 				Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
@@ -2098,7 +2097,7 @@ affyPlotMAcontrast <- function(){
 				##Try(install.packages(pkgs=dataName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))
 				Try(install.packages(pkgs=dataName, lib=.libPaths(), repos=biocinstallRepos(), dependencies=c("Depends", "Imports")))
 				Require(dataName)
-				Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(mget(ls(envir=",dataName,"SYMBOL),env=",dataName,"SYMBOL))))",sep=""))
+				Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(mget(ls(envir=",dataName,"SYMBOL),envir=",dataName,"SYMBOL))))",sep=""))
 				Try(eval(parse(text=code2eval)))
 				Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
 				Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
@@ -2281,7 +2280,7 @@ QQTplot <- function()
 
   Try(fit <- eBayes(fit))
 
-  Try(if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows")
+  Try(if (exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows")
     Try(cex <- 0.3)
   else
     Try(cex <- 0.2))
@@ -2398,7 +2397,7 @@ LogOddsPlot <- function(){
 		}
 	)
 	Try(
-		if (exists("X11", env=.GlobalEnv) && Sys.info()["sysname"] != "Windows"){
+		if (exists("X11", envir=.GlobalEnv) && Sys.info()["sysname"] != "Windows"){
 			Try(cex <- 0.3)
 		}else{
 			Try(cex <- 0.2)
@@ -2431,7 +2430,7 @@ LogOddsPlot <- function(){
 					Try(
 						if( (cdfName %in% .packages(all.available=TRUE)) ){
 							Require(cdfName)
-							Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(mget(ls(envir=",cdfName,"SYMBOL),env=",cdfName,"SYMBOL))))",sep=""))
+							Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(mget(ls(envir=",cdfName,"SYMBOL),envir=",cdfName,"SYMBOL))))",sep=""))
 							Try(eval(parse(text=code2eval)))
 							Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
 							Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))

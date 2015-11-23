@@ -1,16 +1,23 @@
 ------------------------- affylmGUI ChangeLog -------------------------
+
+23 Nov 2015 affylmGUI 1.45.1
+	Simplify CITATION to one article
+	Add Gordon Smyth to maintainer list
+	Care to use full argument names in function calls
+	Move html document files from vignettes to inst/doc
+
 12-Feb 2015 affylmGUI 1.40.2
-	Replace ".find.package" function with "find.package" function as it was defunct.
+	Replace ".find.package" function with "find.package" function as it was defunct
 	Reformat code in toptable.R
 	Removed DEBUG message from ImageQualityWeightPlot function
-	
+
 28-Jan-2015 affylmGUI 1.40.1
 	Modified TclArrayVar function to access value of TclVarCount directly
 	Modified DESCRIPTION and NAMESPACE files to Import names as now required by R-3.1.2
 	Retained affyPLM in Depends field. All others in Imports field in DESCRIPTION and 
 	in the imports function in the NAMESPACE file.
 	Removed calls to Require function as not needed with above mods and assumption of correct installation.
-	
+
 17-Jan-2013 affylmGUI 1.32.2
 	Added Sys.sleep(0.1) calls before various tk commands. In particular before tkgrab.set, 
 	tkwait and some tkfocus and tkgrid commands. There were intermitent freezes and/or 
@@ -31,7 +38,7 @@
 
 17-Jul-2012 affylmGUI 1.31.1
 	Replaced calls to Biobase:::biocReposList() with calls to BiocInstaller biocinstallRepos()
-	
+
 8-Apr-2010 affylmGUI 1.21.0
 	fixed documentation bug relating to Filename argument in the openLimmaFile function
 	This version ready for release with Bioconductor 2.6 due on April 23 2010
