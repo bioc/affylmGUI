@@ -1,6 +1,12 @@
-
-import(limma, tcltk, affy, BiocInstaller, affyio, tkrplot, affyPLM, R2HTML, xtable, gcrma, AnnotationDbi)
-
 #  All functions exported other than those starting with "."
 exportPattern("^[^\\.]")
 
+importFrom("grDevices", "bitmap", "bringToTop", "dev.off", "dev.print", "gray", "jpeg", "pdf", "png", "postscript")
+importFrom("graphics", "abline", "image", "legend", "lines", "par", "plot", "plot.new", "rect", "text", "title")
+importFrom("stats", "model.matrix", "p.adjust")
+importFrom("utils", "available.packages", "browseURL", "citation", "contrib.url", "help", "help.start", "install.packages", "read.table", "winMenuAdd", "winMenuAddItem", "write.table")
+
+importFrom("BiocGenerics", "image")
+importMethodsFrom("affyPLM", "image")
+
+import(limma, tcltk, affy, BiocInstaller, affyio, tkrplot, affyPLM, R2HTML, xtable, gcrma)
