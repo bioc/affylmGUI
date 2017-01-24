@@ -33,7 +33,7 @@ ImageArrayPlot <- function(){
 			Try(opar<-par(bg="white"))
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 			Try(
-				image(
+				graphics::image(
 					1:ncol(RawAffyData),
 					1:nrow(RawAffyData),
 					log2(matrix(intensity(RawAffyData)[,slide],
@@ -2555,10 +2555,10 @@ ImageQualityWeightPlot <- function(){
 			###class(Pset) ###DEBUG
 			if (slide==1000000){
 				op <- par(mfrow = c((sqrt(NumSlides) + 1), (sqrt(NumSlides) + 1)),pty = "s",mar=c(0,0,2,0)+0.1)
-				image(Pset)#ie do all slides
+				BiocGenerics::image(Pset)#ie do all slides
 				par(op)
 			}else{
-				image(Pset, which = slide, main = plotTitle)
+				BiocGenerics::image(Pset, which = slide, main = plotTitle)
 			}
 			#pm.index <- unique(unlist(indexProbes(RawAffyData, "pm")))#returns a list with locations of the probes in all probe sets
 			#rows <- nrow(RawAffyData)
@@ -2681,10 +2681,10 @@ ImageQualityResidualPlot <- function(){
 			Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 			if (slide==1000000){
 				op <- par(mfrow = c((sqrt(NumSlides) + 1), (sqrt(NumSlides) + 1)),pty = "s",mar=c(0,0,2,0)+0.1)
-				image(Pset, type = residType)#ie do all slides
+				BiocGenerics::image(Pset, type = residType)#ie do all slides
 				par(op)
 			}else{
-				image(Pset, which = slide, type = residType, main = plotTitle)
+				BiocGenerics::image(Pset, which = slide, type = residType, main = plotTitle)
 			}
 			#pm.index <- unique(unlist(indexProbes(RawAffyData, "pm")))#returns a list with locations of the probes in all probe sets
 			#rows <- nrow(RawAffyData)

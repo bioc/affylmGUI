@@ -287,43 +287,39 @@ showCitations <- function(){
 	#citationOutput is the ouput from the citation("affylmGUI") command given at the R prompt.
 	citationOutput <-
 	"
-	affylmGUI is an implementation of a body of methodological research by the authors and coworkers. Please cite the
-	appropriate methodological papers whenever you use results from the limma software in a publication. Such citations
-	are the main means by which the authors receive professional credit for their work.
+	affylmGUI is an implementation of a body of methodological research by the authors and coworkers. Please cite
+	the appropriate methodological papers when you use results from affylmGUI in a publication. Such citations are
+	the main means by which the authors receive professional credit for their work.
 
-	Citing limma and affylmGUI in publications will usually involve citing one or more of the methodology papers that the
-	limma software is based on as well as citing the limma(Ref.2) and affylmGUI(Ref.5) software packages themselves.
+	Citing affylmGUI in publications will usually involve citing one or more of the methodology papers that the
+	software is based on as well as citing affylmGUI (Ref.5) itself.
 
-	If you use limma/affylmGUI for differential expression analysis, please cite reference 1 which describes the linear
+	If you use affylmGUI for differential expression analysis, please cite reference 1 which describes the linear
 	modeling approach implemented by lmFit and the empirical Bayes statistics implemented by eBayes, topTable etc.
 
-	To cite the limma software itself please refer to reference 2 which describes the software package in the context of
-	the Bioconductor project and surveys the range of experimental designs for which the package can be used, including
-	spotspecific dye-effects. The pre-processing capabilities of the package are also described but more briefly, with
-	examples of background correction, spot quality weights and filtering with control spots. This article is also the
-	best current reference for the normexp background correction method.
+	To cite other aspects of the limma software please refer to reference 2. 
 
 	To cite the GC robust multiarray average (GCRMA) background correction method please refer to citation 3.
 
 	To cite the robust multiarray average (RMA) background correction method please refer to citation 4.
 
-		1. Smyth, G. K. (2004). Linear models and empirical Bayes methods for assessing differential expression in
-		microarray experiments. Statistical Applications in Genetics and Molecular Biology Vol. 3, No. 1, Article 3.
+		1. 	Phipson, B, Lee, S, Majewski, IJ, Alexander, WS, and Smyth, GK (2016). Robust hyperparameter estimation
+		protects against hypervariable genes and improves power to detect differential expression. Annals of
+		Applied Statistics 10(2), 946-963.
 
-		2. Smyth, G. K. (2005). Limma: linear models for microarray data. In: 'Bioinformatics and Computational Biology
-		Solutions using R and Bioconductor'. R. Gentleman, V. Carey, S. Dudoit, R. Irizarry, W. Huber (eds), Springer, New
-		York, pages 397-420.
+		2. Ritchie, ME, Phipson, B, Wu, D, Hu, Y, Law, CW, Shi, W, and Smyth, GK (2015). limma powers differential
+		expression analyses for RNA-sequencing and microarray studies. Nucleic Acids Research 43(7), e47.
 
-		3. Zhijin Wu1, Rafael A. Irizarry, Robert Gentleman, Francisco Martinez-Murillo, Forrest Spencer. (2004). A Model
-		Based Background Adjustment for Oligonucleotide Expression Arrays In the Journal of the American Statistical
-		Association. Volume 99, Pages 909-917.
+		3. Wu, Z, Irizarry, RA, Gentleman, R, Martinez-Murillo, F, Spencer, F. (2004). A model based background
+		adjustment for oligonucleotide expression arrays. Journal of the American Statistical Association 99(468),
+		909-917.
 
-		4. Rafael A. Irizarry, Bridget Hobbs, Francois Collin, Yasmin D. Beazer-Barclay, Kristen J. Antonellis, Uwe Scherf,
-		Terence P. Speed. (2003). Exploration, normalization, and summaries of high density oligonucleotide array probe
-		level data In the Journal Biostatistics. Volume 4(2), Pages 249-264.
+		4. Irizarry, RA, Hobbs, B, Collin, F, Beazer-Barclay, YD, Antonellis, KJ, Scherf, U, Speed, TP (2003).
+		Exploration, normalization, and summaries of high density oligonucleotide array probe level data.
+		Biostatistics 4(2), 249-264.
 
-		5. James M. Wettenhall, Ken M. Simpson, Keith Satterley and Gordon K. Smyth. affylmGUI: a graphical user interface
-		for linear modeling of single channel microarray data. Bioinformatics, 22:897-899, 2006.
+		5. Wettenhall, JM, Simpson, KM, Satterley, K, and Smyth, GK (2006). affylmGUI: a graphical user
+		interface for linear modeling of single channel microarray data. Bioinformatics 22(7), 897-899.
 	"
 	#
 	citationNote <- "\nThis information is also displayed on the R console, where you may select and copy it."
@@ -3243,9 +3239,9 @@ evalRcode <- function(){
 		}else if(substring(fileName,len-1,len)!=".R"){
 			Try(fileName <- paste(fileName,".R",sep=""))
 		}
-		Try(chn <- tkopen(fileName, "w"))
-		Try(tkputs(chn, tclvalue(tkget(txt,"0.0","end"))))
-		Try(tkclose(chn))
+		Try(chn <- tclopen(fileName, "w"))
+		Try(tclputs(chn, tclvalue(tkget(txt,"0.0","end"))))
+		Try(tclclose(chn))
 		Try(wfile <<- fileName)
 		Try(tkfocus(txt))
 	} #end of SaveRSourceFile <- function()
@@ -3422,9 +3418,9 @@ evalRcode <- function(){
 				}else if(substring(fileName,len-3,len)!=".txt"){
 					Try(fileName <- paste(fileName,".txt",sep=""))
 				} #end of else/if(len<=4)
-				Try(chn <- tkopen(fileName,"w"))
-				Try(tkputs(chn, tclvalue(tkget(txt2,"0.0","end"))))
-				Try(tkclose(chn))
+				Try(chn <- tclopen(fileName,"w"))
+				Try(tclputs(chn, tclvalue(tkget(txt2,"0.0","end"))))
+				Try(tclclose(chn))
 			} #end of SaveTextResults <- function()
 			#
 			Try(topMenu2 <- tkmenu(tt2))
