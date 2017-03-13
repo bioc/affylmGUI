@@ -4,6 +4,11 @@
 	Edit NAMESPACE to import Windows-specific functions from grDevices and
 	utils only when Windows is being run.
 
+24-Jan-2017 affylmGUI 1.49.1
+	Replace deprecated tcltk functions.
+	Make sure that image method is imported from affyPLM.
+	Update citation advice.
+
 23 Nov 2015 affylmGUI 1.45.1
 	Simplify CITATION to one article
 	Add Gordon Smyth to maintainer list
