@@ -1,5 +1,9 @@
 ------------------------- affylmGUI ChangeLog -------------------------
 
+14-Mar-2017 affylmGUI 1.49.2
+	Edit NAMESPACE to import Windows-specific functions from grDevices and
+	utils only when Windows is being run.
+
 23 Nov 2015 affylmGUI 1.45.1
 	Simplify CITATION to one article
 	Add Gordon Smyth to maintainer list

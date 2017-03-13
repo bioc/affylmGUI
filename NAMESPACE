@@ -1,10 +1,15 @@
 #  All functions exported other than those starting with "."
 exportPattern("^[^\\.]")
 
-importFrom("grDevices", "bitmap", "bringToTop", "dev.off", "dev.print", "gray", "jpeg", "pdf", "png", "postscript")
+importFrom("grDevices", "bitmap", "dev.off", "dev.print", "gray", "jpeg", "pdf", "png", "postscript")
 importFrom("graphics", "abline", "image", "legend", "lines", "par", "plot", "plot.new", "rect", "text", "title")
 importFrom("stats", "model.matrix", "p.adjust")
-importFrom("utils", "available.packages", "browseURL", "citation", "contrib.url", "help", "help.start", "install.packages", "read.table", "winMenuAdd", "winMenuAddItem", "write.table")
+importFrom("utils", "available.packages", "browseURL", "citation", "contrib.url", "help", "help.start", "install.packages", "read.table", "write.table")
+
+if( tools:::.OStype() == "windows" ) {
+	importFrom("grDevices", "bringToTop")
+	importFrom("utils", "winMenuAdd", "winMenuAddItem")
+}
 
 importFrom("BiocGenerics", "image")
 importMethodsFrom("affyPLM", "image")

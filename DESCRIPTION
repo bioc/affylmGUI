@@ -1,6 +1,6 @@
 Package: affylmGUI
-Version: 1.49.1
-Date: 2017-01-24
+Version: 1.49.2
+Date: 2017-03-14
 Title: GUI for limma package with Affymetrix microarrays
 Author: James Wettenhall [cre,aut], Ken Simpson [aut], Gordon Smyth [aut], Keith Satterley [ctb], Yifang Hu [ctb]
 Maintainer: Yifang Hu <hu@wehi.edu.au>, Gordon Smyth <smyth@wehi.edu.au>, Keith Satterley <keith@wehi.edu.au>
