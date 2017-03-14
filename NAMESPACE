@@ -13,5 +13,8 @@ if( tools:::.OStype() == "windows" ) {
 
 importFrom("BiocGenerics", "image")
 importMethodsFrom("affyPLM", "image")
+importFrom("affy", "rma")
+importFrom("gcrma", "gcrma")
+importFrom("affyPLM", "fitPLM")
 
-import(limma, tcltk, affy, BiocInstaller, affyio, tkrplot, affyPLM, R2HTML, xtable, gcrma)
+import(limma, tcltk, affy, BiocInstaller, affyio, tkrplot, affyPLM, R2HTML, xtable)
