@@ -11,10 +11,11 @@ if( tools:::.OStype() == "windows" ) {
 	importFrom("utils", "winMenuAdd", "winMenuAddItem")
 }
 
+importFrom("BiocInstaller", "biocinstallRepos")
 importFrom("BiocGenerics", "image")
-importMethodsFrom("affyPLM", "image")
 importFrom("affy", "rma")
-importFrom("gcrma", "gcrma")
 importFrom("affyPLM", "fitPLM")
+importMethodsFrom("affyPLM", "image")
+importFrom("gcrma", "gcrma")
 
-import(limma, tcltk, affy, BiocInstaller, affyio, tkrplot, affyPLM, R2HTML, xtable)
+import(limma, tcltk, affy, affyio, tkrplot, affyPLM, R2HTML, xtable)

@@ -2091,7 +2091,7 @@ affyPlotMAcontrast <- function(){
 			Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
 			Try(dataName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]] )
 			##Try(availablePackages <- available.packages(contriburl=contrib.url(Biobase::biocReposList())))
-			Try(availablePackages <- available.packages(contriburl=contrib.url(BiocInstaller::biocinstallRepos())))
+			Try(availablePackages <- available.packages(contriburl=contrib.url(biocinstallRepos())))
 			Try(matchIndex <- match(dataName,availablePackages[,"Package"]))
 			if (!is.na(matchIndex)){ #ie. if there is a match to this package name
 				##Try(install.packages(pkgs=dataName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))

@@ -1,19 +1,37 @@
 ------------------------- affylmGUI ChangeLog -------------------------
 
+ 4-May-2018 affylmGUI 1.55.2
+	NAMESPACE file: import specific function from BiocInstaller
+	instead of importing whole package.
+
+14-Mar-2018 affylmGUI 1.55.1
+	DESCRIPTION file: remove Yifang Hu and Keith Satterley as maintainers
+
 14-Mar-2017 affylmGUI 1.49.2
-	Edit NAMESPACE to import Windows-specific functions from grDevices and
+	Edits to NAMESPACE file: importFrom gcrma instead import whole
+	package; import Windows-specific functions from grDevices and
 	utils only when Windows is being run.
 
 24-Jan-2017 affylmGUI 1.49.1
 	Replace deprecated tcltk functions.
-	Make sure that image method is imported from affyPLM.
 	Update citation advice.
+	Import specific functions from grDevices, graphics, stats, utils,
+	BiocGenerics and affyPLM instead of importing whole packages.
+	Import image method from affyPLM.
 
 23 Nov 2015 affylmGUI 1.45.1
-	Simplify CITATION to one article
 	Add Gordon Smyth to maintainer list
+	Simplify CITATION to one article
 	Care to use full argument names in function calls
-	Move html document files from vignettes to inst/doc
+	Move html document files from vignettes directory to inst/doc
+
+17 July 2015 affylmGUI 1.43.2
+	Gordon Smyth takes over as maintainer.
+	Revise package Title in DESCRIPTION file.
+	
+16 July 2015 affylmGUI 1.43.1
+	Updates to DESCRIPTION file: expanded Description, changed
+	License from LGPL to GPL (>=2) and updated biocViews list.
 
 12-Feb 2015 affylmGUI 1.40.2
 	Replace ".find.package" function with "find.package" function as it was defunct
