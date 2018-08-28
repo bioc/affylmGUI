@@ -4,7 +4,7 @@ Date: 2017-05-04
 Title: GUI for limma Package with Affymetrix Microarrays
 Author: James Wettenhall [cre,aut], Ken Simpson [aut], Gordon Smyth [aut], Keith Satterley [ctb]
 Maintainer: Gordon Smyth <smyth@wehi.edu.au>
-Imports: grDevices, graphics, stats, utils, tcltk, tkrplot, limma, affy, affyio, affyPLM, gcrma, BiocGenerics, BiocInstaller, R2HTML, xtable
+Imports: grDevices, graphics, stats, utils, tcltk, tkrplot, limma, affy, affyio, affyPLM, gcrma, BiocGenerics, BiocManager, R2HTML, xtable
 Description: A Graphical User Interface (GUI) for analysis of Affymetrix microarray gene expression data using the affy and limma packages.
 License: GPL (>=2)
 URL: http://bioinf.wehi.edu.au/affylmGUI/
