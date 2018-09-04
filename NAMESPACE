@@ -11,7 +11,7 @@ if( tools:::.OStype() == "windows" ) {
 	importFrom("utils", "winMenuAdd", "winMenuAddItem")
 }
 
-importFrom("BiocInstaller", "biocinstallRepos")
+importFrom("BiocManager", "repositories")
 importFrom("BiocGenerics", "image")
 importFrom("affy", "rma")
 importFrom("affyPLM", "fitPLM")

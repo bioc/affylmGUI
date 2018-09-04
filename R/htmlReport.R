@@ -997,7 +997,7 @@ ExportHTMLreport <- function(){
 		Try(cdfName     <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])#Get the cdfname from the RawAffyData
 		if(!(cdfName %in% .packages(all.available=TRUE))){#then check to see if the cdfname package is available on this computer
 			##Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))#if it is not available then install it on this computer over the internet from the Bioc repository
-			Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=biocinstallRepos(), dependencies=c("Depends", "Imports")))#if it is not available then install it on this computer over the internet from the Bioc repository
+			Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=repositories(), dependencies=c("Depends", "Imports")))#if it is not available then install it on this computer over the internet from the Bioc repository
 			Try(assign("cdfName",cdfName,affylmGUIenvironment)) #and assign this cdfname to the  affylmGUI environment
 		}#end of if (!(cdfName %in% .packages(all.available=TRUE)))
 		Try(cdfenv      <- getCdfInfo(RawAffyData)) #Now get the cdfenv from the RawAffyData
@@ -1011,7 +1011,7 @@ ExportHTMLreport <- function(){
 				Try(cdfName     <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])#get the cdfname from the RawaffyData object
 				if(!(cdfName %in% .packages(all.available=TRUE))){
 					##Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))
-					Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=biocinstallRepos(), dependencies=c("Depends", "Imports")))
+					Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=repositories(), dependencies=c("Depends", "Imports")))
 				}
 				Try(
 					if( (cdfName %in% .packages(all.available=TRUE)) ){

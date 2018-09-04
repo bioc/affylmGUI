@@ -1,14 +1,14 @@
-if(require(BiocInstaller)==FALSE){
+if(require(BiocManager)==FALSE){
 	if(interactive()){
 		tkmessageBox(
 			title="An error has occured!",
-			message=paste("Cannot find package BiocInstaller"),
+			message=paste("Cannot find package BiocManager"),
 			icon="error",
 			type="ok"
 		)
 	} #end of if(interactive())
-	stop("Cannot find package BiocInstaller")
-} #end of if(require(BiocInstaller)==FALSE)
+	stop("Cannot find package BiocManager")
+} #end of if(require(BiocManager)==FALSE)
 #
 #
 #
@@ -820,7 +820,7 @@ OpenCDFFile <- function(){
 	Try(tclvalue(.affylmGUIglobals$CDFfileName) <-paste(CDFFile))
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 	##Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))###inserted by keith
-	Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=biocinstallRepos(), dependencies=c("Depends", "Imports")))###inserted by keith
+	Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=repositories(), dependencies=c("Depends", "Imports")))###inserted by keith
 	Try(assign("cdfName",cdfName,affylmGUIenvironment))
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 	Try(ArraysLoaded <- FALSE)
@@ -2508,7 +2508,7 @@ showTopTable <- function(...,export=FALSE){
 	Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])
 	if(!(cdfName %in% .packages(all.available=TRUE))){
 		##Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))
-		Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=biocinstallRepos(), dependencies=c("Depends", "Imports")))
+		Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=repositories(), dependencies=c("Depends", "Imports")))
 		Try(assign("cdfName",cdfName,affylmGUIenvironment))
 	} #end of if(!(cdfName %in% .packages(all.available=TRUE)))
 	Try(cdfenv      <- getCdfInfo(RawAffyData))
@@ -2522,7 +2522,7 @@ showTopTable <- function(...,export=FALSE){
 			Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])
 			if(!(cdfName %in% .packages(all.available=TRUE))){
 				##Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))###inserted by keith
-				Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=biocinstallRepos(), dependencies=c("Depends", "Imports")))###inserted by keith
+				Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=repositories(), dependencies=c("Depends", "Imports")))###inserted by keith
 			}
 			Try(
 				if( (cdfName %in% .packages(all.available=TRUE)) ){
