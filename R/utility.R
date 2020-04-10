@@ -24,3 +24,10 @@ ALGchangeLog <- function(n=20)
 	writeLines(readLines(system.file("doc","changelog.txt",package="affylmGUI"),n=n))
 }
 
+.cdfName2AnnPkg <- function(x)
+#	Construct probe annotation package names from cdfName
+#	Gordon Smyth
+#	Created 10 April 2020
+{
+	paste0(x,".db")
+}

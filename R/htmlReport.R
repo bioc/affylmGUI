@@ -994,51 +994,47 @@ ExportHTMLreport <- function(){
 	#
 	if(ExportTopNNToptables || ExportCompleteToptables){
 		Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
-		Try(cdfName     <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])#Get the cdfname from the RawAffyData
-		if(!(cdfName %in% .packages(all.available=TRUE))){#then check to see if the cdfname package is available on this computer
-			##Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))#if it is not available then install it on this computer over the internet from the Bioc repository
-			Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=repositories(), dependencies=c("Depends", "Imports")))#if it is not available then install it on this computer over the internet from the Bioc repository
-			Try(assign("cdfName",cdfName,affylmGUIenvironment)) #and assign this cdfname to the  affylmGUI environment
-		}#end of if (!(cdfName %in% .packages(all.available=TRUE)))
-		Try(cdfenv      <- getCdfInfo(RawAffyData)) #Now get the cdfenv from the RawAffyData
-		Try(genelist    <- data.frame(ID=I(ls(cdfenv)))) #get the geneID's from cdfenv and put them in the genelist. Note that the genelist = GeneID + GeneSymbol+GeneName
-		Try(geneNames   <- get("geneNames"  ,envir=affylmGUIenvironment)) #get the geneNames   from the affylmGUI environment
-		Try(geneSymbols <- get("geneSymbols",envir=affylmGUIenvironment)) #get the genesymbols from the affylmGUI environment
+		Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])
+		if(!(.cdfName2AnnPkg(cdfName) %in% .packages(all.available=TRUE))){
+			Try(install.packages(pkgs=.cdfName2AnnPkg(cdfName), lib=.libPaths(), repos=repositories(), dependencies=c("Depends", "Imports")))
+			Try(assign("cdfName",cdfName,affylmGUIenvironment))
+		}
+		Try(cdfenv      <- getCdfInfo(RawAffyData))
+		Try(genelist    <- data.frame(ID=I(ls(cdfenv))))
+		Try(geneNames   <- get("geneNames",  envir=affylmGUIenvironment))
+		Try(geneSymbols <- get("geneSymbols",envir=affylmGUIenvironment))
 		Try(
-			if(length(geneNames)==0 || length(geneSymbols)==0){
+			if(!length(geneNames) || !length(geneSymbols)){
 				Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-				Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))#Get the RawAffyData for this if condition
-				Try(cdfName     <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])#get the cdfname from the RawaffyData object
+				Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
+				Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])
 				if(!(cdfName %in% .packages(all.available=TRUE))){
-					##Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=Biobase::biocReposList(), dependencies=c("Depends", "Imports")))
-					Try(install.packages(pkgs=cdfName, lib=.libPaths(), repos=repositories(), dependencies=c("Depends", "Imports")))
+					Try(install.packages(pkgs=.cdfName2AnnPkg(cdfName), lib=.libPaths(), repos=repositories(), dependencies=c("Depends", "Imports")))###inserted by keith
 				}
 				Try(
-					if( (cdfName %in% .packages(all.available=TRUE)) ){
-						Require(cdfName)
-						Try(code2eval <- paste("Try(geneNames <- as.character(unlist(lapply(mget(ls(cdfenv),envir=",cdfName,"GENENAME),function(nm) return(paste(nm,collapse=\"; \"))))))",sep=""))
-						Try(eval(parse(text=code2eval)))
+					if( (.cdfName2AnnPkg(cdfName) %in% .packages(all.available=TRUE)) ){
+						AnnPkg <- .cdfName2AnnPkg(cdfName)
+						suppressPackageStartupMessages(requireNamespace(AnnPkg,quietly=TRUE))
+						Try(probeset2GENENAME <- getFromNamespace(paste0(cdfName,"GENENAME"),AnnPkg))
+						Try(geneNames <- AnnotationDbi::mget(ls(cdfenv),envir=probeset2GENENAME))
+						Try(geneNames <- unlist(lapply(geneNames,function(x) paste(x,collapse="; "))))
 						Try(assign("geneNames",geneNames,affylmGUIenvironment))
-						#get the geneSymbols from the cdfName
-						Try(code2eval <- paste("Try(geneSymbols <- as.character(unlist(lapply(mget(ls(cdfenv),envir=",cdfName,"SYMBOL),function(sym) return(paste(sym,collapse=\"; \"))))))",sep=""))
-						Try(eval(parse(text=code2eval)))
+						Try(probeset2SYMBOL <- getFromNamespace(paste0(cdfName,"SYMBOL"),AnnPkg))
+						Try(geneSymbols <- AnnotationDbi::mget(ls(cdfenv),envir=probeset2SYMBOL))
+						Try(geneSymbols <- unlist(lapply(geneSymbols,function(x) paste(x,collapse="; "))))
 						Try(assign("geneSymbols",geneSymbols,affylmGUIenvironment))
+						Try(genelist <- data.frame(ID=ls(cdfenv),Symbol=geneSymbols,Name=geneNames,stringsAsFactors=FALSE))
 						Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-						#make up the complete genelist = Id+Symbol+Name
-						Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols),as.matrix(geneNames)))
-						Try(colnames(genelist) <- c("ID","Symbol","Name"))
 					}else{
-						Try(genelist <- data.frame(ID=I(ls(cdfenv))))
+						Try(genelist <- data.frame(ID=ls(cdfenv),stringsAsFactors=FALSE))
 						Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
-					} #end of else/if( (cdfName %in% .packages(all.available=TRUE)) )
-				) #end of Try
+					}
+				)
 			}else{
-				#if the geneNames and geneSymbols exist, then create the genelist
-				Try(genelist <- cbind(as.matrix(as.character(ls(cdfenv))),as.matrix(geneSymbols),as.matrix(geneNames)))
-				Try(colnames(genelist) <- c("ID","Symbol","Name"))
-			}#end of else/if(length(geneNames)==0||length(geneSymbols)==0)
-		) #end of Try
-	}#end of if (ExportTopNNToptables || ExportCompleteToptables)
+				Try(genelist <- data.frame(ID=ls(cdfenv),Symbol=geneSymbols,Name=geneNames,stringsAsFactors=FALSE))
+			}
+		)
+	}
 	#
 	if(ExportTopNNToptables){
 		Try(
@@ -1049,11 +1045,7 @@ ExportHTMLreport <- function(){
 			) #end of HTML.title
 		) #end of Try
 		Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
-		Try(
-			if(!("Amean" %in% names(fit))){
-				fit$Amean <- rowMeans(NormalizedAffyData.exprs)
-			}
-		)
+		Try(if(is.null(fit$Amean)) fit$Amean <- rowMeans(NormalizedAffyData.exprs))
 		Try(fit$genes <- genelist)
 		#
 		for(coef in (1:NumContrasts)){
