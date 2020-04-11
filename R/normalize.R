@@ -74,7 +74,7 @@ NormalizeNow <- function(){
 			Try(tkinsert(.affylmGUIglobals$mainTree,"end","NormalizedAffyData","NormalizedAffyData.Status" ,text="Available (PLM)",font=.affylmGUIglobals$affylmGUIfontTree))
 		}
 	)
-}#end of NormalizeNow <- function(){
+}
 
 GetNormalizationMethod <- function(){
 	Try(ttGetNormalizationMethod <- tktoplevel(.affylmGUIglobals$ttMain))
@@ -128,7 +128,7 @@ GetNormalizationMethod <- function(){
 	Try(tkwait.window(ttGetNormalizationMethod))
 	#
 	return (ReturnVal)
-}#end of GetNormalizationMethod <- function()
+}
 
 ExportNormalizedExpressionValues <- function(){
 	Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
@@ -151,7 +151,7 @@ ExportNormalizedExpressionValues <- function(){
 			tkmessageBox(title="Export Normalized Expression Values",message="An error or cancellation occured while trying to normalize the data.")
 			return()
 		}
-	)#end of Try
+	)
 	Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
 	Try(
 		FileName <- tclvalue(
@@ -161,9 +161,9 @@ ExportNormalizedExpressionValues <- function(){
 					"_exprs.xls",
 					sep=""),
 				filetypes="{{Tab-Delimited Text Files} {.txt .xls}} {{All files} *}"
-			)#end of tkgetSaveFile
-		)#end of FileName <- tclvalue
-	)#end of Try
+			)
+		)
+	)
 	Try(if (!nchar(FileName)) return())
 	Try(len <- nchar(FileName))
 	if (len <= 4){
@@ -172,4 +172,4 @@ ExportNormalizedExpressionValues <- function(){
 		Try(FileName <- paste(FileName,".xls",sep=""))
 	}
 	Try(write.table(NormalizedAffyData.exprs,file=FileName,sep="\t",quote=FALSE,col.names=NA))
-}#end of ExportNormalizedExpressionValues <- function()
+}

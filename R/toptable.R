@@ -22,23 +22,22 @@ topTable2 <- function (fit, coef = 1, number = 10, genelist = NULL, adjust.metho
 			adjust.method = adjust.method, 
 			sort.by = sort.by
 		)
-} #end of topTable2 <- function (fit, coef = 1, number = 10, genelist = NULL, adjust.method = "holm", sort.by = "B")
-#
-#
+}
+
 toptable2 <- function (fit, coef = 1, number = 10, genelist = NULL, A = NULL, eb = NULL, adjust.method = "holm", sort.by = "B", ...){
 		if (is.null(eb)){
 			fit$coefficients   <- as.matrix(fit$coef)[, coef]
 			fit$stdev.unscaled <- as.matrix(fit$stdev)[, coef]
 			eb <- ebayes(fit, ...)
 			coef <- 1
-		} #end of if (is.null(eb)) 
+		}
 		M <- as.matrix(fit$coef)[, coef]
 		if (is.null(A)){
 			if (sort.by == "A") 
 				stop("Cannot sort by A-values as these have not been given")
 		}else{
 			if (NCOL(A) > 1) A <- rowMeans(A, na.rm = TRUE)
-		} #end of else/if (is.null(A))
+		}
 		tstat   <- as.matrix(eb$t)[, coef]
 		P.Value <- as.matrix(eb$p)[, coef]
 		B <- as.matrix(eb$lods)[, coef]
@@ -52,7 +51,7 @@ toptable2 <- function (fit, coef = 1, number = 10, genelist = NULL, A = NULL, eb
 			t = order(abs(tstat), decreasing = TRUE), 
 			B = order(B,          decreasing = TRUE),
 			order(B,              decreasing = TRUE)
-		) #end of ord <- switch
+		)
 		top <- ord[1:number]
 		i <- is.na(P.Value)
 		if (any(i)) 
@@ -70,4 +69,4 @@ toptable2 <- function (fit, coef = 1, number = 10, genelist = NULL, A = NULL, eb
 		tab <- data.frame(tab, t = tstat[top], P.Value = P.Value[top], B = B[top])
 		rownames(tab) <- as.character(1:length(M))[top]
 		tab
-} #end of toptable2 <- function (fit, coef = 1, number = 10, genelist = NULL, A = NULL, eb = NULL, adjust.method = "holm", sort.by = "B", ...)
+}
