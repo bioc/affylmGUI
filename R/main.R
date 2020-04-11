@@ -1,4 +1,4 @@
-if(require(BiocManager)==FALSE){
+if(!require(BiocManager)){
 	if(interactive()){
 		tkmessageBox(
 			title="An error has occured!",
@@ -10,7 +10,7 @@ if(require(BiocManager)==FALSE){
 	stop("Cannot find package BiocManager")
 }
 
-if(require(limma)==FALSE){
+if!(require(limma)){
 	if(interactive()){
 		tkmessageBox(
 			title="An error has occured!",
@@ -22,7 +22,7 @@ if(require(limma)==FALSE){
 	stop("Cannot find package limma")
 }
 
-if(require(affy)==FALSE){
+if(!require(affy)){
 	if(interactive()){
 		tkmessageBox(
 			title="An error has occured!",
@@ -34,7 +34,7 @@ if(require(affy)==FALSE){
 	stop("Cannot find package affy")
 }
 
-if(require(tcltk)==FALSE){
+if(!require(tcltk)){
 	if(interactive()){
 		tkmessageBox(
 			title="An error has occured!",
@@ -311,7 +311,7 @@ showChangeLog <- function(n=20){
 Try(
 	onDestroy <- function(){
 		Try(.JustAskedWhetherToSave <- get(".JustAskedWhetherToSave",envir=.GlobalEnv))
-		Try(if(.JustAskedWhetherToSave==FALSE)
+		Try(if(!.JustAskedWhetherToSave)
 		{
 			Try(LimmaFileName <- get("LimmaFileName",envir=affylmGUIenvironment))
 			Try(limmaDataSetNameText <- get("limmaDataSetNameText",envir=affylmGUIenvironment))
@@ -338,7 +338,7 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 	# through the Control Panel) then click on Appearance, and then change the affylmGUIfont size for menu,window title, etc.)
 	# Rather than change each affylmGUIfont (menu,window title,...) manually each time, I save the changes as a "scheme".
 	Try(affylmGUIglobals <- list())
-	Try(if(BigfontsForaffylmGUIpresentation==TRUE)
+	Try(if(BigfontsForaffylmGUIpresentation)
 		Try(affylmGUIglobals$affylmGUIpresentation <- TRUE)
 	else
 		Try(affylmGUIglobals$affylmGUIpresentation <- FALSE))
@@ -414,42 +414,42 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 
 	Try(affylmGUIglobals <- get(".affylmGUIglobals",envir=.GlobalEnv))
 	Try(
-		if(.affylmGUIglobals$affylmGUIpresentation==TRUE)
+		if(.affylmGUIglobals$affylmGUIpresentation)
 			Try(affylmGUIglobals$affylmGUIfont1	<- tkfont.create(family="times",size=48,weight="bold",slant="italic"))
 		else
 			Try(affylmGUIglobals$affylmGUIfont1	<- tkfont.create(family="times",size=24,weight="bold",slant="italic"))
 	)
 	Try(
-		if(.affylmGUIglobals$affylmGUIpresentation==TRUE)
+		if(.affylmGUIglobals$affylmGUIpresentation)
 			Try(affylmGUIglobals$affylmGUIfont2 <- tkfont.create(family="arial",size=16))
 		else
 			Try(affylmGUIglobals$affylmGUIfont2 <- tkfont.create(family="arial",size=10))
 	)
 	Try(
-		if(.affylmGUIglobals$affylmGUIpresentation==TRUE)
+		if(.affylmGUIglobals$affylmGUIpresentation)
 			Try(affylmGUIglobals$affylmGUIfontTree <- tkfont.create(family="arial",size=14))
 		else
 			Try(affylmGUIglobals$affylmGUIfontTree <- tkfont.create(family="arial",size=10))
 	)
 
-	Try(if(.affylmGUIglobals$affylmGUIpresentation==TRUE)
+	Try(if(.affylmGUIglobals$affylmGUIpresentation)
 		Try(affylmGUIglobals$affylmGUIfontTable <- tkfont.create(family="arial",size=16))
 	else
 		Try(affylmGUIglobals$affylmGUIfontTable <- tkfont.create(family="arial",size=10))
 	)
-	Try(if(.affylmGUIglobals$affylmGUIpresentation==TRUE)
+	Try(if(.affylmGUIglobals$affylmGUIpresentation)
 		Try(affylmGUIglobals$affylmGUIfontTopTable <- tkfont.create(family="arial",size=12,weight="bold"))
 	else
 		Try(affylmGUIglobals$affylmGUIfontTopTable <- affylmGUIglobals$affylmGUIfontTable)
 	)
 
-	Try(if(.affylmGUIglobals$affylmGUIpresentation==TRUE)
+	Try(if(.affylmGUIglobals$affylmGUIpresentation)
 		Try(affylmGUIglobals$affylmGUIfont2b <- tkfont.create(family="arial",size=16,weight="bold"))
 	else
 		Try(affylmGUIglobals$affylmGUIfont2b <- tkfont.create(family="arial",size=10,weight="bold"))
 	)
 
-	Try(if(.affylmGUIglobals$affylmGUIpresentation==TRUE)
+	Try(if(.affylmGUIglobals$affylmGUIpresentation)
 		Try(affylmGUIglobals$affylmGUIfontCourier <- tkfont.create(family="courier",size=16))
 	else
 		Try(affylmGUIglobals$affylmGUIfontCourier <- tkfont.create(family="courier",size=10))
@@ -457,13 +457,13 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 
 	Try(affylmGUIglobals$mainTreeWidth <- 30)
 
-	Try(if(.affylmGUIglobals$affylmGUIpresentation==TRUE)
+	Try(if(.affylmGUIglobals$affylmGUIpresentation)
 		Try(affylmGUIglobals$ContrastParameterizationTREEWidth <- 40)
 	else
 		Try(affylmGUIglobals$ContrastParameterizationTREEWidth <- 30)
 	)
 
-	Try(if(.affylmGUIglobals$affylmGUIpresentation==TRUE)
+	Try(if(.affylmGUIglobals$affylmGUIpresentation)
 		{
 			Try(affylmGUIglobals$ContrastParameterizationTREEHeight <- 20)
 			Try(affylmGUIglobals$mainTreeHeight <- 20)
@@ -492,12 +492,12 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 	Try(oldOptions <- options(warn=-1)) # Otherwise R complains that I'm trying to set main in plots, i.e. set a plot title)
 	# Maybe it would be nice to eventually use the MainFrame widget from BWidget so we can have a nice toolbar etc.
 
-	Try(if(.affylmGUIglobals$affylmGUIpresentation==FALSE)
+	Try(if(!.affylmGUIglobals$affylmGUIpresentation)
 		Try(mainFrame <- tkframe(.affylmGUIglobals$ttMain,relief="groove",borderwidth="2"))
 	else
 		Try(mainFrame <- tkframe(.affylmGUIglobals$ttMain))
 	)
-	Try(if(.affylmGUIglobals$affylmGUIpresentation==FALSE)
+	Try(if(!.affylmGUIglobals$affylmGUIpresentation)
 		{
 			Try(toolbarFrame <- tkframe(mainFrame,relief="groove",borderwidth="2"))
 			Try(tb <- tkframe(toolbarFrame,relief="groove",borderwidth="2"))
@@ -531,7 +531,7 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 	Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
 
 	Try(tkgrid(tklabel(mainFrame,text="         "),columnspan=3))
-	Try(if(.affylmGUIglobals$affylmGUIpresentation==TRUE)
+	Try(if(.affylmGUIglobals$affylmGUIpresentation)
 		Try(tkgrid(tklabel(mainFrame,text="affylmGUI",font=.affylmGUIglobals$affylmGUIfont1),column=1,columnspan=3,sticky="ew"))
 	else
 		Try(tkgrid(tklabel(mainFrame,text="     affylmGUI ",font=.affylmGUIglobals$affylmGUIfont1),column=2,sticky="ew"))
@@ -669,7 +669,7 @@ affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
 	Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
 
 	Try(
-		if(.affylmGUIglobals$affylmGUIpresentation==FALSE){
+		if(!.affylmGUIglobals$affylmGUIpresentation){
 			Try(labelStatusBar <- tklabel(.affylmGUIglobals$ttMain,font=.affylmGUIglobals$affylmGUIfont2))
 			Try(tkgrid(labelStatusBar,sticky="w"))
 			Try(CurrentStatus <- tclVar("    "))
@@ -854,13 +854,13 @@ GetContrasts <- function(NumContrasts=0){
 
 	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
 
-	if(ArraysLoaded==FALSE){
-			Try(tkmessageBox(title="Contrasts Matrix",message="No arrays have been loaded.	Please try New or Open from the File menu.",type="ok",icon="error"))
-			Try(tkfocus(.affylmGUIglobals$ttMain))
-			return()
+	if(!ArraysLoaded){
+		Try(tkmessageBox(title="Contrasts Matrix",message="No arrays have been loaded.	Please try New or Open from the File menu.",type="ok",icon="error"))
+		Try(tkfocus(.affylmGUIglobals$ttMain))
+		return()
 	}
 
-	if(LinearModelFit.Available==FALSE){
+	if(!LinearModelFit.Available){
 		Try(ComputeLinearModelFit())
 	#		Try(tkmessageBox(title="Compute Contrasts",message="There is no linear model fit available.	Select \"Compute Linear Model Fit\" from the \"Linear Model\" menu.",type="ok",icon="error"))
 	#		Try(tkfocus(.affylmGUIglobals$ttMain))
@@ -1129,7 +1129,7 @@ GetContrasts <- function(NumContrasts=0){
 				Try(.Tcl(paste("ComboBox",.Tk.ID(plusOrMinusDropDown),"-editable false -values",plusOrMinusTclListAsString)))
 				Try(tcl(.Tk.ID(plusOrMinusDropDown),"setvalue","first"))
 				Try(
-					if(.affylmGUIglobals$affylmGUIpresentation==TRUE){
+					if(.affylmGUIglobals$affylmGUIpresentation){
 						Try(tkconfigure(FirstDropDownColumn,width=10))
 						Try(tkconfigure(SecondDropDownColumn,width=10))
 						Try(tkconfigure(plusOrMinusDropDown,width=10))
@@ -1666,7 +1666,7 @@ ViewExistingContrastParameterization <- function(){
 	Try(ContrastsContrastParameterizationListNode <- paste("ContrastParameterizations.",.affylmGUIglobals$ContrastParameterizationTREEIndex,".",.affylmGUIglobals$ContrastParameterizationTREEIndex, sep=""))
 	Try(contrastsList <- ContrastParameterizationList[[ContrastParameterizationNameNode]]$contrastsMatrixInList)
 	Try(
-		if(contrastsList$contrastsCreatedFromDropDowns==FALSE){
+		if(!contrastsList$contrastsCreatedFromDropDowns){
 			Try(ViewContrastsMatrixInTable(contrastsList,contrastParameterizationIndex))
 		}else{
 			Try(ViewContrastsMatrixAsPairs(contrastsMatrix="Contrasts",contrastsList,contrastParameterizationIndex))
@@ -1679,7 +1679,7 @@ ViewRNATargets <- function(){
 	Try(Targets <- get("Targets",envir=affylmGUIenvironment))
 	Try(ArraysLoaded	<- get("ArraysLoaded", envir=affylmGUIenvironment))
 
-	if(ArraysLoaded==FALSE){
+	if(!ArraysLoaded){
 		Try(tkmessageBox(title="RNA Targets",message="No arrays have been loaded.	Please try New or Open from the File menu.",type="ok",icon="error"))
 		Try(tkfocus(.affylmGUIglobals$ttMain))
 		return()
@@ -1864,13 +1864,13 @@ ComputeContrasts <- function(){
 	Try(ArraysLoaded	                  <- get("ArraysLoaded",                        envir=affylmGUIenvironment))
 	Try(LinearModelFit.Available              <- get("LinearModelFit.Available",            envir=affylmGUIenvironment))
 
-	if(ArraysLoaded==FALSE){
+	if(!ArraysLoaded){
 		Try(tkmessageBox(title="Compute Contrasts",message="No arrays have been loaded.	Please try New or Open from the File menu.",type="ok",icon="error"))
 		Try(tkfocus(.affylmGUIglobals$ttMain))
 		return()
 	}
 
-	if(LinearModelFit.Available==FALSE){
+	if(!LinearModelFit.Available){
 		Try(ComputeLinearModelFit())
 		Try(NumParameters <- get("NumParameters",envir=affylmGUIenvironment))
 		#Try(tkmessageBox(title="Compute Contrasts",message="There is no linear model fit available.	Select \"Compute Linear Model Fit\" from the \"Linear Model\" menu.",type="ok",icon="error"))
@@ -1912,7 +1912,7 @@ ComputeContrasts <- function(){
 	)
 
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-	Try(if(ebayesAvailable==TRUE)
+	Try(if(ebayesAvailable)
 		Try(contrastsEbayes <- eBayes(contrastsFit)))
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 	Try(ContrastParameterizationNameText <- GetContrastParameterizationName())
@@ -1981,7 +1981,7 @@ ComputeContrasts <- function(){
 
 	Try(ContrastParameterizationList[[ContrastParameterizationNameNode]]$fit <- contrastsFit)
 	Try(
-		if(ebayesAvailable==TRUE){
+		if(ebayesAvailable){
 			Try(ContrastParameterizationList[[ContrastParameterizationNameNode]]$eb	<- contrastsEbayes)
 		}else{
 			Try(ContrastParameterizationList[[ContrastParameterizationNameNode]]$eb	<- list())
@@ -2012,7 +2012,7 @@ ComputeContrasts <- function(){
 	Try(EmpiricalBayesNode			 <- paste("EmpiricalBayesNode.",.affylmGUIglobals$ContrastParameterizationTREEIndex))
 	Try(EmpiricalBayesStatusNode <- paste("EmpiricalBayesStatusNode.",.affylmGUIglobals$ContrastParameterizationTREEIndex))
 	Try(tkinsert(.affylmGUIglobals$ContrastParameterizationTREE,"end",ContrastParameterizationNameNode,EmpiricalBayesNode,text="Empirical Bayes Statistics",font=.affylmGUIglobals$affylmGUIfontTree))
-	Try(if(ebayesAvailable==TRUE)
+	Try(if(ebayesAvailable)
 		Try(tkinsert(.affylmGUIglobals$ContrastParameterizationTREE,"end",EmpiricalBayesNode,EmpiricalBayesStatusNode,text="Available",font=.affylmGUIglobals$affylmGUIfontTree))
 	else
 		Try(tkinsert(.affylmGUIglobals$ContrastParameterizationTREE,"end",EmpiricalBayesNode,EmpiricalBayesStatusNode,text="Not Available",font=.affylmGUIglobals$affylmGUIfontTree))			)
@@ -2055,16 +2055,16 @@ ComputeContrasts <- function(){
 ComputeLinearModelFit <- function(){
 	Try(ArraysLoaded	<- get("ArraysLoaded", envir=affylmGUIenvironment))
 	Try(
-		if(ArraysLoaded==FALSE){
+		if(!ArraysLoaded){
 			Try(tkmessageBox(title="Linear Model",message="Error: No arrays have been loaded.",icon="error",default="ok"))
 			return()
 		}
 	)
 	Try(NormalizedAffyData.Available   <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))
-	Try(if(NormalizedAffyData.Available==FALSE)NormalizeNow())
+	Try(if(!NormalizedAffyData.Available)NormalizeNow())
 	Try(NormalizedAffyData.Available   <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))
 	Try(
-		if(NormalizedAffyData.Available==FALSE){
+		if(!NormalizedAffyData.Available){
 			tkmessageBox(title="Linear Model",message="An error occured while trying to normalize the data.")
 			return()
 		}
@@ -2236,7 +2236,7 @@ showTopTable <- function(...,export=FALSE){
 	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
 	Try(ArraysLoaded                         <- get("ArraysLoaded",                        envir=affylmGUIenvironment))
 	Try(
-		if(ArraysLoaded==FALSE){
+		if(!ArraysLoaded){
 			Try(tkmessageBox(title="Top Table",message="No arrays have been loaded.	Please try New or Open from the File menu.",type="ok",icon="error"))
 			Try(tkfocus(.affylmGUIglobals$ttMain))
 			return()
@@ -2285,7 +2285,7 @@ showTopTable <- function(...,export=FALSE){
 	# attributes to the fit object rather than using eb), because this seems to work best with topTable,
 	# affy data etc.
 	Try(
-		if(ebayesAvailable==TRUE)
+		if(ebayesAvailable)
 			Try(fit <- eBayes(fit))
 	)
 	Try(ttToptableDialog<-tktoplevel(.affylmGUIglobals$ttMain))
@@ -2328,7 +2328,7 @@ showTopTable <- function(...,export=FALSE){
 	Try(tkgrid(sortByLabel,sticky="w"))
 	Try(tkgrid.configure(sortByLabel,sticky="w"))
 	Try(
-		if(ebayesAvailable==TRUE)
+		if(ebayesAvailable)
 			Try(sortByTcl <- tclVar("B"))
 		else
 			Try(sortByTcl <- tclVar("M"))
@@ -2347,7 +2347,7 @@ showTopTable <- function(...,export=FALSE){
 	Try(tkgrid(B.but,sticky="w"))
 
 	Try(
-		if(ebayesAvailable==FALSE){
+		if(!ebayesAvailable){
 			Try(tkconfigure(T.but,state="disabled"))
 			Try(tkconfigure(P.but,state="disabled"))
 			Try(tkconfigure(B.but,state="disabled"))
@@ -2359,7 +2359,7 @@ showTopTable <- function(...,export=FALSE){
 	Try(tkgrid          (adjustMethodLabel,sticky="w"))
 	Try(tkgrid.configure(adjustMethodLabel,sticky="w"))
 	Try(
-		if(ebayesAvailable==TRUE)
+		if(ebayesAvailable)
 			Try(adjustMethodTcl <- tclVar("BH"))
 		else
 			Try(adjustMethodTcl <- tclVar("none"))
@@ -2375,7 +2375,7 @@ showTopTable <- function(...,export=FALSE){
 	Try(tkgrid(holm.but,sticky="w"))
 
 	Try(
-		if(ebayesAvailable==FALSE){
+		if(!ebayesAvailable){
 			Try(tkconfigure(none.but,state="disabled"))
 			Try(tkconfigure(bh.but	,state="disabled"))
 			Try(tkconfigure(by.but	,state="disabled"))
@@ -2491,7 +2491,7 @@ showTopTable <- function(...,export=FALSE){
 	# in the case of no replicate arrays (no residual degrees of freedom) we will just do our own sorting.
 
 	Try(
-		if(ebayesAvailable==FALSE){
+		if(!ebayesAvailable){
 			Try(M <- as.matrix(fit$coef)[,contrast])
 			Try(A <- fit$Amean)
 			Try(ord <- switch(sortBy, M = order(abs(M), decreasing = TRUE), A = order(A, decreasing = TRUE)))
@@ -2504,7 +2504,7 @@ showTopTable <- function(...,export=FALSE){
 	# The 2's in front of toptables mean that they use the drop=FALSE option (even if the user hasn't upgraded limma since the 1.3 BioC release.)
 	#	Try(table1 <- toptable2(coef=contrast,number=numberOfGenes,fit=fit,eb=eb,genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy))
 	Try(
-		if(ebayesAvailable==TRUE){
+		if(ebayesAvailable){
 			Try(table1 <- topTable2(coef=contrast,number=numberOfGenes,fit=fit,genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy))
 		}
 	)
@@ -2600,7 +2600,7 @@ showTopTable <- function(...,export=FALSE){
 				for (i in (1:ncols)){
 					if(tolower(colnames(table1)[i]) %in% c("block","row","column","gridrow","gridcolumn","gridcol","grid.row","grid.col","grid.column")){
 						Try(
-							if(.affylmGUIglobals$affylmGUIpresentation==FALSE){
+							if(!.affylmGUIglobals$affylmGUIpresentation){
 								Try(tcl(toptableTable,"width",paste(i-1),paste(max(4,nchar(colnames(table1)[i])+2))))
 							}else{
 								Try(tcl(toptableTable,"width",paste(i-1),paste(max(4,nchar(colnames(table1)[i])))))
@@ -2742,7 +2742,7 @@ showTopTable <- function(...,export=FALSE){
 GetSlideNum <- function(all=FALSE){
 	Try(SlideNamesVec <- get("SlideNamesVec",envir=affylmGUIenvironment))
 	Try(
-		if(min(nchar(gsub("[^0-9]","",SlideNamesVec))==nchar(SlideNamesVec))==TRUE){
+		if(min(nchar(gsub("[^0-9]","",SlideNamesVec))==nchar(SlideNamesVec))){
 			SlideNamesVec <- paste("Slide",SlideNamesVec)
 		}
 	)
@@ -4454,7 +4454,7 @@ OpenALimmaFile <- function(FileName){
 				Try(EmpiricalBayesStatusNode <- paste("EmpiricalBayesStatusNode.",.affylmGUIglobals$ContrastParameterizationTREEIndex))
 				Try(tkinsert(.affylmGUIglobals$ContrastParameterizationTREE,"end",ContrastParameterizationNameNode,EmpiricalBayesNode,text="Empirical Bayes Statistics",font=.affylmGUIglobals$affylmGUIfontTree))
 				Try(
-					if(ebayesAvailable==TRUE){
+					if(ebayesAvailable){
 						Try(tkinsert(.affylmGUIglobals$ContrastParameterizationTREE,"end",EmpiricalBayesNode,EmpiricalBayesStatusNode,text="Available",font=.affylmGUIglobals$affylmGUIfontTree))
 					}else{
 						Try(tkinsert(.affylmGUIglobals$ContrastParameterizationTREE,"end",EmpiricalBayesNode,EmpiricalBayesStatusNode,text="Not Available",font=.affylmGUIglobals$affylmGUIfontTree))
