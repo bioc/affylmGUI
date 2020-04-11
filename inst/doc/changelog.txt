@@ -1,5 +1,8 @@
 ------------------------- affylmGUI ChangeLog -------------------------
 
+11-Apr-2020 affylmGUI 1.61.2
+	Simplify formating of code. Remove the "end of" comments. No change to functionality.
+
 10-Apr-2020 affylmGUI 1.61.1
 	Update affylmGUI to use *.db probe annotation packages. If the cdf package is called xxxxcdf then the probe annotation package is now assumed to be xxxx.db instead of xxxx. Gene names and gene symbols are now extracted using the AnnotionDbi package.
 
