@@ -10,7 +10,7 @@ if(!require(BiocManager)){
 	stop("Cannot find package BiocManager")
 }
 
-if!(require(limma)){
+if(!require(limma)){
 	if(interactive()){
 		tkmessageBox(
 			title="An error has occured!",
