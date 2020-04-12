@@ -1,5 +1,9 @@
 ------------------------- affylmGUI ChangeLog -------------------------
 
+11-Apr-2020 affylmGUI 1.61.5
+	Update to use limma::lmFit() instead of limma::lm.series.
+	Remove topTable2() and toptable2(), replacing with limma::topTable().
+
 11-Apr-2020 affylmGUI 1.61.4
 	Simplify code by removing `==TRUE` or `==FALSE`. No change to functionality.
 
