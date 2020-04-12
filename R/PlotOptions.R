@@ -1,4 +1,7 @@
-PlotOptions <- function(){
+## plotMenu-Options calls PlotOptions()
+
+PlotOptions <- function()
+{
   Try(ttGetPlotOptions<-tktoplevel(.affylmGUIglobals$ttMain))
   Try(tkwm.title(ttGetPlotOptions,"Plot Options"))
   Try(tkwm.deiconify(ttGetPlotOptions))
@@ -40,7 +43,7 @@ PlotOptions <- function(){
     Try(affylmGUIglobals$graphicsDevice <- graphicsDevice)
     Try(assign(".affylmGUIglobals",affylmGUIglobals,.GlobalEnv))
     Try(tkfocus(.affylmGUIglobals$ttMain))  
-  } #end of onOK function
+  }
   Try(OK.but <-tkbutton(tkframe4,text="   OK   ",command=onOK,font=.affylmGUIglobals$affylmGUIfont2))
   Try(
     Cancel.but <-tkbutton(
@@ -53,16 +56,16 @@ PlotOptions <- function(){
         Try(tkfocus(.affylmGUIglobals$ttMain))
       },
       font=.affylmGUIglobals$affylmGUIfont2
-    ) # end of Cancel.but
-  ) #end of Try
+    )
+  )
   Try(
     onHelp <- function(){ 
       tkmessageBox(
         title="Plotting Device",
         message="The R graphics is device can be resized more easily, but it may be inconvenient for Windows users running R in MDI mode.",
-        icon="info") #end of tkmessageBox
-      } #end of onHelp <- function
-  ) #end of Try
+        icon="info")
+      }
+  )
   Try(Help.but <- tkbutton(tkframe4,text=" Help ",command=function()Try(onHelp()),font=.affylmGUIglobals$affylmGUIfont2))
   Try(tkgrid(tklabel(tkframe4,text="                    ")))
   Try(tkgrid(OK.but,Cancel.but,Help.but))
@@ -79,4 +82,4 @@ PlotOptions <- function(){
   Try(tkdestroy(ttGetPlotOptions))  
   # This return value below is not used.  The function above is used for its effect on PlotOptions in affylmGUIenvironment
   return(newGraphicsDevice)
-} #end of PlotOptions <- function()
+}

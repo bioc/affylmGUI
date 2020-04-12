@@ -1,51 +1,3 @@
-if(!require(BiocManager)){
-	if(interactive()){
-		tkmessageBox(
-			title="An error has occured!",
-			message=paste("Cannot find package BiocManager"),
-			icon="error",
-			type="ok"
-		)
-	}
-	stop("Cannot find package BiocManager")
-}
-
-if(!require(limma)){
-	if(interactive()){
-		tkmessageBox(
-			title="An error has occured!",
-			message=paste("Cannot find package limma"),
-			icon="error",
-			type="ok"
-		)
-	}
-	stop("Cannot find package limma")
-}
-
-if(!require(affy)){
-	if(interactive()){
-		tkmessageBox(
-			title="An error has occured!",
-			message=paste("Cannot find package affy"),
-			icon="error",
-			type="ok"
-		)
-	}
-	stop("Cannot find package affy")
-}
-
-if(!require(tcltk)){
-	if(interactive()){
-		tkmessageBox(
-			title="An error has occured!",
-			message=paste("Cannot find package tcltk"),
-			icon="error",
-			type="ok"
-		)
-	}
-	stop("Cannot find package tcltk")
-}
-
 Try <- function(expr){
 	result <- try(expr, silent=TRUE)
 	if(data.class(result)=="try-error"){
@@ -232,22 +184,21 @@ TclRequire <- function(tclPkg){
 }
 
 fixSeps <- function(string){
-	Try(if(.Platform$OS.type=="windows")
-		string <- gsub("/","\\\\",string))
+	Try(if(.Platform$OS.type=="windows") string <- gsub("/","\\\\",string))
 	return (string)
 }
 
 affylmGUIhelp <- function(){
 	Try(affylmGUIhelpIndex <- file.path(system.file("doc",package="affylmGUI"),"index.html"))
 	Try(browseURL(affylmGUIhelpIndex))
-	##Try(tkmessageBox(title="affylmGUI Help",message=paste("Opening affylmGUI help...\nIf nothing happens, please open :\n",affylmGUIhelpIndex,"\nyourself.",sep="")))
+#	Try(tkmessageBox(title="affylmGUI Help",message=paste("Opening affylmGUI help...\nIf nothing happens, please open :\n",affylmGUIhelpIndex,"\nyourself.",sep="")))
 	Try(cat(paste("Opening affylmGUI help...\nIf nothing happens, please open :\n",affylmGUIhelpIndex,"\nyourself.",sep="")))
 }
 
 limmaHelp <- function(){
 	Try(limmaHelpIndex <- file.path(system.file("doc",package="limma"),"index.html"))
 	Try(browseURL(limmaHelpIndex))
-	##Try(tkmessageBox(title="limma Help",message=paste("Opening limma help...\nIf nothing happens, please open :\n",limmaHelpIndex,"\nyourself.",sep="")))
+#	Try(tkmessageBox(title="limma Help",message=paste("Opening limma help...\nIf nothing happens, please open :\n",limmaHelpIndex,"\nyourself.",sep="")))
 	Try(cat(paste("Opening limma help...\nIf nothing happens, please open :\n",limmaHelpIndex,"\nyourself.",sep="")))
 }
 
@@ -748,37 +699,6 @@ initGlobals <- function(){
 	#assign("Pset",                                Pset,                           affylmGUIenvironment) ###not sure whether & how to put this into affylmGUIenvironment
 }
 
-deleteItemFromList <- function(list1,itemName=NULL,index=NULL)
-# I wrote the function deleteItemFromList before I discovered
-# that you could simply assign an item to NULL in a list to
-# delete it (or use negative-indexing).	Because I am only
-# dealing with very small lists, it does not matter that
-# I am using an inefficient method, and it may actually make
-# the code more readable that assigning an element to NULL.
-{
-	if(is.null(index)){
-		index <- match(itemName,attributes(list1)$names)
-	}
-	if(is.na(index)){
-		return(list1)
-	}
-	len <- length(list1)
-	newlist <- list()
-	count <- 0
-	for (i in (1:len)){
-		if(i!=index){
-			count <- count + 1
-			if(!is.null(attributes(list1)$names[i])){
-				newlist <- c(newlist,list(foo=list1[[i]]))
-				attributes(newlist)$names[count] <- attributes(list1)$names[i]
-			}else{
-				newlist[[count]] <- list1[[i]]
-			}
-		}
-	}
-	return (newlist)
-}
-
 OpenCDFFile <- function(){
 	Try(cdfName <- ChooseCDF())
 	Try(if(cdfName=="") return())
@@ -863,10 +783,10 @@ GetContrasts <- function(NumContrasts=0){
 	}
 
 	if(!LinearModelFit.Available){
+#		Try(tkmessageBox(title="Compute Contrasts",message="There is no linear model fit available.	Select \"Compute Linear Model Fit\" from the \"Linear Model\" menu.",type="ok",icon="error"))
+#		Try(tkfocus(.affylmGUIglobals$ttMain))
 		Try(ComputeLinearModelFit())
-	#		Try(tkmessageBox(title="Compute Contrasts",message="There is no linear model fit available.	Select \"Compute Linear Model Fit\" from the \"Linear Model\" menu.",type="ok",icon="error"))
-	#		Try(tkfocus(.affylmGUIglobals$ttMain))
-	#		return()
+		return()
 	}
 
 	Try(design             <- get("design", envir=affylmGUIenvironment))
@@ -1853,23 +1773,25 @@ strstr <- function(haystack,needle){
 	return (substr(haystack,strIndex,nchar(haystack)))
 }
 
-ComputeContrasts <- function(){
-	# For now, we will assume that the number of contrasts is one less than the number of parameters,
-	# e.g. with 4 treatments, we estimate 4 parameters, then 3 contrasts.
+## linearModelMenu-Compute Contrasts: ComputeContrasts()
 
-	Try(NumParameters                         <- get("NumParameters",                       envir=affylmGUIenvironment))
-	Try(Targets                               <- get("Targets",                             envir=affylmGUIenvironment))
-	Try(NumContrastParameterizations          <- get("NumContrastParameterizations",        envir=affylmGUIenvironment))
-	Try(ContrastParameterizationNamesVec      <- get("ContrastParameterizationNamesVec",    envir=affylmGUIenvironment))
-	Try(ContrastParameterizationList          <- get("ContrastParameterizationList",        envir=affylmGUIenvironment))
-	Try(ContrastParameterizationTREEIndexVec  <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment))
-	Try(ArraysLoaded	                  <- get("ArraysLoaded",                        envir=affylmGUIenvironment))
-	Try(LinearModelFit.Available              <- get("LinearModelFit.Available",            envir=affylmGUIenvironment))
+ComputeContrasts <- function()
+#  For now, we will assume that the number of contrasts is one less than the number of parameters,
+#  e.g. with 4 treatments, we estimate 4 parameters, then 3 contrasts.
+{
+	Try(NumParameters                        <- get("NumParameters",                        envir=affylmGUIenvironment))
+	Try(Targets                              <- get("Targets",                              envir=affylmGUIenvironment))
+	Try(NumContrastParameterizations         <- get("NumContrastParameterizations",         envir=affylmGUIenvironment))
+	Try(ContrastParameterizationNamesVec     <- get("ContrastParameterizationNamesVec",     envir=affylmGUIenvironment))
+	Try(ContrastParameterizationList         <- get("ContrastParameterizationList",         envir=affylmGUIenvironment))
+	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec", envir=affylmGUIenvironment))
+	Try(ArraysLoaded                         <- get("ArraysLoaded",                         envir=affylmGUIenvironment))
+	Try(LinearModelFit.Available             <- get("LinearModelFit.Available",             envir=affylmGUIenvironment))
 
 	if(!ArraysLoaded){
 		Try(tkmessageBox(title="Compute Contrasts",message="No arrays have been loaded.	Please try New or Open from the File menu.",type="ok",icon="error"))
 		Try(tkfocus(.affylmGUIglobals$ttMain))
-		return()
+		invisible()
 	}
 
 	if(!LinearModelFit.Available){
@@ -1877,35 +1799,32 @@ ComputeContrasts <- function(){
 		Try(NumParameters <- get("NumParameters",envir=affylmGUIenvironment))
 		#Try(tkmessageBox(title="Compute Contrasts",message="There is no linear model fit available.	Select \"Compute Linear Model Fit\" from the \"Linear Model\" menu.",type="ok",icon="error"))
 		#Try(tkfocus(.affylmGUIglobals$ttMain))
-		#return()
+		invisible()
 	}
-	Try(fit    <- get("fit",    envir=affylmGUIenvironment))
-	Try(design <- get("design", envir=affylmGUIenvironment))
-
-	Try(ParameterNamesVec <- colnames(design))
-
-	Try(NumContrasts <- NumParameters - 1)
-
 	Try(
-		if(NumContrasts<=0){
+		if(NumParameters<=1L){
 			tkmessageBox(title="Compute Contrasts",message=paste("You need to have two or more treatments in order to compute contrasts."),type="ok",icon="error")
 			Try(tkfocus(.affylmGUIglobals$ttMain))
-			return()
+			invisible()
 		}
 	)
-	Try(NumContrasts <- min(NumContrasts,10))
+	Try(fit    <- get("fit",    envir=affylmGUIenvironment))
+	Try(design <- get("design", envir=affylmGUIenvironment))
+	Try(ParameterNamesVec <- colnames(design))
+	Try(NumContrasts <- min(NumParameters-1L,10L))
 
+#	Prompt user for contrasts and make contrast matrix
 	Try(contrastsMatrixInList <- GetContrasts(NumContrasts=NumContrasts))
 	Try(if(nrow(contrastsMatrixInList$contrasts)==0) return())
 	Try(contrastsMatrix <- as.matrix(contrastsMatrixInList$contrasts))
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
+
+#	Apply contrasts to linear model fit
 	Try(contrastsFit <- contrasts.fit(fit,contrastsMatrix))
-
-	# NEW
-
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
+
 	Try(
-		if(min(contrastsFit$df)==0){
+		if(max(contrastsFit$df.residual)==0){
 			Try(tkmessageBox(title="No degrees of freedom",message="Empirical Bayes statistics will not be available because of the lack of replicate arrays.",icon="warning"))
 			Try(ebayesAvailable <- FALSE)
 		}else{
@@ -1914,8 +1833,9 @@ ComputeContrasts <- function(){
 	)
 
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
-	Try(if(ebayesAvailable)
-		Try(contrastsEbayes <- eBayes(contrastsFit)))
+	Try(
+		if(ebayesAvailable) Try(contrastsEbayes <- eBayes(contrastsFit))
+	)
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 	Try(ContrastParameterizationNameText <- GetContrastParameterizationName())
 	Try(if(ContrastParameterizationNameText=="GetContrastParameterizationName.CANCEL") return())
@@ -3186,7 +3106,6 @@ evalRcode <- function(){
 		if(runType!="runTextOnly"){
 			Try(
 				if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-					##Require("tkrplot")
 					Try(LocalHScale <- .affylmGUIglobals$Myhscale)
 					Try(LocalVScale <- .affylmGUIglobals$Myvscale)
 					Try(ttGraph<-tktoplevel(.affylmGUIglobals$ttMain))
@@ -3259,7 +3178,6 @@ evalRcode <- function(){
 		
 			Try(
 				if(.affylmGUIglobals$graphicsDevice=="tkrplot"){
-					##Require("tkrplot")
 					Try(plotFunction <- get("plotFunction",envir=affylmGUIenvironment))
 					Try(imgaffylmGUI<-tkrplot(ttGraph,plotFunction,hscale=LocalHScale,vscale=LocalVScale))
 					SetupPlotKeyBindings(tt=ttGraph,img=imgaffylmGUI)
@@ -3392,7 +3310,6 @@ evalRcode <- function(){
 }
 
 OpenCDFandTargetsfiles <- function(){
-	###Require("affy")
 	Try(ttCDFandTargets<-tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttCDFandTargets))
 	Sys.sleep(0.1)
@@ -3753,7 +3670,8 @@ NewLimmaFile <- function(){
 			Try(.affylmGUIglobals$ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
 			Try(ParameterizationNameNode <- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
 			Try(tkdelete(.affylmGUIglobals$ContrastParameterizationTREE,ParameterizationNameNode))
-			Try(assign("ContrastParameterizationList", deleteItemFromList(ContrastParameterizationList,ParameterizationNameNode),affylmGUIenvironment))
+			Try(ContrastParameterizationList$ParameterizationNameNode <- NULL)
+			Try(assign("ContrastParameterizationList",ContrastParameterizationList,affylmGUIenvironment))
 		}
 	}
 	Try(initGlobals())
@@ -4012,12 +3930,7 @@ DeleteContrastParameterization <- function(){
 	Try(ContrastParameterizationNameNode<- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
 
 	Try(tkdelete(.affylmGUIglobals$ContrastParameterizationTREE,ContrastParameterizationNameNode))
-	Try(
-		ContrastParameterizationList <- deleteItemFromList(
-			ContrastParameterizationList,
-			ContrastParameterizationNameNode
-		)
-	) 
+	Try(ContrastParameterizationList$ContrastParameterizationNameNode <- NULL)
 	Try(tempVec <- c())
 
 	Try(
@@ -4244,7 +4157,8 @@ OpenALimmaFile <- function(FileName){
 				Try(.affylmGUIglobals$ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex])
 				Try(ContrastParameterizationNameNode <- paste("ContrastParameterizationName.",.affylmGUIglobals$ContrastParameterizationTREEIndex,sep=""))
 				Try(tkdelete(.affylmGUIglobals$ContrastParameterizationTREE,ContrastParameterizationNameNode))
-				Try(assign("ContrastParameterizationList",deleteItemFromList(ContrastParameterizationList,ContrastParameterizationNameNode),affylmGUIenvironment))
+				Try(ContrastParameterizationList$ContrastParameterizationNameNode <- NULL)
+				Try(assign("ContrastParameterizationList",ContrastParameterizationList,affylmGUIenvironment))
 			}
 		)
 	)

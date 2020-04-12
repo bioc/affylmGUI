@@ -1,7 +1,4 @@
-#
-# R2HTML Plot Function (Modified to accept a plotFunction argument, rather than using the main R Graphics Device)
-#
-"HTMLplotUsingFunction" <- function (
+HTMLplotUsingFunction <- function(
 	Caption = "",
 	File = .HTML.file,
 	GraphRelativeDirectory = ".",
@@ -15,8 +12,10 @@
 	Height=600,
 	PointSize=12,
 	BG="white",
-	res=72,...){
-	#
+	res=72,
+	...)
+# R2HTML plot function modified to accept a plotFunction argument, rather than using the main R Graphics Device.
+{
 	if(is.null(GraphAbsoluteDirectory)){
 		GraphAbsoluteDirectory <- getwd()
 		#For eg. "W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files"
@@ -36,7 +35,7 @@
 		)
 		# Example name = GRAPH_Sep20_112714
 	}
-	GraphFileName <- paste(GraphFileName, ".", GraphSaveAs, sep = "")
+	GraphFileName <- paste(GraphFileName, GraphSaveAs, sep=".")
 	# for eg. = GRAPH_Sep20_112714.png
 	#
 	#AbsGraphFileName <- paste(GraphRelativeDirectory,.Platform$file.sep,GraphFileName,sep="")
@@ -101,9 +100,7 @@
 	###try(assign(".HTML.graph", TRUE, envir = get("HTMLenv", envir = .GlobalEnv)))
 	invisible(return())
 }
-#
-#
-#
+
 GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL){
 	#get numberOfGenes,adjustMethod and sortBy from environment if they are available, or set them to default values
 	Try(
@@ -282,14 +279,10 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 	#
 	return (ReturnVal)
 }
-#
-#
-#
+
 ExportHTMLreport <- function(){
 	# We will use the R2HTML package, but with my own HTMLplot function.
 	# Will we need xtable or does R2HTML have its own HTMLtable function?
-	##Require("xtable")
-	##Require("R2HTML")
 	#
 	#get numberOfGenes,adjustMethod and sortBy from environment if they are available, if not,  set them to default values
 	Try(
@@ -897,9 +890,7 @@ ExportHTMLreport <- function(){
 		#
 		#
 	}
-	#
-	#
-	#
+
 	if(ExportContrastsMatrix){
 		Try(displayVector <- rep("g",ncol(contrastsMatrix)+1))
 		Try(displayVector[0] <- "s")
@@ -919,9 +910,7 @@ ExportHTMLreport <- function(){
 		#
 		#
 	}
-	#
-	#
-	#
+
 	if(ExportMAPlotsContrasts){
 		Try(HTML.title("<a name=\"MAPlotsContrasts\">M A Plots for Contrasts</a>",HR=2))
 		#For eg. This writes to HTML file:
@@ -989,9 +978,7 @@ ExportHTMLreport <- function(){
 			}
 		)
 	}
-	#
-	#
-	#
+
 	if(ExportTopNNToptables || ExportCompleteToptables){
 		Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
 		Try(cdfName <- strsplit(cleancdfname(cdfName(RawAffyData)),"cdf")[[1]])
@@ -1035,7 +1022,7 @@ ExportHTMLreport <- function(){
 			}
 		)
 	}
-	#
+
 	if(ExportTopNNToptables){
 		Try(
 			HTML.title(
@@ -1047,11 +1034,10 @@ ExportHTMLreport <- function(){
 		Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
 		Try(if(is.null(fit$Amean)) fit$Amean <- rowMeans(NormalizedAffyData.exprs))
 		Try(fit$genes <- genelist)
-		#
+
 		for(coef in (1:NumContrasts)){
 			Try(options(digits=3))
-			###Try(table1 <- topTable2(coef=coef,number=50,                   genelist=genelist,fit=fit))
-			Try(table1 <- topTable2(coef=coef,number=numberOfGenes,genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy,fit=fit))
+			Try(table1 <- topTable(coef=coef,number=numberOfGenes,genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy,fit=fit))
 			Try(toptableDisplay <- rep("s",ncol(table1)+1))
 			Try(toptableDisplay[1] <- "d")
 			Try(
@@ -1084,7 +1070,7 @@ ExportHTMLreport <- function(){
 			Try(print(toptableXtable,type="html",file=fileNameWithPath,append=TRUE))
 		}
 	}
-	#
+
 	if(ExportCompleteToptables){
 		Try(
 			HTML.title(
@@ -1092,7 +1078,7 @@ ExportHTMLreport <- function(){
 				HR=2
 			)
 		)
-		#
+
 		Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
 		Try(
 			if(!("Amean" %in% names(fit))){
@@ -1100,11 +1086,10 @@ ExportHTMLreport <- function(){
 			}
 		)
 		Try(fit$genes <- genelist)
-		#
+
 		for(coef in (1:NumContrasts)){
 			Try(options(digits=3))
-			###Try(table1 <- topTable2(coef=coef,number=nrow(genelist),genelist=genelist,fit=fit))
-			Try(table1 <- topTable2(coef=coef,number=nrow(genelist),genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy,fit=fit))
+			Try(table1 <- topTable(coef=coef,number=nrow(genelist),genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy,fit=fit))
 			Try(ToptableAbsoluteFilename <- paste(HTMLfilePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".xls",sep=""))
 			Try(ToptableRelativeFilename <- paste(HTMLfileRelativePath ,.Platform$file.sep,"CompleteToptable_Contrast",coef,".xls",sep=""))
 			Try(write.table(table1,file=ToptableAbsoluteFilename,quote=FALSE,col.names=NA,sep="\t"))
@@ -1112,7 +1097,7 @@ ExportHTMLreport <- function(){
 			Try(HTMLli(txt=paste("<a href=\"",ToptableRelativeFilename,"\"><b>",paste("CompleteToptable_Contrast",coef,".xls",sep=""),"</b></a>",sep="")))
 		}
 	}
-	#
+
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow"))
 	Try(tkfocus(.affylmGUIglobals$ttMain))
 	Try(HTMLhr())

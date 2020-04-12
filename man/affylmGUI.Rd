@@ -16,7 +16,6 @@
 \alias{ComputeLinearModelFit}
 \alias{CopyGraph}
 \alias{DeleteContrastParameterization}
-\alias{deleteItemFromList}
 \alias{DensityPlotAll}
 \alias{DensityPlot}
 \alias{evalRcode}
@@ -126,7 +125,6 @@ ComputeContrasts()
 ComputeLinearModelFit()
 CopyGraph(img)
 DeleteContrastParameterization()
-deleteItemFromList(list1,itemName=NULL,index=NULL)
 DensityPlot()
 DensityPlotAll()
 evalRcode()
@@ -245,10 +243,7 @@ ViewRNATargets()
 	\item{Height}{HTMLplotUsingFunction:arg11}
 	\item{img}{Resize:arg1:and:SetupPlotMenus:arg4:and:CopyGraph:arg1:and:SetupPlotKeyBindings:arg2}
 	\item{includeBoth}{GetWhichProbes:arg1}
-	\item{index}{deleteItemFromList:arg3:an index}
 	\item{initialfile}{SetupPlotMenus:arg2:and:SaveGraphAsJpeg:arg1:and:SaveGraphAsPDF:arg1:and:SaveGraphAsPNG:arg1:and:SaveGraphAsPostscript:arg1}
-	\item{itemName}{deleteItemFromList:arg2:an item name}
-	\item{list1}{deleteItemFromList:arg1:a list}
 	\item{needle}{nstrstr:arg2:and:strstr:arg2}
 	\item{NumContrasts}{GetContrasts:arg1}
 	\item{numContrasts}{GetContrastNamesForHeatDiagram:arg1}

@@ -1,5 +1,9 @@
 ------------------------- affylmGUI ChangeLog -------------------------
 
+12-Apr-2020 affylmGUI 1.61.7
+	Remove the majority of require() calls because the NAMESPACE makes them superfluous.
+	Remove deleteItemFromList().
+
 12-Apr-2020 affylmGUI 1.61.6
 	Remove ALGlimmaUsersGuide() because it is identical to limma::limmaUsersGuide().
 	Update showChangeLog() to show an arbitrary number of lines. Previously the `n` argument was ignored.
