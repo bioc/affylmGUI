@@ -305,8 +305,9 @@ showCitations <- function(){
 }
 
 showChangeLog <- function(n=20){
-	Try(tkmessageBox(title="ChangeLog",message="See the R console for the first 20 lines of the ChangeLog file.\nTo see more lines, use the ALGchangeLog(n=nnn) function, where nnn is the number of lines to view."))
-	Try(ALGchangeLog(20))
+	msg <- paste("See the R console for the first",n,"lines of the ChangeLog file.")
+	Try(writeLines(readLines(system.file("doc","changelog.txt",package="affylmGUI"),n=n)))
+	Try(tkmessageBox(title="ChangeLog",message=msg))
 }
 
 Try(

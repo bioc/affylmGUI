@@ -8,7 +8,6 @@
 \alias{affylmGUI}
 \alias{affyPlotMAcontrast}
 \alias{affyPlotMA}
-\alias{ALGlimmaUsersGuide}
 \alias{ChooseCDF}
 \alias{ChooseContrastParameterization}
 \alias{chooseDir}
@@ -119,7 +118,6 @@ affylmGUI(BigfontsForaffylmGUIpresentation=FALSE)
 affylmGUIhelp()
 affyPlotMA()
 affyPlotMAcontrast()
-ALGlimmaUsersGuide(view=TRUE)
 ChooseCDF()
 ChooseContrastParameterization()
 chooseDir()
@@ -268,7 +266,6 @@ ViewRNATargets()
 	\item{string}{fixSeps:arg1:A character string:and:GetRNATypesFrom.ContrastsFromDropDowns.String:arg1:and:SimplifyContrastsExpression:arg1}
 	\item{tclPkg}{TclRequire:arg1}
 	\item{tt}{SetupPlotMenus:arg1:and:SetupPlotKeyBindings:arg1}
-	\item{view}{ALGlimmaUsersGuide:arg1:A boolean determinig if the users'd guide will be viewed}
 	\item{Width}{HTMLplotUsingFunction:arg10}
 	\item{WindowTitle}{generalPlotFunction: arg2: a title}
 	\item{xlabel}{GetPlotLabels:arg2}
@@ -280,7 +277,7 @@ ViewRNATargets()
 	\item{mar}{vennDiagramaffylmGUI:arg5}
 	\item{contrastsMatrix}{ViewContrastsMatrixAsPairs:arg1}
 	\item{contrastsMatrixList}{ViewContrastsMatrixAsPairs:arg2:and:ViewContrastsMatrixInTable:arg1}
-	\item{n}{showChangeLog:arg1}
+	\item{n}{showChangeLog:arg1 number of lines of changelog to print at the console}
 	\item{PointSize}{HTMLplotUsingFunction:arg12}
 }
 

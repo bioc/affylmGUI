@@ -1,5 +1,10 @@
 ------------------------- affylmGUI ChangeLog -------------------------
 
+12-Apr-2020 affylmGUI 1.61.6
+	Remove ALGlimmaUsersGuide() because it is identical to limma::limmaUsersGuide().
+	Update showChangeLog() to show an arbitrary number of lines. Previously the `n` argument was ignored.
+	Remove ALGchangeLog() after copying code to showChangeLog().
+
 11-Apr-2020 affylmGUI 1.61.5
 	Update to use limma::lmFit() instead of limma::lm.series.
 	Remove topTable2() and toptable2(), replacing with limma::topTable().
