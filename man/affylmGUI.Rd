@@ -99,8 +99,6 @@
 \alias{strstr}
 \alias{tclArrayVar}
 \alias{TclRequire}
-\alias{topTable2}
-\alias{toptable2}
 \alias{TryReadImgProcFile}
 \alias{Try}
 \alias{UpDownOrBoth}
@@ -212,8 +210,6 @@ SimplifyContrastsExpression(string)
 strstr(haystack, needle)
 tclArrayVar()
 TclRequire(tclPkg)
-topTable2(fit, coef = 1, number = 10, genelist = NULL,adjust.method = "holm", sort.by = "B")
-toptable2(fit, coef = 1, number = 10, genelist = NULL, A = NULL,eb = NULL, adjust.method = "holm", sort.by = "B", \dots)
 Try(expr)
 TryReadImgProcFile(expr)
 UpDownOrBoth()
@@ -229,7 +225,7 @@ ViewRNATargets()
 	\item{BigfontsForaffylmGUIpresentation}{affylmGUI:arg1:If set to TRUE, larger fonts are used.  However, some font
 	sizes are not controlled by affylmGUI and so must be adjusted in the operating system, e.g.
 	in the Control Panel in Windows under Display, Appearance.}
-	\item{\dots}{HTMLplotUsingFunction:arg14:and:showTopTable:arg1:and:toptable2:arg9:and:vennDiagramaffylmGUI:arg6}
+	\item{\dots}{HTMLplotUsingFunction:arg14:and:showTopTable:arg1:and:vennDiagramaffylmGUI:arg6}
 	\item{Align}{HTMLplotUsingFunction:arg8}
 	\item{all}{GetSlideNum:arg1}
 	\item{BG}{HTMLplotUsingFunction:arg12}
@@ -277,14 +273,6 @@ ViewRNATargets()
 	\item{WindowTitle}{generalPlotFunction: arg2: a title}
 	\item{xlabel}{GetPlotLabels:arg2}
 	\item{ylabel}{GetPlotLabels:arg3}
-	\item{fit}{topTable2:arg1:and:toptable2:arg1}
-	\item{coef}{topTable2:arg2:and:toptable2:arg2}
-	\item{number}{topTable2:arg3:and:toptable2:arg3}
-	\item{genelist}{topTable2:arg4:and:toptable2:arg4}
-	\item{A}{toptable2:arg5}
-	\item{eb}{toptable2:arg6}
-	\item{adjust.method}{topTable2:arg5:and:toptable2:arg7}
-	\item{sort.by}{topTable2:arg6:and:toptable2:arg8}
 	\item{object}{vennDiagramaffylmGUI:arg1}
 	\item{include}{vennDiagramaffylmGUI:arg2}
 	\item{names}{vennDiagramaffylmGUI:arg3}
@@ -297,12 +285,12 @@ ViewRNATargets()
 }
 
 \details{
-This function launches a Graphical User Interface for the limma package by Gordon Smyth.
+The \code{affylmGUI} function launches a Graphical User Interface for the limma package by Gordon Smyth.
 The GUI uses Tk widgets (via the R TclTk interface by Peter Dalgaard) in order to provide
-a simple interface to the limma functions for linear modelling of microarrays and
+a simple interface to the limma functions for linear modelling of Affymetrix microarrays and
 identification of differentially expressed genes.
+
+The other functions are called by \code{affylmGUI} via the GUI and are not intended to be called directly by users.
 }
 
-\author{James Wettenhall}
-
-\keyword{IO}
+\author{Created by James Wettenhall between 2003 and September 2006. Maintained by Keith Satterley between September 2006 and July 2015. Currently maintained by Gordon Smyth.}

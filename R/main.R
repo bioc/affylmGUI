@@ -47,7 +47,8 @@ if(!require(tcltk)){
 }
 
 Try <- function(expr){
-	if(data.class(result<-try(expr,TRUE))=="try-error"){
+	result <- try(expr, silent=TRUE)
+	if(data.class(result)=="try-error"){
 		tkmessageBox(
 			title="An error has occured!",
 			message=as.character(result),
@@ -55,7 +56,7 @@ Try <- function(expr){
 			type="ok"
 		)
 	}else{
-		return (result)
+		return(result)
 	}
 }
 
@@ -1611,7 +1612,7 @@ ViewContrastsMatrixAsPairs <- function(contrastsMatrix,contrastsMatrixList,contr
 					tklabel(ttViewContrastsMatrixAsPairs,text="    "),
 					tklabel(ttViewContrastsMatrixAsPairs,text=SecondItemOfPair,background="white",font=.affylmGUIglobals$affylmGUIfont2),
 					tklabel(ttViewContrastsMatrixAsPairs,text="    ")
-				) #end of tkgrid
+				)
 			) 
 			Try(tkgrid(tklabel(ttViewContrastsMatrixAsPairs,text="    ")))
 		}
@@ -1877,10 +1878,10 @@ ComputeContrasts <- function(){
 		#Try(tkfocus(.affylmGUIglobals$ttMain))
 		#return()
 	}
-	Try(fit    <- get("fit",	 envir=affylmGUIenvironment))
-	Try(design <- get("design",envir=affylmGUIenvironment))
+	Try(fit    <- get("fit",    envir=affylmGUIenvironment))
+	Try(design <- get("design", envir=affylmGUIenvironment))
 
-	Try(ParameterNamesVec	<- colnames(design))
+	Try(ParameterNamesVec <- colnames(design))
 
 	Try(NumContrasts <- NumParameters - 1)
 
@@ -2053,7 +2054,7 @@ ComputeContrasts <- function(){
 }
 
 ComputeLinearModelFit <- function(){
-	Try(ArraysLoaded	<- get("ArraysLoaded", envir=affylmGUIenvironment))
+	Try(ArraysLoaded <- get("ArraysLoaded", envir=affylmGUIenvironment))
 	Try(
 		if(!ArraysLoaded){
 			Try(tkmessageBox(title="Linear Model",message="Error: No arrays have been loaded.",icon="error",default="ok"))
@@ -2061,7 +2062,7 @@ ComputeLinearModelFit <- function(){
 		}
 	)
 	Try(NormalizedAffyData.Available   <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))
-	Try(if(!NormalizedAffyData.Available)NormalizeNow())
+	Try(if(!NormalizedAffyData.Available) NormalizeNow())
 	Try(NormalizedAffyData.Available   <- get("NormalizedAffyData.Available",envir=affylmGUIenvironment))
 	Try(
 		if(!NormalizedAffyData.Available){
@@ -2097,9 +2098,9 @@ ComputeLinearModelFit <- function(){
 					Try(weights <- 1/pmax(NormalizedAffyData.se.exprs, 1e-05)^2)
 				}
 			) 
-			Try(fit <- lm.series(NormalizedAffyData.exprs,design,weights=weights))
+			Try(fit <- lmFit(NormalizedAffyData.exprs,design,weights=weights))
 		}else{
-			Try(fit <- lm.series(NormalizedAffyData.exprs,design))
+			Try(fit <- lmFit(NormalizedAffyData.exprs,design))
 		}
 	)
 	Try(assign("LinearModelFit.Available",TRUE,affylmGUIenvironment))
@@ -2487,7 +2488,7 @@ showTopTable <- function(...,export=FALSE){
 	Try(NormalizedAffyData.se.exprs <- get("NormalizedAffyData.se.exprs",envir=affylmGUIenvironment))
 	Try(if(is.null(fit$Amean)) fit$Amean <- rowMeans(NormalizedAffyData.exprs))
 
-	# Note that it is difficult to use the limma toptable/topTable functions if you don't have ebayes statistics, so
+	# Note that it is difficult to use the limma::topTable if you don't have eBayes statistics, so
 	# in the case of no replicate arrays (no residual degrees of freedom) we will just do our own sorting.
 
 	Try(
@@ -2501,14 +2502,11 @@ showTopTable <- function(...,export=FALSE){
 		}
 	)
 
-	# The 2's in front of toptables mean that they use the drop=FALSE option (even if the user hasn't upgraded limma since the 1.3 BioC release.)
-	#	Try(table1 <- toptable2(coef=contrast,number=numberOfGenes,fit=fit,eb=eb,genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy))
 	Try(
 		if(ebayesAvailable){
-			Try(table1 <- topTable2(coef=contrast,number=numberOfGenes,fit=fit,genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy))
+			Try(table1 <- topTable(coef=contrast,number=numberOfGenes,fit=fit,genelist=genelist,adjust.method=adjustMethod,sort.by=sortBy))
 		}
 	)
-	#Try(colnames(table1)[ncol(table1)-1] <- sprintf("%-10s",colnames(table1)[ncol(table1)-1]))
 
 	Try(nrows <- nrow(table1))
 	Try(ncols <- ncol(table1))
@@ -2543,8 +2541,8 @@ showTopTable <- function(...,export=FALSE){
 						adjustMethod,
 						".",
 						sep=" "
-					) #end of paste
-				) #end of tkwm.title
+					)
+				)
 			) 
 			TclRequire("Tktable")
 			Try(
@@ -2565,7 +2563,7 @@ showTopTable <- function(...,export=FALSE){
 					multiline="0",
 					state="disabled",
 					font=.affylmGUIglobals$affylmGUIfontTopTable
-				) #end of toptableTable <- tkwidget
+				)
 			) 
 			Try(xscr <-tkscrollbar(ttToptableTable,orient="horizontal", command=function(...)tkxview(toptableTable,...)))
 			Try(yscr <- tkscrollbar(ttToptableTable,command=function(...)tkyview(toptableTable,...)))
@@ -2652,19 +2650,19 @@ showTopTable <- function(...,export=FALSE){
 					adjustMethod,
 					".",
 					sep=" "
-				) #end of paste
-			) #end of tkwm.title
+				)
+			)
 			xscr <-tkscrollbar(
 				ttToptableTable,
 				repeatinterval=5,
 				orient="horizontal",
 				command=function(...)tkxview(txt,...)
-			) #end of xscr <-tkscrollbar
+			)
 			scr <- tkscrollbar(
 				ttToptableTable,
 				repeatinterval=5,
 				command=function(...)tkyview(txt,...)
-			) #end of scr <- tkscrollbar
+			)
 			txt <- tktext(
 				ttToptableTable,
 				bg="white",
@@ -2673,7 +2671,7 @@ showTopTable <- function(...,export=FALSE){
 				yscrollcommand=function(...)tkset(scr,...),
 				wrap="none",
 				width=100
-			) #end of txt <- tktext
+			)
 			copyText2 <- function() .Tcl(paste("event","generate",.Tcl.args(.Tk.ID(txt),"<<Copy>>")))
 			editPopupMenu2 <- tkmenu(txt, tearoff=FALSE)
 			tkadd(
@@ -2701,7 +2699,7 @@ showTopTable <- function(...,export=FALSE){
 			tkfocus(txt)
 			tkconfigure(.affylmGUIglobals$ttMain,cursor="arrow")
 		}
-	) #end of try
+	)
 	Try(copyFcn <-			function() .Tcl(paste("event","generate",.Tcl.args(.Tk.ID(toptableTable),"<<Copy>>"))))
 	topMenu2 <- tkmenu(ttToptableTable)
 	tkconfigure(ttToptableTable, menu=topMenu2)
@@ -2711,32 +2709,32 @@ showTopTable <- function(...,export=FALSE){
 		"command",
 		label="Save As",
 		command=SaveTopTable
-	) #end of tkadd   # ) # ,font=affylmGUIfontMenu)
+	)
 	tkadd(
 		fileMenu2,
 		"command",
 		label="Close",
 		command=function() tkdestroy(ttToptableTable)
-	) #end of tkadd   # ) # ,font=affylmGUIfontMenu)
+	)
 	tkadd(
 		topMenu2,
 		"cascade",
 		label="File",
 		menu=fileMenu2
-	) #end of tkadd    # ,font=affylmGUIfontMenu)
+	)
 	editMenu2 <- tkmenu(topMenu2, tearoff=FALSE)
 	tkadd(
 		editMenu2,
 		"command",
 		label="Copy <Ctrl-C>",
 		command=copyFcn
-	) #end of tkadd    # ,font=affylmGUIfontMenu)
+	)
 	tkadd(
 		topMenu2,
 		"cascade",
 		label="Edit",
 		menu=editMenu2
-	) #end of tkadd    # ,font=affylmGUIfontMenu)
+	)
 }
 
 GetSlideNum <- function(all=FALSE){
@@ -2850,7 +2848,7 @@ GetSlideNum <- function(all=FALSE){
 		tklabel(ttGetSlideNum,text="    "),
 		tklabel(ttGetSlideNum,text="    "),
 		tklabel(ttGetSlideNum,text="    ")
-	) #end of tkgrid
+	)
 	Try(tkbind(OK.but, "<Return>",onOK))
 	Try(tkbind(tl, "<Return>",onOK))
 	Try(tkbind(Cancel.but, "<Return>",onCancel))
@@ -2986,7 +2984,7 @@ ChooseEbayesStatistic <- function(){
 		tklabel(ttChooseEbayesStatistic,text="    "),
 		tklabel(ttChooseEbayesStatistic,text="    "),
 		tklabel(ttChooseEbayesStatistic,text="    ")
-	) #end of tkgrid
+	)
 	Try(tkfocus(ttChooseEbayesStatistic))
 	Try(tkbind(ttChooseEbayesStatistic, "<Destroy>", function() {Try(tkgrab.release(ttChooseEbayesStatistic));Try(tkfocus(.affylmGUIglobals$ttMain));}))
 	Sys.sleep(0.1)
@@ -3128,7 +3126,7 @@ evalRcode <- function(){
 			xscrollcommand=function(...)tkset(xscrCode,...),
 			wrap="none",width=100,bg="white",
 			font=.affylmGUIglobals$affylmGUIfontCourier
-		) #end of txt <- tktext
+		)
 	)
 	Try(cutText <- function() .Tcl(paste("event","generate",.Tcl.args(.Tk.ID(txt),"<<Cut>>")))		)
 	Try(copyText <- function() .Tcl(paste("event","generate",.Tcl.args(.Tk.ID(txt),"<<Copy>>"))))
@@ -3198,7 +3196,7 @@ evalRcode <- function(){
 			Try(
 				codeGraph <- paste(
 					"assign(\"plotFunction\",function () {\nopar<-par(bg=\"white\")\nTry({\n",code,"\n})\n\ntempGraphPar <- par(opar)\n},affylmGUIenvironment)\n",sep=""
-				) #end of codeGraph <- paste
+				)
 			)
 		}
 	
@@ -3300,7 +3298,7 @@ evalRcode <- function(){
 					wrap="none",
 					width=100,
 					font=.affylmGUIglobals$affylmGUIfontCourier
-				) #end of txt2 <- tktext
+				)
 			)
 		
 			Try(copyText2 <- function() .Tcl(paste("event","generate",.Tcl.args(.Tk.ID(txt2),"<<Copy>>"))))
@@ -3468,8 +3466,8 @@ OpenCDFandTargetsfiles <- function(){
 						message=paste(
 							"Either you did not specify a valid RNA Targets File",
 							"or an error occurred while reading in the Targets file.	It should be in tab-delimited text format and it should include the column headings \"FileName\", and \"Target\".",icon="error"
-						) #end of message=paste
-					) #end of tkmessageBox
+						)
+					)
 				) 
 				onCancel()
 				return()
@@ -3522,7 +3520,7 @@ OpenCDFandTargetsfiles <- function(){
 							title="Error opening file",
 							message=paste("Failed to open file: \"",filesWhichDontExist[i],"\"",sep=""),
 							icon="error"
-						) #end of tkmessageBox
+						)
 					) 
 				}
 			)
@@ -3709,8 +3707,8 @@ NewLimmaFile <- function(){
 				icon="question",
 				type="yesnocancel",
 				default="yes"
-			) #end of mbval <- tkmessageBox
-		) #end of Try(mbVal..
+			)
+		)
 		if(tclvalue(mbVal)=="yes"){Try(SaveLimmaFile())}
 		if(tclvalue(mbVal)=="cancel"){
 			Try(tkfocus(.affylmGUIglobals$ttMain))
@@ -3743,11 +3741,11 @@ NewLimmaFile <- function(){
 		if(NumParameters>0){
 			Try(for (i in (1:NumParameters))
 				Try(tkdelete(.affylmGUIglobals$mainTree,paste("Parameters.Status.",i,sep="")))
-			)#end of Try-for..
+			)
 		}else{
 			Try(tkdelete(.affylmGUIglobals$mainTree,"Parameters.Status.1"))
 		}
-	)#end of Try-if...
+	)
 	Try(tkinsert(.affylmGUIglobals$mainTree,"end","Parameters","Parameters.Status.1" ,text="None",font=.affylmGUIglobals$affylmGUIfontTree))
 	if(NumContrastParameterizations>0){
 		for (contrastParameterizationIndex in (1:NumContrastParameterizations)){
@@ -3827,7 +3825,7 @@ chooseDir <- function(){
 			Try(tkgrab.release(ttChooseDir));
 			Try(tkdestroy(ttChooseDir))
 		}
-	) #end of try
+	)
 
 
 	Try(Browse.but <- tkbutton(ttChooseDir,text="Browse",command=onBrowse,font=.affylmGUIglobals$affylmGUIfont2))
@@ -3878,7 +3876,7 @@ onExit <- function(){
 				icon="question",
 				type="yesnocancel",
 				default="yes"
-			) #end of mbVal <- tkmessageBox
+			)
 		) 
 		if(tclvalue(mbVal)=="yes"){
 			Try(SaveLimmaFile())
@@ -4001,7 +3999,7 @@ DeleteContrastParameterization <- function(){
 					message="There are no contrast parameterizations loaded.	Select \"Create New Parameterization\" or \"Compute Linear Model Fit\" from the \"Linear Model\" menu.",
 					type="ok",
 					icon="error"
-				) #end of tkmessageBox
+				)
 			) 
 			Try(tkfocus(.affylmGUIglobals$ttMain))
 			return()
@@ -4083,7 +4081,7 @@ DeleteContrastParameterization <- function(){
 						ContrastParameterizationsStatusNameNode ,
 						text=ContrastParameterizationNamesVec[contrastParameterizationIndex],
 						font=.affylmGUIglobals$affylmGUIfontTree
-					) #end of tkinsert
+					)
 				) 
 				#Try(contrastsMatrix <- ContrastParameterizationList[[1]]$contrastsMatrixInList$contrasts)
 				#Try(ContrastsNames <- colnames(contrastsMatrix))
@@ -4103,7 +4101,7 @@ DeleteContrastParameterization <- function(){
 					"ContrastParameterizations.Status.1" ,
 					text="None",
 					font=.affylmGUIglobals$affylmGUIfontTree
-				) #end of tkinsert
+				)
 			) 
 		}
 	) 
@@ -4147,7 +4145,7 @@ OpenALimmaFile <- function(FileName){
 					icon="question",
 					type="yesnocancel",
 					default="yes"
-				)#end of mbVal <- tkmessageBox
+				)
 			)
 			Try(if(tclvalue(mbVal)=="yes")SaveLimmaFile())
 			Try(if(tclvalue(mbVal)=="cancel")return())
@@ -4208,7 +4206,7 @@ OpenALimmaFile <- function(FileName){
 									"command",
 									label=paste(i,". ",gsub("/","\\\\",label),sep=""),
 									command=eval(parse(text=paste(".OpenALimmaFile_",i,sep="")))
-								) #end of tkinsert
+								)
 							) 
 						}else{
 							Try(
@@ -4218,7 +4216,7 @@ OpenALimmaFile <- function(FileName){
 									"command",
 									label=paste(i,". ",label,sep=""),
 									command=eval(parse(text=paste(".OpenALimmaFile_",i,sep="")))
-								) #end of tkinsert
+								)
 							) 
 						}
 					)
@@ -4369,7 +4367,7 @@ OpenALimmaFile <- function(FileName){
 		}else{
 			Try(tkinsert(.affylmGUIglobals$mainTree,"end","RawAffyData","RawAffyData.Status" ,text="Not Available",font=.affylmGUIglobals$affylmGUIfontTree))
 		}
-	) #end of try
+	)
 
 	Try(
 		if(exists("NormMethod",envir=affylmGUIenvironment))
@@ -4403,13 +4401,13 @@ OpenALimmaFile <- function(FileName){
 								paste("Parameters.Status.",i,sep=""),
 								text=colnames(design)[i],
 								font=.affylmGUIglobals$affylmGUIfontTree
-							) #end of tkinsert
+							)
 						) 
 					}
 				}else{
 					Try(tkinsert(.affylmGUIglobals$mainTree,"end","Parameters","Parameters.Status.1" ,text="None",font=.affylmGUIglobals$affylmGUIfontTree))
 				}
-			) #end of try
+			)
 		}else{
 			Try(tkinsert(.affylmGUIglobals$mainTree,"end","Parameters","Parameters.Status.1" ,text="None",font=.affylmGUIglobals$affylmGUIfontTree))
 		}
@@ -4470,7 +4468,7 @@ OpenALimmaFile <- function(FileName){
 					"ContrastParameterizations.Status.1" ,
 					text="None",
 					font=.affylmGUIglobals$affylmGUIfontTree
-				) #end of tkinsert
+				)
 			)
 		}
 	) 
@@ -4568,7 +4566,7 @@ SaveAsLimmaFile <- function(){
 									"command",
 									label=paste(i,". ",gsub("/","\\\\",label),sep=""),
 									command=eval(parse(text=paste(".OpenALimmaFile_",i,sep="")))
-								) #end of tkinsert
+								)
 							) 
 						}else{
 							Try(
