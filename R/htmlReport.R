@@ -1,6 +1,6 @@
 HTMLplotUsingFunction <- function(
 	Caption = "",
-	File = .HTML.file,
+	File = "plot.html",
 	GraphRelativeDirectory = ".",
 	GraphAbsoluteDirectory = NULL,
 	GraphFileName = "",
@@ -14,7 +14,7 @@ HTMLplotUsingFunction <- function(
 	BG="white",
 	res=72,
 	...)
-# R2HTML plot function modified to accept a plotFunction argument, rather than using the main R Graphics Device.
+#	R2HTML::HTMLplot function modified to accept a plotFunction argument, rather than using the main R Graphics Device.
 {
 	if(is.null(GraphAbsoluteDirectory)){
 		GraphAbsoluteDirectory <- getwd()
@@ -37,7 +37,7 @@ HTMLplotUsingFunction <- function(
 	}
 	GraphFileName <- paste(GraphFileName, GraphSaveAs, sep=".")
 	# for eg. = GRAPH_Sep20_112714.png
-	#
+
 	#AbsGraphFileName <- paste(GraphRelativeDirectory,.Platform$file.sep,GraphFileName,sep="")
 	AbsGraphFileName <- file.path(GraphAbsoluteDirectory, GraphFileName)
 	#For eg. = "W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files/GRAPH_Sep20_112714.png"
@@ -92,17 +92,19 @@ HTMLplotUsingFunction <- function(
 		cat(paste("<br><i>", Caption, "</i>"), file = File, append = TRUE, sep = "")
 	}
 	cat("</P>", file = File, append = TRUE, sep = "\n")
-	#
+
 	if (exists("HTMLenv",where=".GlobalEnv",mode="environment")){
 		try(assign(".HTML.graph", TRUE, envir = get("HTMLenv", envir = .GlobalEnv)))
 	}
-	#
+
 	###try(assign(".HTML.graph", TRUE, envir = get("HTMLenv", envir = .GlobalEnv)))
-	invisible(return())
+	invisible()
 }
 
-GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL){
-	#get numberOfGenes,adjustMethod and sortBy from environment if they are available, or set them to default values
+GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL)
+#	Get numberOfGenes, adjustMethod and sortBy from environment if they are available.
+#	Otherwise set them to default values.
+{
 	Try(
 		if(exists("numberOfGenes",envir=affylmGUIenvironment)){
 			Try(numberOfGenes <- get("numberOfGenes",envir=affylmGUIenvironment))
@@ -128,9 +130,9 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 			Try(assign("adjustMethod",adjustMethod,affylmGUIenvironment))
 		}
 	)
-	#
+
 	Try(NumContrastParameterizations <- get("NumContrastParameterizations",envir=affylmGUIenvironment))
-	#
+
 	Try(ttHTMLreportDialog<-tktoplevel(.affylmGUIglobals$ttMain))
 	Try(tkwm.deiconify(ttHTMLreportDialog))
 	Sys.sleep(0.1)
@@ -138,7 +140,7 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 	Try(tkfocus(ttHTMLreportDialog))
 	Try(tkwm.title(ttHTMLreportDialog,"HTML Report"))
 	Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),tklabel(ttHTMLreportDialog,text="    ")))
-	#
+
 	Try(TargetsTcl                            <- tclVar("1"))
 	Try(NormalizationMethodTcl                <- tclVar("1"))
 	Try(RawIntensityBoxPlotTcl                <- tclVar("1"))
@@ -181,7 +183,7 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 	)
 	#set CompleteToptablesTcl
 	Try(CompleteToptablesTcl                  <- tclVar("0"))
-	#
+
 	Try(TargetsCheckbox                       <- tkcheckbutton(ttHTMLreportDialog,variable=TargetsTcl))
 	Try(NormalizationMethodCheckbox           <- tkcheckbutton(ttHTMLreportDialog,variable=NormalizationMethodTcl))
 	Try(RawIntensityBoxPlotCheckbox           <- tkcheckbutton(ttHTMLreportDialog,variable=RawIntensityBoxPlotTcl))
@@ -191,12 +193,12 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 	Try(MAPlotsContrastsCheckbox              <- tkcheckbutton(ttHTMLreportDialog,variable=MAPlotsContrastsTcl))
 	Try(TopNNToptablesCheckbox                <- tkcheckbutton(ttHTMLreportDialog,variable=TopNNToptablesTcl))
 	Try(CompleteToptablesCheckbox             <- tkcheckbutton(ttHTMLreportDialog,variable=CompleteToptablesTcl))
-	#
+
 	Try(lbl2 <- tklabel(ttHTMLreportDialog,text="Components to be Included in the HTML Report",font=.affylmGUIglobals$affylmGUIfont2))
 	tkgrid(tklabel(ttHTMLreportDialog,text="    "),lbl2)
 	Try(tkgrid.configure(lbl2,columnspan=3,sticky="w"))
 	tkgrid(tklabel(ttHTMLreportDialog,text="    "))
-	#
+
 	Try(currentLabel <- tklabel(ttHTMLreportDialog,text="RNA Targets",font=.affylmGUIglobals$affylmGUIfont2))
 	Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),TargetsCheckbox,currentLabel))
 	Try(tkgrid.configure(TargetsCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
@@ -212,7 +214,7 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 	Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Design Matrix (Parameterization)",font=.affylmGUIglobals$affylmGUIfont2))
 	Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),DesignMatrixCheckbox,currentLabel))
 	Try(tkgrid.configure(DesignMatrixCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
-	#
+
 	Try(currentLabel <- tklabel(ttHTMLreportDialog,text="Contrasts Matrix (Parameterization)",font=.affylmGUIglobals$affylmGUIfont2))
 	Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),ContrastMatrixCheckbox,currentLabel))
 	Try(tkgrid.configure(ContrastMatrixCheckbox,sticky="e"));  Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
@@ -226,14 +228,14 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 	Try(tkgrid(tklabel(ttHTMLreportDialog,text="    "),CompleteToptablesCheckbox,currentLabel))
 	Try(tkgrid.configure(CompleteToptablesCheckbox,sticky="e"));
 	Try(tkgrid.configure(currentLabel,sticky="w",columnspan=2))
-	#
+
 	if (NumContrastParameterizations==0){
 		Try(tkconfigure(ContrastMatrixCheckbox,   state="disabled"))
 		Try(tkconfigure(MAPlotsContrastsCheckbox, state="disabled"))
 		Try(tkconfigure(TopNNToptablesCheckbox,   state="disabled"))
 		Try(tkconfigure(CompleteToptablesCheckbox,state="disabled"))
 	}
-	#
+
 	tkgrid(tklabel(ttHTMLreportDialog,text="    "))
 	tkgrid(tklabel(ttHTMLreportDialog,text="    "))
 	ReturnVal <- list()
@@ -252,17 +254,17 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 		Try(tkfocus(.affylmGUIglobals$ttMain))
 		ReturnVal  <<-  ReturnVal
 	}
-	#
+
 	onCancel <- function(){
 		Try(tkgrab.release (ttHTMLreportDialog));
 		Try(tkdestroy      (ttHTMLreportDialog));
 		Try(tkfocus        (.affylmGUIglobals$ttMain));
 		ReturnVal <<- list()
 	}
-	#
+
 	OK.but     <-tkbutton(ttHTMLreportDialog,text="   OK   ",command=onOK,    font=.affylmGUIglobals$affylmGUIfont2)
 	Cancel.but <-tkbutton(ttHTMLreportDialog,text=" Cancel ",command=onCancel,font=.affylmGUIglobals$affylmGUIfont2)
-	#
+
 	tkgrid(tklabel(ttHTMLreportDialog,text="    "),tklabel(ttHTMLreportDialog,text="    "),OK.but,Cancel.but,tklabel(ttHTMLreportDialog,text="    "),tklabel(ttHTMLreportDialog,text="    "))
 	tkgrid.configure(OK.but,    sticky="e")
 	tkgrid.configure(Cancel.but,sticky="w")
@@ -276,14 +278,14 @@ GetComponentsToExportInHTMLreport <- function(contrastParameterizationIndex=NULL
 	Try(tkfocus(ttHTMLreportDialog))
 	Try(tkbind(ttHTMLreportDialog, "<Destroy>", function() {Try(tkgrab.release(ttHTMLreportDialog));Try(tkfocus(.affylmGUIglobals$ttMain));}))
 	Try(tkwait.window(ttHTMLreportDialog))
-	#
+
 	return (ReturnVal)
 }
 
 ExportHTMLreport <- function(){
 	# We will use the R2HTML package, but with my own HTMLplot function.
 	# Will we need xtable or does R2HTML have its own HTMLtable function?
-	#
+
 	#get numberOfGenes,adjustMethod and sortBy from environment if they are available, if not,  set them to default values
 	Try(
 		if(exists("numberOfGenes",envir=affylmGUIenvironment)){
@@ -310,7 +312,7 @@ ExportHTMLreport <- function(){
 			Try(assign("adjustMethod",adjustMethod,affylmGUIenvironment))
 		}
 	)
-	#
+
 	Try(limmaDataSetNameText                 <- get("limmaDataSetNameText"         ,envir=affylmGUIenvironment)) #for eg: [1] "alg_Est_gcrma_3C"
 	Try(ArraysLoaded                         <- get("ArraysLoaded"                 , envir=affylmGUIenvironment))
 	Try(NumContrastParameterizations         <- get("NumContrastParameterizations" ,envir=affylmGUIenvironment)) #for eg: [1] 1
@@ -319,16 +321,16 @@ ExportHTMLreport <- function(){
 	#> summary(ContrastParameterizationList)
 	#                               Length Class  Mode
 	#ContrastParameterizationName.1 5      -none- list
-	#
+
 	#ContrastParameterizationList is a list with entrys for each gene(?) for:
 	#some values for each gene off the top of the screen, followed by all of this data:
-	#
+
 	#$ContrastParameterizationName.1$eb$rank
 	#[1] 4
-	#
+
 	#$ContrastParameterizationName.1$eb$assign
 	#NULL
-	#
+
 	#$ContrastParameterizationName.1$eb$qr
 	#$qr
 	#             EstAbsent10 EstAbsent48 EstPresent10 EstPresent48
@@ -340,28 +342,28 @@ ExportHTMLreport <- function(){
 	#low48-2.cel    0.0000000   0.7071068    0.0000000    0.0000000
 	#high48-1.cel   0.0000000   0.0000000    0.0000000    0.7071068
 	#high48-2.cel   0.0000000   0.0000000    0.0000000    0.7071068
-	#
+
 	#$qraux
 	#[1] 1.707107 1.000000 1.707107 1.000000
-	#
+
 	#$pivot
 	#[1] 1 2 3 4
-	#
+
 	#$tol
 	#[1] 1e-07
-	#
+
 	#$rank
 	#[1] 4
-	#
+
 	#attr(,"class")
 	#[1] "qr"
-	#
+
 	#$ContrastParameterizationName.1$eb$df.residual
 	#    [1] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
 	#   [85] 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4
 	#   ...  ...................................
 	#[12601] 4 4 4 ...
-	#
+
 	#$ContrastParameterizationName.1$eb$sigma
 	#                   100_g_at                     1000_at                     1001_at                   1002_f_at                   1003_s_at                     1004_at
 	#                0.210371658                 0.229581752                 0.056224969                 0.079154826                 0.035168585                 0.062620730
@@ -372,32 +374,32 @@ ExportHTMLreport <- function(){
 	#(EstAbsent10)-(EstAbsent48)                           1.0                           0.0                          0.5
 	#(EstPresent10)-(EstPresent48)                         0.0                           1.0                          0.5
 	#(EstAbsent10)-(EstPresent48)                          0.5                           0.5                          1.0
-	#
+
 	#$ContrastParameterizationName.1$eb$stdev.unscaled
 	#                            (EstAbsent10)-(EstAbsent48) (EstPresent10)-(EstPresent48) (EstAbsent10)-(EstPresent48)
 	#100_g_at                                              1                             1                            1
 	#1000_at                                               1                             1                            1
 	#   ...                                              ...                           ...                          ...
-	#
+
 	#$ContrastParameterizationName.1$eb$contrasts
 	#             (EstAbsent10)-(EstAbsent48) (EstPresent10)-(EstPresent48) (EstAbsent10)-(EstPresent48)
 	#EstAbsent10                            1                             0                            1
 	#EstAbsent48                           -1                             0                            0
 	#EstPresent10                           0                             1                            0
 	#EstPresent48                           0                            -1                           -1
-	#
+
 	#$ContrastParameterizationName.1$eb$df.prior
 	#[1] 1.916164
-	#
+
 	#$ContrastParameterizationName.1$eb$s2.prior
 	#[1] 0.01619520
-	#
+
 	#$ContrastParameterizationName.1$eb$var.prior
 	#[1] 156.9730 123.4235 256.8846
-	#
+
 	#$ContrastParameterizationName.1$eb$proportion
 	#[1] 0.01
-	#
+
 	#$ContrastParameterizationName.1$eb$s2.post
 	#                   100_g_at                     1000_at                     1001_at                   1002_f_at                   1003_s_at                     1004_at
 	#                0.035167654                 0.040881861                 0.007382765                 0.009481584                 0.006081640                 0.007896685
@@ -428,37 +430,37 @@ ExportHTMLreport <- function(){
 	#EstAbsent48                           -1                             0                            0
 	#EstPresent10                           0                             1                            0
 	#EstPresent48                           0                            -1                           -1
-	#
+
 	#$ContrastParameterizationName.1$contrastsMatrixInList$contrastsCreatedFromDropDowns
 	#[1] TRUE
-	#
+
 	#$ContrastParameterizationName.1$contrastsMatrixInList$Param1
 	#[1] 1 3 1
-	#
+
 	#$ContrastParameterizationName.1$contrastsMatrixInList$Param2
 	#[1] 2 4 4
-	#
-	#
+
+
 	#$ContrastParameterizationName.1$ContrastParameterizationNameText
 	#[1] "ContSet1"
-	#
-	#
+
+
 	Try(ContrastParameterizationTREEIndexVec <- get("ContrastParameterizationTREEIndexVec",envir=affylmGUIenvironment)) #for eg: [1] 1
-	#
+
 	if(ArraysLoaded==FALSE){
 		Try(tkmessageBox(title="Export HTML Report",message="No arrays have been loaded.  Please try New or Open from the File menu.",type="ok",icon="error"))
 		Try(tkfocus(.affylmGUIglobals$ttMain))
 		return()
 	}
-	#
-	#
-	#
+
+
+
 	if(NumContrastParameterizations>0){
 		#Select which parameterization
 		Try(contrastParameterizationIndex <- ChooseContrastParameterization()) #for eg: [1] 1
 		#If click cancel button, then exit this routine
 		Try(if (contrastParameterizationIndex==0) return()) # Cancel
-		#
+	
 		Try(ContrastParameterizationNamesVec <- get("ContrastParameterizationNamesVec",envir=affylmGUIenvironment)) #for eg: [1] "ContSet1"
 		#store locally TREEindex for chosen parameterization
 		Try(.affylmGUIglobals$ContrastParameterizationTREEIndex <- ContrastParameterizationTREEIndexVec[contrastParameterizationIndex]) #for eg: [1] 1
@@ -489,7 +491,7 @@ ExportHTMLreport <- function(){
 		#stdev.unscaled   37875  -none- numeric
 		#contrasts           12  -none- numeric
 		#Amean            12625  -none- numeric
-		#
+	
 		Try(fit <- eBayes(fit))
 		#> summary(fit)
 		#                 Length Class  Mode
@@ -511,45 +513,45 @@ ExportHTMLreport <- function(){
 		#t                37875  -none- numeric
 		#p.value          37875  -none- numeric
 		#lods             37875  -none- numeric
-		#
+	
 		Try(ComponentsToExport <- GetComponentsToExportInHTMLreport(contrastParameterizationIndex))
 	}else{
 		Try(ComponentsToExport <- GetComponentsToExportInHTMLreport())
 	}
 	#if nothing selected, exit this routine
 	Try(if (length(ComponentsToExport)==0) return())
-	#
-	#
+
+
 	#Setup files to use for HTML report
 	Try(fileNameWithPath<- tkgetSaveFile(initialfile=limmaDataSetNameText,filetypes="{{HTML Files} {.html .htm}} {{All files} *}"))
 	#for eg: W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files/alg_Est_gcrma_3C
 	#Try(tkmessageBox(title="229:affylmGUI-htmlreport",message=paste("fileNameWithPath =",fileNameWithPath),icon="info",default="ok"))
 	#if null filename selected, exit this routine
 	Try(if (nchar(tclvalue(fileNameWithPath))==0)return())
-	#
-	#
-	#
+
+
+
 	Try(path <- tclvalue(tclfile.dir (tclvalue(fileNameWithPath)))) #for eg: "W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files"
 	#Try(tkmessageBox(title="235:affylmGUI-htmlreport",message=paste("path =",path),icon="info",default="ok"))
-	#
+
 	Try(fileName <- tclvalue(tclfile.tail(tclvalue(fileNameWithPath)))) #for eg: "alg_Est_gcrma_3C"
 	#Try(tkmessageBox(title="242:affylmGUI-htmlreport",message=paste("fileName =",fileName),icon="info",default="ok"))
-	#
+
 	Try(len <- nchar(fileName))
 	if (len<4){
 		Try(fileName <- paste(fileName,".html",sep=""))
 	}else if((tolower(substring(fileName,len-4,len))!=".html") &&(len<5 || (tolower(substring(fileName,len-4,len))!=".html"))){
 		Try(fileName <- paste(fileName,".html",sep="")) #for eg: "alg_Est_gcrma_3C.html"
 	}
-	#
+
 	Try(fileNameWithoutExtension <- substring(fileName,1,nchar(fileName)-5)) #for eg: "alg_Est_gcrma_3C"
-	#
+
 	Try(HTMLfilePath <- paste(path,.Platform$file.sep,fileNameWithoutExtension,"_files",sep="")) #for eg:  "W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files/alg_Est_gcrma_3C_files"
 	Try(HTMLfileRelativePath <- paste(fileNameWithoutExtension,"_files",sep="")) #for eg: "alg_Est_gcrma_3C_files"
 	Try(dir.create(HTMLfilePath))
-	#
+
 	Try(fileNameWithPath <- paste(path,"/",fileName,sep="")) #for eg: "W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files/alg_Est_gcrma_3C.html"
-	#
+
 	Try(R2HTMLpath <- system.file(package="R2HTML","output")) #for eg: [1] "C:/R/R-2.6.0alpha/library/R2HTML/output"
 	Try(cssFileSource <- paste(R2HTMLpath,"/","R2HTML.css",sep="")) #for eg: [1] "C:/R/R-2.6.0alpha/library/R2HTML/output/R2HTML.css"
 	Try(cssFileDestination <- paste(path,"/","R2HTML.css",sep="")) #for eg: "W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files/R2HTML.css"
@@ -557,10 +559,10 @@ ExportHTMLreport <- function(){
 	Try(R2HTMLlogoDestination <- paste(path,"/","R2HTMLlogo.png",sep="")) #for eg: [1] "W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files/R2HTMLlogo.png"
 	Try(file.copy(cssFileSource,cssFileDestination,overwrite=TRUE)) #for eg: TRUE
 	Try(file.copy(R2HTMLlogoSource,R2HTMLlogoDestination,overwrite=TRUE)) #for eg: TRUE
-	#
+
 	Try(HTMLtarget <- HTMLInitFile(path,filename=fileNameWithoutExtension,Title=paste(limmaDataSetNameText,"- Statistical Microarray Analysis using affylmGUI"), HTMLframe=FALSE,BackGroundColor="#FFFFFF"))
 	# for eg: "W:/aaa-R/eg_datasets/Affy-Estrogen_Data/estrogen_CEL_files/alg_Est_gcrma_3C.html"
-	#
+
 	# The following is written to this file:
 	# <html xmlns:mml="http://www.w3.org/1998/Math/MathML">
 	# <head>
@@ -571,21 +573,21 @@ ExportHTMLreport <- function(){
 	# <script type="text/javascript" src="ASCIIMathML.js"></script>
 	# <link href="./runtime/styles/xp/grid.css" rel="stylesheet" type="text/css" ></link>
 	# <link href="gridR2HTML.css" rel="stylesheet" type="text/css" ></link>
-	#
+
 	# <script src="./runtime/lib/grid.js"></script>
-	#
+
 	# <script src="./gridR2HTML.js"></script>
 	# <script>
 	#    nequations=0;
 	# </script>
 	# </head>
 	# <body onload="translate()" bgcolor= #FFFFFF background="" >
-	#
-	#
+
+
 	Try(HTML.title(paste(limmaDataSetNameText,"- Statistical Microarray Analysis using affylmGUI"),HR=1)) #for eg: NULL
 	# for eg: written to html file is:
 	# <h1 > alg_Est_gcrma_3C - Statistical Microarray Analysis using affylmGUI</h1>
-	#
+
 	Try(ExportTargets                    <- ComponentsToExport$Targets)
 	Try(ExportNormalizationMethod        <- ComponentsToExport$NormalizationMethod)
 	Try(ExportRawIntensityBoxPlot        <- ComponentsToExport$RawIntensityBoxPlot)
@@ -596,7 +598,7 @@ ExportHTMLreport <- function(){
 	Try(ExportTopNNToptables             <- ComponentsToExport$TopNNToptables)
 	Try(ExportCompleteToptables          <- ComponentsToExport$CompleteToptables)
 	#All the above are set to TRUE or FALSE, depending on what was chosen in the dialogue box
-	#
+
 	#This sets up parameters for the plots
 	if(ExportRawIntensityBoxPlot || ExportNormalizedIntensityBoxPlot || ExportMAPlotsContrasts){
 		Try(
@@ -617,7 +619,7 @@ ExportHTMLreport <- function(){
 			}
 		)
 	}
-	#
+
 	Try(HTML.title("Contents",HR=2)) # this writes " <h2 > Contents</h2>" to html file
 	#This writes links to html file for each feature selected
 	Try(if (ExportTargets) Try(HTMLli(txt="<a href=\"#Targets\"><b>Targets</b></a>")))
@@ -629,12 +631,12 @@ ExportHTMLreport <- function(){
 	Try(if (ExportMAPlotsContrasts) Try(HTMLli(txt="<a href=\"#MAPlotsContrasts\"><b>M A Plots for Contrasts</b></a>")))
 	Try(if (ExportTopNNToptables) Try(HTMLli(txt=paste("<a href=\"#TopNNToptables\"><b>Tables of Top ",numberOfGenes," Differentially Expressed Genes</b></a>",sep=""))))
 	Try(if (ExportCompleteToptables) Try(HTMLli(txt="<a href=\"#CompleteToptables\"><b>Complete Tables of Genes Ranked in order of Evidence for Differential Expression</b></a>")))
-	#
+
 	Try(tkconfigure(.affylmGUIglobals$ttMain,cursor="watch"))
 	Try(tkfocus(.affylmGUIglobals$ttMain))
-	#
-	#
-	#
+
+
+
 	if (ExportTargets){
 		Try(Targets <- get("Targets",envir=affylmGUIenvironment))
 		#for eg: Targets is:
@@ -647,7 +649,7 @@ ExportHTMLreport <- function(){
 		#6  Abs48.2  low48-2.cel  EstAbsent48
 		#7 Pres48.1 high48-1.cel EstPresent48
 		#8 Pres48.2 high48-2.cel EstPresent48
-		#
+	
 		Try(displayVector <- rep("s",ncol(Targets)+1)) #for eg: [1] "s" "s" "s" "s"
 		Try(
 			for (i in (0:ncol(Targets))){
@@ -679,7 +681,7 @@ ExportHTMLreport <- function(){
 		# \end{tabular}
 		# \end{center}
 		# \end{table}
-		#
+	
 		Try(HTML.title("<a name=\"Targets\">RNA Targets</a>",HR=2)) #for eg: this writes " <h2 > <a name="Targets">RNA Targets</a></h2>" to html file
 		Try(print(TargetsXtable,type="html",file=fileNameWithPath,append=TRUE))
 		#For eg: This prints the following to the html file:
@@ -696,11 +698,11 @@ ExportHTMLreport <- function(){
 		#   <TR> <TD align="right"> 8 </TD> <TD> Pres48.2 </TD> <TD> high48-2.cel </TD> <TD> EstPresent48 </TD> </TR>
 		#    </TABLE>
 		# <!-- html table generated in R 2.6.0 by xtable 1.5-1 package -->
-		#
+	
 	}
-	#
-	#
-	#
+
+
+
 	if (ExportNormalizationMethod){
 		Try(NormMethod <- get("NormMethod", envir=affylmGUIenvironment)) #for eg: GCRMA
 		Try(HTML.title("<a name=\"NormalizationMethod\">Normalization method</a>",HR=2)) #writes to html: " <h2 > <a name="NormalizationMethod">Normalization method</a></h2>"
@@ -716,13 +718,13 @@ ExportHTMLreport <- function(){
 			}
 		) #which writes to the html file for eg: "<br><li><b>GCRMA (GC Robust Multiarray Averaging)</b>"
 	}
-	#
-	#
-	#
+
+
+
 	if(ExportRawIntensityBoxPlot){
 		Try(HTML.title("<a name=\"RawIntensityBoxPlot\">Raw (Unnormalized) Intensity Box Plot</a>",HR=2))
 		#which writes for eg: <h2 > <a name="RawIntensityBoxPlot">Raw (Unnormalized) Intensity Box Plot</a></h2>
-		#
+	
 		Try(RawAffyData <- get("RawAffyData",envir=affylmGUIenvironment))
 		#for eg: this is:
 		#AffyBatch object
@@ -732,9 +734,9 @@ ExportHTMLreport <- function(){
 		#number of genes=12625
 		#annotation=hgu95av2
 		#notes=
-		#
+	
 		Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment)) #for eg: [1] "Abs10.1"  "Abs10.2"  "Pres10.1" "Pres10.2" "Abs48.1"  "Abs48.2"  "Pres48.1" "Pres48.2"
-		#
+	
 		#This plotFunction creates a boxplot from the raw data
 		Try(
 			plotFunction <- function(){
@@ -767,15 +769,15 @@ ExportHTMLreport <- function(){
 		# <p align=left><img src='alg_Est_gcrma_3C_files/RawIntensityBoxPlot.png' border=1><br><i> Raw intensity distribution for each slide </i></P>
 		#and creates a file "RawIntensityBoxPlot.png" in the "alg_Est_gcrma_3C_files" subdirectory.
 	}
-	#
-	#
-	#
+
+
+
 	if(ExportNormalizedIntensityBoxPlot){
 		Try(HTML.title("<a name=\"NormalizedIntensityBoxPlot\">Normalized Intensity Box Plot</a>",HR=2))
 		# for eg: this writes to the HTML file:
-		#
+	
 		# <h2 > <a name="NormalizedIntensityBoxPlot">Normalized Intensity Box Plot</a></h2>
-		#
+	
 		Try(NormalizedAffyData.exprs <- get("NormalizedAffyData.exprs",envir=affylmGUIenvironment))
 		#For eg: this is the normalized data:
 		#> summary(NormalizedAffyData.exprs)
@@ -786,12 +788,12 @@ ExportHTMLreport <- function(){
 		# Mean   : 5.1289   Mean   : 5.0827   Mean   : 5.2261   Mean   : 5.2530   Mean   : 5.0292   Mean   : 4.9990   Mean   : 5.0386   Mean   : 5.0201
 		# 3rd Qu.: 7.2458   3rd Qu.: 7.1482   3rd Qu.: 7.2749   3rd Qu.: 7.2045   3rd Qu.: 7.0249   3rd Qu.: 6.8045   3rd Qu.: 7.1026   3rd Qu.: 6.8093
  		# Max.   :16.0300   Max.   :16.0264   Max.   :15.8995   Max.   :15.9624   Max.   :15.9858   Max.   :15.9348   Max.   :15.6545   Max.   :15.7622
- 		#
+ 	
 		Try(SlideNamesVec  <- get("SlideNamesVec",envir=affylmGUIenvironment))
 		#for eg: SlideNamesVec is:
 		#[1] "Abs10.1"  "Abs10.2"  "Pres10.1" "Pres10.2" "Abs48.1"  "Abs48.2"  "Pres48.1" "Pres48.2"
-		#
-		#
+	
+	
 		#This plotFunction will create a boxplot of Normalized data
 		Try(
 			plotFunction <- function(){
@@ -822,11 +824,11 @@ ExportHTMLreport <- function(){
 		)
 		#For eg: This writes to HTML file:
 		# <p align=left><img src='alg_Est_gcrma_3C_files/NormalizedIntensityBoxPlot.png' border=1><br><i> Normalized intensity distribution for each slide </i></P>
-		#
+	
 		#It also creates the file "NormalizedIntensityBoxPlot.png" in the "alg_Est_gcrma_3C_files" subdirectory.
-		#
+	
 	}
-	#
+
 	if(ExportDesignMatrix){
 		Try(design <- get("design",envir=affylmGUIenvironment))
 		#For eg: This gets the design matrix:
@@ -839,8 +841,8 @@ ExportHTMLreport <- function(){
 		#low48-2.cel            0           1            0            0
 		#high48-1.cel           0           0            0            1
 		#high48-2.cel           0           0            0            1
-		#
-		#
+	
+	
 		Try(displayVector <- rep("g",ncol(design)+1)) #This creates: [1] "g" "g" "g" "g" "g"
 		Try(displayVector[0] <- "s")
 		Try(DesignXtable <- xtable(design,display=displayVector))
@@ -865,13 +867,13 @@ ExportHTMLreport <- function(){
 		#\end{tabular}
 		#\end{center}
 		#\end{table}
-		#
-		#
+	
+	
 		Try(HTML.title("<a name=\"DesignMatrix\">Design Matrix</a>",HR=2))
 		# For eg. this writes to HTML file:
-		#
+	
 		# <h2 > <a name="DesignMatrix">Design Matrix</a></h2>
-		#
+	
 		Try(print(DesignXtable,type="html",file=fileNameWithPath,append=TRUE))
 		#For eg. This writes to HTML file:
 		#<!-- html table generated in R 2.6.0 by xtable 1.5-1 package -->
@@ -887,8 +889,8 @@ ExportHTMLreport <- function(){
 		#  <TR> <TD align="right"> high48-1.cel </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> </TR>
 		#  <TR> <TD align="right"> high48-2.cel </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> </TR>
 		#   </TABLE>
-		#
-		#
+	
+	
 	}
 
 	if(ExportContrastsMatrix){
@@ -907,25 +909,25 @@ ExportHTMLreport <- function(){
 		#  <TR> <TD align="right"> EstPresent10 </TD> <TD align="right">   0 </TD> <TD align="right">   1 </TD> <TD align="right">   0 </TD> </TR>
 		#  <TR> <TD align="right"> EstPresent48 </TD> <TD align="right">   0 </TD> <TD align="right">  -1 </TD> <TD align="right">  -1 </TD> </TR>
 		#   </TABLE>
-		#
-		#
+	
+	
 	}
 
 	if(ExportMAPlotsContrasts){
 		Try(HTML.title("<a name=\"MAPlotsContrasts\">M A Plots for Contrasts</a>",HR=2))
 		#For eg. This writes to HTML file:
-		#
+	
 		# <h2 > <a name="MAPlotsContrasts">M A Plots for Contrasts</a></h2>
-		#
+	
 		Try(A <- rowMeans(NormalizedAffyData.exprs))
 		#For eg. This gets rowMeans, as summarized below:
 		#> summary(A)
 		#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
 		#-0.3351  2.9500  4.1050  5.0970  7.0480 15.9100
-		#
+	
 		Try(pch <- 16) #set character height plot
 		Try(cex <- 0.2) #set character expansion for plot
-		#
+	
 		Try(
 			#In this example, create an MA plot for each of the three contrast
 			for (contrast in (1:NumContrasts)){ #For eg. NumContrasts = 3
@@ -933,13 +935,13 @@ ExportHTMLreport <- function(){
 				Try(HTML.title(plotTitle,HR=2))
 				#For eg. this writes to HTML:
 				# <h2 > M A Plot ((EstAbsent10)-(EstAbsent48))</h2><p align=left><img src='alg_Est_gcrma_3C_files/contrastMAplot.1.png' border=1><br><i> M A Plot ((EstAbsent10)-(EstAbsent48)) </i></P>
-				#
+			
 				# <h2 > M A Plot ((EstPresent10)-(EstPresent48))</h2><p align=left><img src='alg_Est_gcrma_3C_files/contrastMAplot.2.png' border=1><br><i> M A Plot ((EstPresent10)-(EstPresent48)) </i></P>
-				#
+			
 				# <h2 > M A Plot ((EstAbsent10)-(EstPresent48))</h2><p align=left><img src='alg_Est_gcrma_3C_files/contrastMAplot.3.png' border=1><br><i> M A Plot ((EstAbsent10)-(EstPresent48)) </i></P>
-				#
-				#
-				#
+			
+			
+			
 				Try(M <- fit$coefficients[,contrast])
 				#For eg. For contrast no.1, M is:
 				#> summary(M)
@@ -947,8 +949,8 @@ ExportHTMLreport <- function(){
 				#-5.303e+00 -9.561e-02  7.819e-05  9.169e-02  2.857e-01  1.168e+01
 				#> length(M)
 				#[1] 12625
-				#
-				#
+			
+			
 				#Do an MA plot
 				Try(
 					plotFunction <- function(){
@@ -1109,4 +1111,5 @@ ExportHTMLreport <- function(){
 	Try(HTMLli(txt=paste("R2HTML Version",getPackageVersion("R2HTML"),"(by Eric Lecoutre) and ")))
 	Try(HTMLli(txt=paste("xtable Version",getPackageVersion("xtable"),"(by David Dahl)")))
 	Try(HTMLEndFile())
+	invisible()
 }

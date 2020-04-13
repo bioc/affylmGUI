@@ -1,5 +1,9 @@
 ------------------------- affylmGUI ChangeLog -------------------------
 
+13-Apr-2020 affylmGUI 1.61.8
+	Remove .HTML.file as an undefined global.
+	Fix code error with extra bracket introduced in previous commit.
+
 12-Apr-2020 affylmGUI 1.61.7
 	Remove the majority of require() calls because the NAMESPACE makes them superfluous.
 	Remove deleteItemFromList().
@@ -14,7 +18,7 @@
 	Remove topTable2() and toptable2(), replacing with limma::topTable().
 
 11-Apr-2020 affylmGUI 1.61.4
-	Simplify code by removing `==TRUE` or `==FALSE`. No change to functionality.
+	Simplify code by removing usages of `==TRUE` or `==FALSE`. No change to functionality.
 
 11-Apr-2020 affylmGUI 1.61.3
 	More simplification of code formatting. No change to functionality.
