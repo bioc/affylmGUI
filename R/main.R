@@ -210,54 +210,17 @@ affyHelp <- function(){
 }
 
 showCitations <- function(){
-	Try(print(citation("affylmGUI"))) #Put this on the R Console first.
-	#citationOutput is the ouput from the citation("affylmGUI") command given at the R prompt.
-	citationOutput <-
-	"
-	affylmGUI is an implementation of a body of methodological research by the authors and coworkers. Please cite
-	the appropriate methodological papers when you use results from affylmGUI in a publication. Such citations are
-	the main means by which the authors receive professional credit for their work.
-
-	Citing affylmGUI in publications will usually involve citing one or more of the methodology papers that the
-	software is based on as well as citing affylmGUI (Ref.5) itself.
-
-	If you use affylmGUI for differential expression analysis, please cite reference 1 which describes the linear
-	modeling approach implemented by lmFit and the empirical Bayes statistics implemented by eBayes, topTable etc.
-
-	To cite other aspects of the limma software please refer to reference 2. 
-
-	To cite the GC robust multiarray average (GCRMA) background correction method please refer to citation 3.
-
-	To cite the robust multiarray average (RMA) background correction method please refer to citation 4.
-
-		1. 	Phipson, B, Lee, S, Majewski, IJ, Alexander, WS, and Smyth, GK (2016). Robust hyperparameter estimation
-		protects against hypervariable genes and improves power to detect differential expression. Annals of
-		Applied Statistics 10(2), 946-963.
-
-		2. Ritchie, ME, Phipson, B, Wu, D, Hu, Y, Law, CW, Shi, W, and Smyth, GK (2015). limma powers differential
-		expression analyses for RNA-sequencing and microarray studies. Nucleic Acids Research 43(7), e47.
-
-		3. Wu, Z, Irizarry, RA, Gentleman, R, Martinez-Murillo, F, Spencer, F. (2004). A model based background
-		adjustment for oligonucleotide expression arrays. Journal of the American Statistical Association 99(468),
-		909-917.
-
-		4. Irizarry, RA, Hobbs, B, Collin, F, Beazer-Barclay, YD, Antonellis, KJ, Scherf, U, Speed, TP (2003).
-		Exploration, normalization, and summaries of high density oligonucleotide array probe level data.
-		Biostatistics 4(2), 249-264.
-
-		5. Wettenhall, JM, Simpson, KM, Satterley, K, and Smyth, GK (2006). affylmGUI: a graphical user
-		interface for linear modeling of single channel microarray data. Bioinformatics 22(7), 897-899.
-	"
-
-	citationNote <- "\nThis information is also displayed on the R console, where you may select and copy it."
-
-	citationMessage <- paste(citationOutput,citationNote,sep="")
-	Try(tkmessageBox(title="Citations",message=citationMessage))
+	banner <- "\n----- Citing affylmGUI -----\n\n"
+	msg <- "Wettenhall, JM, Simpson, KM, Satterley, K, and Smyth, GK (2006). affylmGUI: a graphical user interface for linear modeling of single channel microarray data. Bioinformatics 22(7), 897-899.\n\nRitchie, ME, Phipson, B, Wu, D, Hu, Y, Law, CW, Shi, W, and Smyth, GK (2015). limma powers differential expression analyses for RNA-sequencing and microarray studies. Nucleic Acids Research 43(7), e47.\n"
+	cat(banner)
+	writeLines(strwrap(msg))
+	Try(tkmessageBox(title="Citations",message=msg))
 }
 
-showChangeLog <- function(n=20){
-	msg <- paste("See the R console for the first",n,"lines of the ChangeLog file.")
-	Try(writeLines(readLines(system.file("doc","changelog.txt",package="affylmGUI"),n=n)))
+showChangeLog <- function(){
+	cat("\n")
+	Try(writeLines(readLines(system.file("doc","changelog.txt",package="affylmGUI"),n=40)))
+	msg <- "See the R console for the first 40 lines of the ChangeLog file. To see more lines, use changeLog(n, package='affylmGUI')."
 	Try(tkmessageBox(title="ChangeLog",message=msg))
 }
 
@@ -282,14 +245,15 @@ Try(
 	}
 )
 
-affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE){
+affylmGUI <- function(BigfontsForaffylmGUIpresentation=FALSE)
+# The function argument is for when I give a Presentation/talk on affylmGUI and want large affylmGUIfonts.	Currently, there are
+# some affylmGUIfonts which affylmGUI can't control, like menus, so as well as changing .affylmGUIglobals$affylmGUIpresentation to TRUE here, I
+# Right-Click the Windows Desktop, click Properties (to get Display properties which can also be accessed
+# through the Control Panel) then click on Appearance, and then change the affylmGUIfont size for menu,window title, etc.)
+# Rather than change each affylmGUIfont (menu,window title,...) manually each time, I save the changes as a "scheme".
+{
 	assign("affylmGUIenvironment",new.env(),.GlobalEnv)
 	assign("Try",get("Try",envir=.GlobalEnv),affylmGUIenvironment)
-	# This option is for when I give a Presentation/talk on affylmGUI and want large affylmGUIfonts.	Currently, there are
-	# some affylmGUIfonts which affylmGUI can't control, like menus, so as well as changing .affylmGUIglobals$affylmGUIpresentation to TRUE here, I
-	# Right-Click the Windows Desktop, click Properties (to get Display properties which can also be accessed
-	# through the Control Panel) then click on Appearance, and then change the affylmGUIfont size for menu,window title, etc.)
-	# Rather than change each affylmGUIfont (menu,window title,...) manually each time, I save the changes as a "scheme".
 	Try(affylmGUIglobals <- list())
 	Try(if(BigfontsForaffylmGUIpresentation)
 		Try(affylmGUIglobals$affylmGUIpresentation <- TRUE)
@@ -2555,7 +2519,7 @@ showTopTable <- function(...,export=FALSE){
 				}
 			) 
 			Try(tkfocus(toptableTable))
-		}else{ #end of if(nrows <=100)
+		}else{
 			Try(tkmessageBox(title="Large Toptable",message="Toptable is too large to display in a table widget, so it will be displayed in a text window instead.	You can save it as a tab-delimited text file and then import it into a spreadsheet program.",icon="info",type="ok"))
 			Try(tempfile1 <- tempfile())
 			write.table(table1,file=tempfile1,quote=FALSE,col.names=NA,sep="\t")
@@ -2600,7 +2564,7 @@ showTopTable <- function(...,export=FALSE){
 				"command",
 				label="Copy <Ctrl-C>",
 				command=copyText2
-			) # end of tkadd   # ,font=affylmGUIfontMenu
+			)
 			RightClick2 <- function(x,y){ # x and y are the mouse coordinates
 			 rootx <- as.integer(tkwinfo("rootx",txt))
 			 rooty <- as.integer(tkwinfo("rooty",txt))
@@ -3196,7 +3160,7 @@ evalRcode <- function(){
 					CopyToClip <- function(){
 						Try(tkrreplot(imgaffylmGUI))
 					}
-				}else{ #end of if(.affylmGUIglobals$graphicsDevice=="tkrplot"). #not using tkrplot, but R window
+				}else{
 					Try(plot.new())
 					Try(plotFunction())
 				}
@@ -3722,7 +3686,7 @@ chooseDir <- function(){
 				}
 			)
 		}
-	)# end of Try
+	)
 
 
 	Try(ReturnVal <- "")
@@ -3806,8 +3770,8 @@ onExit <- function(){
 	}
 
 	Try(assign(".JustAskedWhetherToSave",TRUE,.GlobalEnv))
-	#	try(tkdestroy(.affylmGUIglobals$ttMain),silent=TRUE)
 	try(tkdestroy(.affylmGUIglobals$ttMain),silent=TRUE)
+	return()
 }
 
 ChooseContrastParameterization <- function(){
@@ -3941,7 +3905,7 @@ DeleteContrastParameterization <- function(){
 						if(i!=.affylmGUIglobals$ContrastParameterizationTREEIndex){
 							Try(tempVec <- c(tempVec,ContrastParameterizationTREEIndexVec[i]))
 						}
-					)# end of Try
+					)
 				} 
 			) 
 		}
@@ -3961,7 +3925,7 @@ DeleteContrastParameterization <- function(){
 				}
 			) 
 		}
-	)# end of Try
+	)
 	Try(ContrastParameterizationNamesVec <- tempVec)
 
 	Try(NumContrastParameterizations <- NumContrastParameterizations - 1)
@@ -4267,7 +4231,6 @@ OpenALimmaFile <- function(FileName){
 			##		NormalizedAffyData.se.exprs <- assayDataElement(NormalizedAffyData,"se.exprs")
 			##	}
 			##}
-			###end of if(is(NormalizedAffyData, "ExpressionSet"))
 		}
 	)
 	#Now assign correct values to environment
